@@ -35,7 +35,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/newReqride:
+ * /ride-requests/newReqride:
  *   post:
  *     summary: Create a new ride request
  *     tags: [RideRequest]
@@ -62,7 +62,7 @@ router.post(
 
 /**
  * @swagger
- * /api/viewRideReq/{id}:
+ * /ride-requests/viewRideReq/{id}:
  *   get:
  *     summary: Get a ride request by ID
  *     tags: [RideRequest]
@@ -88,7 +88,7 @@ router.get(
 
 /**
  * @swagger
- * /api/allRideReq:
+ * /ride-requests/allRideReq:
  *   get:
  *     summary: Get all ride requests
  *     tags: [RideRequest]
@@ -112,7 +112,7 @@ router.get(
 
 /**
  * @swagger
- * /api/acceptReq/{id}:
+ * /ride-requests/acceptReq/{id}:
  *   patch:
  *     summary: Accept a ride request
  *     tags: [RideRequest]
@@ -139,7 +139,7 @@ router.patch(
 
 /**
  * @swagger
- * /api/dislineReq/{id}:
+ * /ride-requests/dislineReq/{id}:
  *   patch:
  *     summary: Decline a ride request
  *     tags: [RideRequest]
@@ -166,7 +166,7 @@ router.patch(
 
 /**
  * @swagger
- * /api/cancelReq/{id}:
+ * /ride-requests/cancelReq/{id}:
  *   delete:
  *     summary: Cancel a ride request
  *     tags: [RideRequest]
@@ -192,7 +192,7 @@ router.delete(
 
 /**
  * @swagger
- * /api/changeDriver/{id}:
+ * /ride-requests/changeDriver/{id}:
  *   patch:
  *     summary: Change driver for a ride request
  *     tags: [RideRequest]
@@ -228,7 +228,7 @@ router.patch(
 
 /**
  * @swagger
- * /api/viewARideReq/{id}:
+ * /ride-requests/viewARideReq/{id}:
  *   get:
  *     summary: Get a single ride request
  *     tags: [RideRequest]

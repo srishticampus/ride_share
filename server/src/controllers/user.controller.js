@@ -49,55 +49,54 @@ const filterUserData = (user) => {
   return filteredUser;
 };
 
-// User registration with transaction support
+// User registration (without transactions)
 export const registerUser = catchAsync(async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  
   try {
     const { email, password, fullName, phoneNumber } = req.body;
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ 
-      $or: [{ email }, { phoneNumber }] 
-    }).session(session);
+    // Check if user exists
+    const existingUser = await User.findOne({
+      $or: [{ email }, { phoneNumber }]
+    });
 
     if (existingUser) {
-      await session.abortTransaction();
       return next(new AppError('User with this email or phone number already exists', 400));
     }
 
-    // Process file upload if present
+    // Handle file upload
     let profilePicturePath;
     if (req.file) {
       profilePicturePath = `/uploads/users/${req.file.filename}`;
     }
 
-    const newUser = await User.create([{
+    // Create user
+    const newUser = await User.create({
       email,
       fullName,
       phoneNumber,
       password,
       profilePicture: profilePicturePath
-    }], { session });
+    });
 
-    await session.commitTransaction();
-    createSendToken(newUser[0], 201, res);
+    // Send response
+    createSendToken(newUser, 201, res);
+
   } catch (err) {
-    await session.abortTransaction();
-    
-    // Clean up uploaded file if registration failed
+    // Clean up uploaded file if an error occurs
     if (req.file) {
-      fs.unlink(req.file.path, () => {});
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (unlinkErr) {
+        console.error('File cleanup failed:', unlinkErr);
+      }
     }
-    
+
+    console.error('Registration Error:', err);
     return next(new AppError('User registration failed. Please try again.', 500));
-  } finally {
-    session.endSession();
   }
 });
 
-// User login with improved error handling
+// User login
 export const loginUser = catchAsync(async (req, res, next) => {
   const { phoneNumber, password } = req.body;
 
@@ -117,34 +116,26 @@ export const loginUser = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
-// Forgot password with transaction support
+// Forgot password (without transactions)
 export const forgotPassword = catchAsync(async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  
   try {
     const { phoneNumber, newPassword } = req.body;
 
-    const user = await User.findOne({ phoneNumber }).session(session);
+    const user = await User.findOne({ phoneNumber });
     if (!user) {
-      await session.abortTransaction();
       return next(new AppError('No user found with that phone number', 404));
     }
 
     user.password = newPassword;
-    await user.save({ session });
+    await user.save();
     
-    await session.commitTransaction();
     createSendToken(user, 200, res);
   } catch (err) {
-    await session.abortTransaction();
     return next(new AppError('Password reset failed. Please try again.', 500));
-  } finally {
-    session.endSession();
   }
 });
 
-// Update profile with file handling
+// Update profile with file handling (without transactions)
 export const updateProfile = catchAsync(async (req, res, next) => {
   if (req.body.password) {
     return next(new AppError('This route is not for password updates. Please use /forgot-password', 400));

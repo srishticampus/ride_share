@@ -15,7 +15,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/loginAdmin:
+ * /admin/loginAdmin:
  *   post:
  *     summary: Admin login
  *     tags: [Admin]

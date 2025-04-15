@@ -1,4 +1,3 @@
-//server/app.js
 import express, { json, urlencoded } from "express";
 import { static as expressStatic } from "express";
 import cors from "cors";
@@ -10,7 +9,7 @@ import mongoSanitize from "express-mongo-sanitize";
 import DOMPurify from "dompurify";
 import { JSDOM } from "jsdom";
 import hpp from "hpp";
-import { join ,dirname} from "path";
+import { join, dirname } from "path";
 import AppError from "./src/utils/appError.js";
 import globalErrorHandler from "./src/middlewares/error.middleware.js";
 import routes from "./src/routes/index.js";
@@ -18,9 +17,9 @@ import { setupSwagger } from "./src/config/swagger.js";
 import { connectDB } from "./src/config/dbConnection.js";
 import { fileURLToPath } from 'url';
 
-// Initialize express app
 const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
 // Configure DOM Purify
 const window = new JSDOM("").window;
 const domPurify = DOMPurify(window);
@@ -30,8 +29,10 @@ connectDB();
 
 // 2. Global Middlewares
 
-// Trust proxy for production
-app.enable("trust proxy");
+// ✅ Trust proxy only in production
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1); // trust first proxy (e.g., Heroku, NGINX)
+}
 
 // Implement CORS
 app.use(cors());
@@ -64,19 +65,16 @@ if (process.env.NODE_ENV === "development") {
   });
 }
 
-// Limit requests from same API
+// ✅ Rate limiting (Safe & configurable)
 const limiter = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000,
   message: "Too many requests from this IP, please try again in an hour!",
-  skip: (req) => {
-    // Skip rate limiting for health checks
-    return req.path === '/api/v1/health';
-  }
+  skip: (req) => req.path === '/api/v1/health'
 });
 app.use("/api", limiter);
 
-// Body parser, reading data from body into req.body
+// Body parser
 app.use(json({ limit: "10kb" }));
 app.use(urlencoded({ extended: true, limit: "10kb" }));
 
@@ -98,7 +96,7 @@ app.use((req, res, next) => {
 // Prevent parameter pollution
 app.use(hpp({
   whitelist: [
-    'duration', 'ratingsQuantity', 'ratingsAverage', 
+    'duration', 'ratingsQuantity', 'ratingsAverage',
     'maxGroupSize', 'difficulty', 'price'
   ]
 }));
@@ -106,16 +104,16 @@ app.use(hpp({
 // Compression
 app.use(compression());
 
-// 3. Static files
+// Static files
 app.use(expressStatic(join(__dirname, "./uploads")));
 
-// 4. Swagger documentation
+// Swagger docs
 setupSwagger(app);
 
-// 5. Routes
+// Routes
 app.use("/api/v1", routes);
 
-// Health check endpoint
+// Health check
 app.get('/api/v1/health', (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -124,12 +122,12 @@ app.get('/api/v1/health', (req, res) => {
   });
 });
 
-// 6. Handle unhandled routes
+// Handle 404
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
-// 7. Global error handler
+// Global error handler
 app.use(globalErrorHandler);
 
 export default app;

@@ -56,7 +56,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/vehicledetails:
+ * /vehicles/vehicledetails:
  *   post:
  *     summary: Add vehicle details
  *     tags: [Vehicle]
@@ -86,7 +86,7 @@ router.post(
 
 /**
  * @swagger
- * /api/editvehicle/{id}:
+ * /vehicles/editvehicle/{id}:
  *   patch:
  *     summary: Update vehicle details
  *     tags: [Vehicle]
@@ -120,7 +120,7 @@ router.patch(
 
 /**
  * @swagger
- * /api/showAllVehicle:
+ * /vehicles/showAllVehicle:
  *   get:
  *     summary: Get all vehicles
  *     tags: [Vehicle]
@@ -144,7 +144,7 @@ router.get(
 
 /**
  * @swagger
- * /api/showAVehicle/{id}:
+ * /vehicles/showAVehicle/{id}:
  *   get:
  *     summary: Get a single vehicle
  *     tags: [Vehicle]

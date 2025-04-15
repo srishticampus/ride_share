@@ -66,7 +66,7 @@ const RideSchema = new Schema({
     required: [true, 'Origin is required'],
     trim: true
   },
-  distination: {
+  destination: {
     type: String,
     required: [true, 'Destination is required'],
     trim: true
@@ -82,8 +82,8 @@ const RideSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ['Pending', 'Accepted', 'Cancelled'],
-    default: 'Pending'
+    enum: ['pending', 'accepted', 'started', 'completed', 'cancelled'],
+    default: 'pending'
   },
   price: {
     type: Number,

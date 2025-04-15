@@ -43,7 +43,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/addprofile:
+ * /profiles/addprofile:
  *   post:
  *     summary: Create or update user profile
  *     tags: [Profile]
@@ -70,7 +70,7 @@ router.post(
 
 /**
  * @swagger
- * /api/editprofile/{id}:
+ * /profiles/editprofile/{id}:
  *   patch:
  *     summary: Update profile
  *     tags: [Profile]
@@ -103,7 +103,7 @@ router.patch(
 
 /**
  * @swagger
- * /api/allprofile:
+ * /profiles/allprofile:
  *   get:
  *     summary: Get all profiles (Admin only)
  *     tags: [Profile]
@@ -129,7 +129,7 @@ router.get(
 
 /**
  * @swagger
- * /api/aProfile/{id}:
+ * /profiles/aProfile/{id}:
  *   get:
  *     summary: Get a single profile
  *     tags: [Profile]

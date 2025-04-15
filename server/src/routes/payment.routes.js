@@ -39,7 +39,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/payment:
+ * /payments/payment:
  *   post:
  *     summary: Create a new payment
  *     tags: [Payment]
@@ -66,7 +66,7 @@ router.post(
 
 /**
  * @swagger
- * /api/confirmPayment/{id}:
+ * /payments/confirmPayment/{id}:
  *   patch:
  *     summary: Confirm a payment
  *     tags: [Payment]
@@ -92,7 +92,7 @@ router.patch(
 
 /**
  * @swagger
- * /api/failedPayment/{id}:
+ * /payments/failedPayment/{id}:
  *   patch:
  *     summary: Mark payment as failed
  *     tags: [Payment]
@@ -118,7 +118,7 @@ router.patch(
 
 /**
  * @swagger
- * /api/completedPayment:
+ * /payments/completedPayment:
  *   get:
  *     summary: Get all completed payments
  *     tags: [Payment]
@@ -142,7 +142,7 @@ router.get(
 
 /**
  * @swagger
- * /api/unCompletedPayment:
+ * /payments/unCompletedPayment:
  *   get:
  *     summary: Get all failed payments
  *     tags: [Payment]

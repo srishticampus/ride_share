@@ -39,7 +39,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/rating:
+ * /ratings/rating:
  *   post:
  *     summary: Create a new rating
  *     tags: [Rating]
@@ -66,7 +66,7 @@ router.post(
 
 /**
  * @swagger
- * /api/editRating/{id}:
+ * /ratings/editRating/{id}:
  *   patch:
  *     summary: Update a rating
  *     tags: [Rating]
@@ -99,7 +99,7 @@ router.patch(
 
 /**
  * @swagger
- * /api/deleteRating/{id}:
+ * /ratings/deleteRating/{id}:
  *   delete:
  *     summary: Delete a rating
  *     tags: [Rating]
@@ -125,7 +125,7 @@ router.delete(
 
 /**
  * @swagger
- * /api/viewAllRating:
+ * /ratings/viewAllRating:
  *   get:
  *     summary: Get all ratings
  *     tags: [Rating]
@@ -149,7 +149,7 @@ router.get(
 
 /**
  * @swagger
- * /api/viewARating/{id}:
+ * /ratings/viewARating/{id}:
  *   get:
  *     summary: Get a single rating
  *     tags: [Rating]

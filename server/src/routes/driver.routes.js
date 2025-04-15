@@ -11,13 +11,13 @@ const router = express.Router();
 router.post(
   '/register',
   uploadDriverPhoto,
-  validate(driverValidation.registerDriverSchema),
+  validate(driverValidation.driverRegistrationSchema),
   driverController.DriverRegistration
 );
 
 router.post(
   '/login',
-  validate(driverValidation.loginDriverSchema),
+  validate(driverValidation.driverLoginSchema),
   driverController.login
 );
 

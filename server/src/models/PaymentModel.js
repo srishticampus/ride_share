@@ -73,7 +73,7 @@ const PaymentSchema = new Schema({
   paymentMethod: {
     type: String,
     required: [true, 'Payment method is required'],
-    enum: ['Cash', 'Online Payment']
+    enum: ['Cash', 'Online Payment',"Card"]
   }
 }, { timestamps: true });
 

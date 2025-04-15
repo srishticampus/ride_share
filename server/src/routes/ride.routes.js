@@ -50,7 +50,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/newride:
+ * /rides/newride:
  *   post:
  *     summary: Create a new ride
  *     tags: [Ride]
@@ -77,7 +77,7 @@ router.post(
 
 /**
  * @swagger
- * /api/showAllRide:
+ * /rides/showAllRide:
  *   get:
  *     summary: Get all rides
  *     tags: [Ride]
@@ -101,7 +101,7 @@ router.get(
 
 /**
  * @swagger
- * /api/showAride/{id}:
+ * /rides/showAride/{id}:
  *   get:
  *     summary: Get a single ride
  *     tags: [Ride]
@@ -127,7 +127,7 @@ router.get(
 
 /**
  * @swagger
- * /api/updateRide/{id}:
+ * /rides/updateRide/{id}:
  *   patch:
  *     summary: Update a ride
  *     tags: [Ride]
@@ -160,7 +160,7 @@ router.patch(
 
 /**
  * @swagger
- * /api/deleteRide/{id}:
+ * /rides/deleteRide/{id}:
  *   delete:
  *     summary: Delete a ride
  *     tags: [Ride]

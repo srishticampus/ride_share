@@ -42,7 +42,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/dispute:
+ * /disputes/dispute:
  *   post:
  *     summary: Create a new dispute
  *     tags: [Dispute]
@@ -69,7 +69,7 @@ router.post(
 
 /**
  * @swagger
- * /api/solved/{id}:
+ * /disputes/solved/{id}:
  *   patch:
  *     summary: Mark dispute as solved (Admin only)
  *     tags: [Dispute]
@@ -97,7 +97,7 @@ router.patch(
 
 /**
  * @swagger
- * /api/dismiss/{id}:
+ * /disputes/dismiss/{id}:
  *   patch:
  *     summary: Mark dispute as dismissed (Admin only)
  *     tags: [Dispute]
@@ -125,7 +125,7 @@ router.patch(
 
 /**
  * @swagger
- * /api/viewDisputed:
+ * /disputes/viewDisputed:
  *   get:
  *     summary: Get all disputes (Admin only)
  *     tags: [Dispute]
@@ -151,7 +151,7 @@ router.get(
 
 /**
  * @swagger
- * /api/showAdispute/{id}:
+ * /disputes/showAdispute/{id}:
  *   get:
  *     summary: Get a single dispute (Admin only)
  *     tags: [Dispute]
