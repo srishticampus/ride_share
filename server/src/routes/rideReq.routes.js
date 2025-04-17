@@ -3,16 +3,9 @@ import express from 'express';
 import RideReqController from '../controllers/rideReq.controller.js';
 import { rideRequestSchema, updateRideRequestSchema } from '../validations/rideReq.validation.js';
 import { validate } from '../middlewares/validation.middleware.js';
-import {protect,restrictTo} from '../middlewares/auth.middleware.js';
+import { protect, restrictTo } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
-
-/**
- * @swagger
- * tags:
- *   name: RideRequest
- *   description: Ride request management
- */
 
 /**
  * @swagger
@@ -23,22 +16,37 @@ const router = express.Router();
  *       required:
  *         - riderId
  *         - driverId
+ *         - pickupLocation
+ *         - dropoffLocation
  *       properties:
  *         riderId:
  *           type: string
  *         driverId:
  *           type: string
+ *         pickupLocation:
+ *           type: string
+ *         dropoffLocation:
+ *           type: string
  *         status:
  *           type: string
- *           enum: [pending, accepted, declined, cancelled]
+ *           enum: [pending, accepted, rejected, cancelled, completed]
  */
 
 /**
  * @swagger
- * /ride-requests/newReqride:
+ * tags:
+ *   name: RideRequests
+ *   description: Ride request management endpoints
+ */
+
+router.use(protect);
+
+/**
+ * @swagger
+ * /ride-requests:
  *   post:
- *     summary: Create a new ride request
- *     tags: [RideRequest]
+ *     summary: Create new ride request
+ *     tags: [RideRequests]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -50,206 +58,57 @@ const router = express.Router();
  *     responses:
  *       201:
  *         description: Ride request created successfully
- *       400:
- *         description: Bad request
- */
-router.post(
-  '/newReqride',
-  protect,
-  validate(rideRequestSchema),
-  RideReqController.addRideReq
-);
-
-/**
- * @swagger
- * /ride-requests/viewRideReq/{id}:
- *   get:
- *     summary: Get a ride request by ID
- *     tags: [RideRequest]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Ride request details
- *       404:
- *         description: Ride request not found
- */
-router.get(
-  '/viewRideReq/:id',
-  protect,
-  RideReqController.viewReq
-);
-
-/**
- * @swagger
- * /ride-requests/allRideReq:
- *   get:
- *     summary: Get all ride requests
- *     tags: [RideRequest]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: List of ride requests
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/RideRequest'
+ *               $ref: '#/components/schemas/RideRequest'
+ *       400:
+ *         description: Validation error
  */
-router.get(
-  '/allRideReq',
-  protect,
-  RideReqController.allReq
-);
+router.post('/', validate(rideRequestSchema), RideReqController.addRideReq);
 
 /**
  * @swagger
- * /ride-requests/acceptReq/{id}:
+ * /ride-requests/{id}/accept:
  *   patch:
- *     summary: Accept a ride request
- *     tags: [RideRequest]
+ *     summary: Accept ride request (Driver only)
+ *     tags: [RideRequests]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema:
- *           type: string
  *     responses:
  *       200:
  *         description: Ride request accepted
+ *       403:
+ *         description: Forbidden - Driver access required
  *       404:
  *         description: Ride request not found
  */
-router.patch(
-  '/acceptReq/:id',
-  protect,
-  restrictTo('driver'),
-  RideReqController.acceptReq
-);
+router.patch('/:id/accept', restrictTo('driver'), RideReqController.acceptReq);
 
 /**
  * @swagger
- * /ride-requests/dislineReq/{id}:
+ * /ride-requests/{id}/reject:
  *   patch:
- *     summary: Decline a ride request
- *     tags: [RideRequest]
+ *     summary: Reject ride request (Driver only)
+ *     tags: [RideRequests]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema:
- *           type: string
  *     responses:
  *       200:
- *         description: Ride request declined
+ *         description: Ride request rejected
+ *       403:
+ *         description: Forbidden - Driver access required
  *       404:
  *         description: Ride request not found
  */
-router.patch(
-  '/dislineReq/:id',
-  protect,
-  restrictTo('driver'),
-  RideReqController.dislineReq
-);
-
-/**
- * @swagger
- * /ride-requests/cancelReq/{id}:
- *   delete:
- *     summary: Cancel a ride request
- *     tags: [RideRequest]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       204:
- *         description: Ride request cancelled
- *       404:
- *         description: Ride request not found
- */
-router.delete(
-  '/cancelReq/:id',
-  protect,
-  RideReqController.deleteReq
-);
-
-/**
- * @swagger
- * /ride-requests/changeDriver/{id}:
- *   patch:
- *     summary: Change driver for a ride request
- *     tags: [RideRequest]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               driverId:
- *                 type: string
- *     responses:
- *       200:
- *         description: Driver changed successfully
- *       404:
- *         description: Ride request not found
- */
-router.patch(
-  '/changeDriver/:id',
-  protect,
-  validate(updateRideRequestSchema),
-  RideReqController.changeDriver
-);
-
-/**
- * @swagger
- * /ride-requests/viewARideReq/{id}:
- *   get:
- *     summary: Get a single ride request
- *     tags: [RideRequest]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Ride request details
- *       404:
- *         description: Ride request not found
- */
-router.get(
-  '/viewARideReq/:id',
-  protect,
-  RideReqController.viewARideRequest
-);
+router.patch('/:id/reject', restrictTo('driver'), RideReqController.dislineReq);
 
 export default router;

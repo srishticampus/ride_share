@@ -12,12 +12,18 @@ import { loginSchema } from '../validations/admin.validation.js';
 
 
 export const login = catchAsync(async (req, res, next) => {
+  // Hardcoded admin credentials (consider moving to config)
   if (req.body.email === "admin@gmail.com" && req.body.password === "admin@123") {
-    const token = signToken('admin');
+    const token = signToken('admin', 'admin'); // Add role as second parameter
     return res.status(200).json({
       status: 'success',
       token,
-      data: { admin: { email: "admin@gmail.com" } }
+      data: { 
+        admin: { 
+          email: "admin@gmail.com",
+          role: "admin"
+        } 
+      }
     });
   }
 
@@ -27,7 +33,7 @@ export const login = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect email or password', 401));
   }
 
-  const token = signToken(admin._id);
+  const token = signToken(admin._id, admin.role);
   
   res.status(200).json({
     status: 'success',

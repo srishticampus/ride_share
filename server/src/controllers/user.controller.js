@@ -1,5 +1,4 @@
 // server/src/controllers/user.controller.js
-import mongoose from 'mongoose';
 import {User} from '../models/index.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';

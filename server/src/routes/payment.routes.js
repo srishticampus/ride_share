@@ -3,16 +3,9 @@ import express from 'express';
 import PaymentController from '../controllers/payment.controller.js';
 import { paymentSchema } from '../validations/payment.validation.js';
 import { validate } from '../middlewares/validation.middleware.js';
-import {protect,restrictTo} from '../middlewares/auth.middleware.js';
+import { protect, restrictTo } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
-
-/**
- * @swagger
- * tags:
- *   name: Payment
- *   description: Payment management
- */
 
 /**
  * @swagger
@@ -39,10 +32,19 @@ const router = express.Router();
 
 /**
  * @swagger
- * /payments/payment:
+ * tags:
+ *   name: Payments
+ *   description: Payment management endpoints
+ */
+
+router.use(protect);
+
+/**
+ * @swagger
+ * /payments:
  *   post:
  *     summary: Create a new payment
- *     tags: [Payment]
+ *     tags: [Payments]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -54,74 +56,41 @@ const router = express.Router();
  *     responses:
  *       201:
  *         description: Payment created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Payment'
  *       400:
- *         description: Bad request
+ *         description: Validation error
  */
-router.post(
-  '/payment',
-  protect,
-  validate(paymentSchema),
-  PaymentController.newPayment
-);
+router.post('/', validate(paymentSchema), PaymentController.newPayment);
 
 /**
  * @swagger
- * /payments/confirmPayment/{id}:
+ * /payments/{id}/confirm:
  *   patch:
- *     summary: Confirm a payment
- *     tags: [Payment]
+ *     summary: Confirm payment
+ *     tags: [Payments]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema:
- *           type: string
  *     responses:
  *       200:
  *         description: Payment confirmed
  *       404:
  *         description: Payment not found
  */
-router.patch(
-  '/confirmPayment/:id',
-  protect,
-  PaymentController.confirmPayment
-);
+router.patch('/:id/confirm', PaymentController.confirmPayment);
 
 /**
  * @swagger
- * /payments/failedPayment/{id}:
- *   patch:
- *     summary: Mark payment as failed
- *     tags: [Payment]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Payment marked as failed
- *       404:
- *         description: Payment not found
- */
-router.patch(
-  '/failedPayment/:id',
-  protect,
-  PaymentController.FailedPayment
-);
-
-/**
- * @swagger
- * /payments/completedPayment:
+ * /payments/completed:
  *   get:
  *     summary: Get all completed payments
- *     tags: [Payment]
+ *     tags: [Payments]
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -134,34 +103,6 @@ router.patch(
  *               items:
  *                 $ref: '#/components/schemas/Payment'
  */
-router.get(
-  '/completedPayment',
-  protect,
-  PaymentController.showCompletedPayments
-);
-
-/**
- * @swagger
- * /payments/unCompletedPayment:
- *   get:
- *     summary: Get all failed payments
- *     tags: [Payment]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: List of failed payments
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Payment'
- */
-router.get(
-  '/unCompletedPayment',
-  protect,
-  PaymentController.showFailedPayments
-);
+router.get('/completed', PaymentController.showCompletedPayments);
 
 export default router;

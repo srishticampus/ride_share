@@ -3,16 +3,9 @@ import express from 'express';
 import VehicleController from '../controllers/vehicle.controller.js';
 import { vehicleSchema, updateVehicleSchema } from '../validations/vehicle.validation.js';
 import { validate } from '../middlewares/validation.middleware.js';
-import {protect,restrictTo} from '../middlewares/auth.middleware.js';
+import { protect, restrictTo } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
-
-/**
- * @swagger
- * tags:
- *   name: Vehicle
- *   description: Vehicle management
- */
 
 /**
  * @swagger
@@ -25,9 +18,6 @@ const router = express.Router();
  *         - vehicleMake
  *         - vehicleModel
  *         - vehicleYear
- *         - vehicleType
- *         - vehicleCapacity
- *         - vehicleFuelType
  *         - driverId
  *       properties:
  *         vehicleRegistrationNo:
@@ -56,10 +46,20 @@ const router = express.Router();
 
 /**
  * @swagger
- * /vehicles/vehicledetails:
+ * tags:
+ *   name: Vehicles
+ *   description: Vehicle management endpoints
+ */
+
+router.use(protect);
+router.use(restrictTo('driver'));
+
+/**
+ * @swagger
+ * /vehicles:
  *   post:
- *     summary: Add vehicle details
- *     tags: [Vehicle]
+ *     summary: Register new vehicle (Driver only)
+ *     tags: [Vehicles]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -70,34 +70,28 @@ const router = express.Router();
  *             $ref: '#/components/schemas/Vehicle'
  *     responses:
  *       201:
- *         description: Vehicle created successfully
+ *         description: Vehicle registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Vehicle'
  *       400:
- *         description: Bad request
- *       401:
- *         description: Unauthorized
+ *         description: Validation error
  */
-router.post(
-  '/vehicledetails',
-  protect,
-  restrictTo('driver'),
-  validate(vehicleSchema),
-  VehicleController.AddVehicleDtl
-);
+router.post('/', validate(vehicleSchema), VehicleController.AddVehicleDtl);
 
 /**
  * @swagger
- * /vehicles/editvehicle/{id}:
+ * /vehicles/{id}:
  *   patch:
- *     summary: Update vehicle details
- *     tags: [Vehicle]
+ *     summary: Update vehicle details (Driver only)
+ *     tags: [Vehicles]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema:
- *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -110,25 +104,21 @@ router.post(
  *       404:
  *         description: Vehicle not found
  */
-router.patch(
-  '/editvehicle/:id',
-  protect,
-  restrictTo('driver'),
-  validate(updateVehicleSchema),
-  VehicleController.updateDetails
-);
+router.patch('/:id', validate(updateVehicleSchema), VehicleController.updateDetails);
+
+router.use(restrictTo('admin'));
 
 /**
  * @swagger
- * /vehicles/showAllVehicle:
+ * /vehicles:
  *   get:
- *     summary: Get all vehicles
- *     tags: [Vehicle]
+ *     summary: Get all vehicles (Admin only)
+ *     tags: [Vehicles]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of vehicles
+ *         description: List of all vehicles
  *         content:
  *           application/json:
  *             schema:
@@ -136,36 +126,30 @@ router.patch(
  *               items:
  *                 $ref: '#/components/schemas/Vehicle'
  */
-router.get(
-  '/showAllVehicle',
-  protect,
-  VehicleController.ShowAllVehicle
-);
+router.get('/', VehicleController.ShowAllVehicle);
 
 /**
  * @swagger
- * /vehicles/showAVehicle/{id}:
+ * /vehicles/{id}:
  *   get:
- *     summary: Get a single vehicle
- *     tags: [Vehicle]
+ *     summary: Get vehicle by ID (Admin only)
+ *     tags: [Vehicles]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema:
- *           type: string
  *     responses:
  *       200:
- *         description: Vehicle data
+ *         description: Vehicle details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Vehicle'
  *       404:
  *         description: Vehicle not found
  */
-router.get(
-  '/showAVehicle/:id',
-  protect,
-  VehicleController.ShowAVehicle
-);
+router.get('/:id', VehicleController.ShowAVehicle);
 
 export default router;
