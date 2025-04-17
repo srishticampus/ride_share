@@ -3,16 +3,9 @@ import express from 'express';
 import RatingController from '../controllers/rating.controller.js';
 import { ratingSchema, updateRatingSchema } from '../validations/rating.validation.js';
 import { validate } from '../middlewares/validation.middleware.js';
-import {protect,restrictTo} from '../middlewares/auth.middleware.js';
+import { protect } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
-
-/**
- * @swagger
- * tags:
- *   name: Rating
- *   description: Rating management
- */
 
 /**
  * @swagger
@@ -39,10 +32,19 @@ const router = express.Router();
 
 /**
  * @swagger
- * /ratings/rating:
+ * tags:
+ *   name: Ratings
+ *   description: Rating management endpoints
+ */
+
+router.use(protect);
+
+/**
+ * @swagger
+ * /ratings:
  *   post:
- *     summary: Create a new rating
- *     tags: [Rating]
+ *     summary: Create new rating
+ *     tags: [Ratings]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -54,30 +56,27 @@ const router = express.Router();
  *     responses:
  *       201:
  *         description: Rating created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Rating'
  *       400:
- *         description: Bad request
+ *         description: Validation error
  */
-router.post(
-  '/rating',
-  protect,
-  validate(ratingSchema),
-  RatingController.newRating
-);
+router.post('/', validate(ratingSchema), RatingController.newRating);
 
 /**
  * @swagger
- * /ratings/editRating/{id}:
+ * /ratings/{id}:
  *   patch:
- *     summary: Update a rating
- *     tags: [Rating]
+ *     summary: Update rating
+ *     tags: [Ratings]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema:
- *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -90,50 +89,39 @@ router.post(
  *       404:
  *         description: Rating not found
  */
-router.patch(
-  '/editRating/:id',
-  protect,
-  validate(updateRatingSchema),
-  RatingController.editRating
-);
+router.patch('/:id', validate(updateRatingSchema), RatingController.editRating);
 
 /**
  * @swagger
- * /ratings/deleteRating/{id}:
+ * /ratings/{id}:
  *   delete:
- *     summary: Delete a rating
- *     tags: [Rating]
+ *     summary: Delete rating
+ *     tags: [Ratings]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema:
- *           type: string
  *     responses:
  *       204:
  *         description: Rating deleted successfully
  *       404:
  *         description: Rating not found
  */
-router.delete(
-  '/deleteRating/:id',
-  protect,
-  RatingController.deleteRating
-);
+router.delete('/:id', RatingController.deleteRating);
 
 /**
  * @swagger
- * /ratings/viewAllRating:
+ * /ratings:
  *   get:
  *     summary: Get all ratings
- *     tags: [Rating]
+ *     tags: [Ratings]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of ratings
+ *         description: List of all ratings
  *         content:
  *           application/json:
  *             schema:
@@ -141,36 +129,6 @@ router.delete(
  *               items:
  *                 $ref: '#/components/schemas/Rating'
  */
-router.get(
-  '/viewAllRating',
-  protect,
-  RatingController.viewAllRating
-);
-
-/**
- * @swagger
- * /ratings/viewARating/{id}:
- *   get:
- *     summary: Get a single rating
- *     tags: [Rating]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Rating details
- *       404:
- *         description: Rating not found
- */
-router.get(
-  '/viewARating/:id',
-  protect,
-  RatingController.viewARating
-);
+router.get('/', RatingController.viewAllRating);
 
 export default router;

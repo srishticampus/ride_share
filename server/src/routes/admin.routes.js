@@ -8,16 +8,39 @@ const router = express.Router();
 
 /**
  * @swagger
- * tags:
- *   name: Admin
- *   description: Admin management
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *   schemas:
+ *     Admin:
+ *       type: object
+ *       properties:
+ *         email:
+ *           type: string
+ *           format: email
+ *         password:
+ *           type: string
+ *           format: password
+ *         role:
+ *           type: string
+ *           enum: [admin]
  */
 
 /**
  * @swagger
- * /admin/loginAdmin:
+ * tags:
+ *   name: Admin
+ *   description: Admin management endpoints
+ */
+
+/**
+ * @swagger
+ * /admin/login:
  *   post:
- *     summary: Admin login
+ *     summary: Authenticate admin
  *     tags: [Admin]
  *     requestBody:
  *       required: true
@@ -31,12 +54,13 @@ const router = express.Router();
  *             properties:
  *               email:
  *                 type: string
- *                 format: email
+ *                 example: admin@example.com
  *               password:
  *                 type: string
+ *                 example: admin123
  *     responses:
  *       200:
- *         description: Admin logged in successfully
+ *         description: Admin authenticated successfully
  *         content:
  *           application/json:
  *             schema:
@@ -44,13 +68,17 @@ const router = express.Router();
  *               properties:
  *                 status:
  *                   type: string
+ *                   example: success
  *                 token:
  *                   type: string
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  *                 data:
- *                   type: object
+ *                   $ref: '#/components/schemas/Admin'
+ *       400:
+ *         description: Validation error
  *       401:
  *         description: Invalid credentials
  */
-router.post('/loginAdmin', validate(loginSchema), AdminController.login);
+router.post('/login', validate(loginSchema), AdminController.login);
 
 export default router;

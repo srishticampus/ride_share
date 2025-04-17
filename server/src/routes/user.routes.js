@@ -8,16 +8,9 @@ import {
   forgotPasswordSchema 
 } from '../validations/user.validation.js';
 import { validate } from '../middlewares/validation.middleware.js';
-import {protect,restrictTo} from '../middlewares/auth.middleware.js';
+import { protect, restrictTo } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
-
-/**
- * @swagger
- * tags:
- *   name: Users
- *   description: User management and authentication
- */
 
 /**
  * @swagger
@@ -34,60 +27,40 @@ const router = express.Router();
  *         email:
  *           type: string
  *           format: email
- *           example: user@example.com
  *         password:
  *           type: string
  *           format: password
- *           minLength: 8
- *           example: "password123"
  *         fullName:
  *           type: string
- *           example: "John Doe"
  *         phoneNumber:
  *           type: string
- *           example: "+1234567890"
  *         profilePicture:
  *           type: string
- *           format: uri
- *           example: "/uploads/users/user-1234567890.jpg"
  *         isVerified:
  *           type: boolean
- *           default: true
  *         commuteStatus:
  *           type: boolean
- *           default: false
- *         createdAt:
- *           type: string
- *           format: date-time
- *         updatedAt:
- *           type: string
- *           format: date-time
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: User management endpoints
  */
 
 /**
  * @swagger
  * /users/register:
  *   post:
- *     summary: Register a new user
+ *     summary: Register new user
  *     tags: [Users]
  *     requestBody:
  *       required: true
  *       content:
  *         multipart/form-data:
  *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *               fullName:
- *                 type: string
- *               phoneNumber:
- *                 type: string
- *               profilePicture:
- *                 type: string
- *                 format: binary
+ *             $ref: '#/components/schemas/User'
  *     responses:
  *       201:
  *         description: User registered successfully
@@ -98,16 +71,12 @@ const router = express.Router();
  *               properties:
  *                 status:
  *                   type: string
- *                   example: "success"
  *                 token:
  *                   type: string
- *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
  *                 data:
  *                   $ref: '#/components/schemas/User'
  *       400:
- *         description: Validation error or user already exists
- *       500:
- *         description: Internal server error
+ *         description: Validation error
  */
 router.post(
   '/register',
@@ -120,7 +89,7 @@ router.post(
  * @swagger
  * /users/login:
  *   post:
- *     summary: Login user
+ *     summary: Authenticate user
  *     tags: [Users]
  *     requestBody:
  *       required: true
@@ -128,6 +97,9 @@ router.post(
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - phoneNumber
+ *               - password
  *             properties:
  *               phoneNumber:
  *                 type: string
@@ -135,7 +107,7 @@ router.post(
  *                 type: string
  *     responses:
  *       200:
- *         description: User logged in successfully
+ *         description: User authenticated successfully
  *         content:
  *           application/json:
  *             schema:
@@ -143,18 +115,12 @@ router.post(
  *               properties:
  *                 status:
  *                   type: string
- *                   example: "success"
  *                 token:
  *                   type: string
- *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
  *                 data:
  *                   $ref: '#/components/schemas/User'
- *       400:
- *         description: Validation error
  *       401:
  *         description: Invalid credentials
- *       500:
- *         description: Internal server error
  */
 router.post(
   '/login',
@@ -174,6 +140,9 @@ router.post(
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - phoneNumber
+ *               - newPassword
  *             properties:
  *               phoneNumber:
  *                 type: string
@@ -181,13 +150,9 @@ router.post(
  *                 type: string
  *     responses:
  *       200:
- *         description: Password updated successfully
- *       400:
- *         description: Validation error
+ *         description: Password reset successfully
  *       404:
  *         description: User not found
- *       500:
- *         description: Internal server error
  */
 router.post(
   '/forgot-password',
@@ -195,7 +160,6 @@ router.post(
   UserController.forgotPassword
 );
 
-// Protected routes (require authentication)
 router.use(protect);
 
 /**
@@ -208,26 +172,19 @@ router.use(protect);
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Current user data
+ *         description: Current user profile
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
- *       401:
- *         description: Unauthorized
- *       404:
- *         description: User not found
  */
-router.get(
-  '/me',
-  UserController.getMe
-);
+router.get('/me', UserController.getMe);
 
 /**
  * @swagger
  * /users/me/update:
  *   patch:
- *     summary: Update user profile
+ *     summary: Update current user profile
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -236,26 +193,12 @@ router.get(
  *       content:
  *         multipart/form-data:
  *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *               fullName:
- *                 type: string
- *               phoneNumber:
- *                 type: string
- *               profilePicture:
- *                 type: string
- *                 format: binary
+ *             $ref: '#/components/schemas/User'
  *     responses:
  *       200:
  *         description: Profile updated successfully
  *       400:
  *         description: Validation error
- *       401:
- *         description: Unauthorized
- *       500:
- *         description: Internal server error
  */
 router.patch(
   '/me/update',
@@ -264,7 +207,6 @@ router.patch(
   UserController.updateProfile
 );
 
-// Admin-only routes
 router.use(restrictTo('admin'));
 
 /**
@@ -275,7 +217,6 @@ router.use(restrictTo('admin'));
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
- *       - adminAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -299,54 +240,35 @@ router.use(restrictTo('admin'));
  *                   type: string
  *                 results:
  *                   type: integer
- *                 total:
- *                   type: integer
- *                 page:
- *                   type: integer
- *                 pages:
- *                   type: integer
  *                 data:
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/User'
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden (not admin)
  */
-router.get(
-  '/',
-  UserController.getAllUsers
-);
+router.get('/', UserController.getAllUsers);
 
 /**
  * @swagger
  * /users/{id}:
  *   get:
- *     summary: Get a single user (Admin only)
+ *     summary: Get user by ID (Admin only)
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
- *       - adminAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema:
- *           type: string
  *     responses:
  *       200:
- *         description: User data
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden (not admin)
+ *         description: User details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
  *       404:
  *         description: User not found
  */
-router.get(
-  '/:id',
-  UserController.getUser
-);
+router.get('/:id', UserController.getUser);
 
 export default router;

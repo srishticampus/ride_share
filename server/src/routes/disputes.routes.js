@@ -3,16 +3,9 @@ import express from 'express';
 import DisputeController from '../controllers/disputes.controller.js';
 import { disputeSchema } from '../validations/dispute.validation.js';
 import { validate } from '../middlewares/validation.middleware.js';
-import {protect,restrictTo} from '../middlewares/auth.middleware.js';
+import { protect, restrictTo } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
-
-/**
- * @swagger
- * tags:
- *   name: Dispute
- *   description: Dispute management
- */
 
 /**
  * @swagger
@@ -42,10 +35,19 @@ const router = express.Router();
 
 /**
  * @swagger
- * /disputes/dispute:
+ * tags:
+ *   name: Disputes
+ *   description: Dispute management endpoints
+ */
+
+router.use(protect);
+
+/**
+ * @swagger
+ * /disputes:
  *   post:
  *     summary: Create a new dispute
- *     tags: [Dispute]
+ *     tags: [Disputes]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -57,81 +59,23 @@ const router = express.Router();
  *     responses:
  *       201:
  *         description: Dispute created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Dispute'
  *       400:
- *         description: Bad request
+ *         description: Validation error
  */
-router.post(
-  '/dispute',
-  protect,
-  validate(disputeSchema),
-  DisputeController.newDispute
-);
+router.post('/', validate(disputeSchema), DisputeController.newDispute);
 
 /**
  * @swagger
- * /disputes/solved/{id}:
- *   patch:
- *     summary: Mark dispute as solved (Admin only)
- *     tags: [Dispute]
- *     security:
- *       - bearerAuth: []
- *       - adminAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Dispute marked as solved
- *       404:
- *         description: Dispute not found
- */
-router.patch(
-  '/solved/:id',
-  protect,
-  restrictTo('admin'),
-  DisputeController.disputeSolve
-);
-
-/**
- * @swagger
- * /disputes/dismiss/{id}:
- *   patch:
- *     summary: Mark dispute as dismissed (Admin only)
- *     tags: [Dispute]
- *     security:
- *       - bearerAuth: []
- *       - adminAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Dispute marked as dismissed
- *       404:
- *         description: Dispute not found
- */
-router.patch(
-  '/dismiss/:id',
-  protect,
-  restrictTo('admin'),
-  DisputeController.disputeDismissed
-);
-
-/**
- * @swagger
- * /disputes/viewDisputed:
+ * /disputes:
  *   get:
  *     summary: Get all disputes (Admin only)
- *     tags: [Dispute]
+ *     tags: [Disputes]
  *     security:
  *       - bearerAuth: []
- *       - adminAuth: []
  *     responses:
  *       200:
  *         description: List of disputes
@@ -142,39 +86,70 @@ router.patch(
  *               items:
  *                 $ref: '#/components/schemas/Dispute'
  */
-router.get(
-  '/viewDisputed',
-  protect,
-  restrictTo('admin'),
-  DisputeController.showAllDisputes
-);
+router.get('/', restrictTo('admin'), DisputeController.showAllDisputes);
 
 /**
  * @swagger
- * /disputes/showAdispute/{id}:
+ * /disputes/{id}:
  *   get:
- *     summary: Get a single dispute (Admin only)
- *     tags: [Dispute]
+ *     summary: Get a single dispute
+ *     tags: [Disputes]
  *     security:
  *       - bearerAuth: []
- *       - adminAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema:
- *           type: string
  *     responses:
  *       200:
  *         description: Dispute details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Dispute'
  *       404:
  *         description: Dispute not found
  */
-router.get(
-  '/showAdispute/:id',
-  protect,
-  restrictTo('admin'),
-  DisputeController.showADisputes
-);
+router.get('/:id', DisputeController.showADisputes);
+
+/**
+ * @swagger
+ * /disputes/{id}/solve:
+ *   patch:
+ *     summary: Mark dispute as solved (Admin only)
+ *     tags: [Disputes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Dispute marked as solved
+ *       404:
+ *         description: Dispute not found
+ */
+router.patch('/:id/solve', restrictTo('admin'), DisputeController.disputeSolve);
+
+/**
+ * @swagger
+ * /disputes/{id}/dismiss:
+ *   patch:
+ *     summary: Mark dispute as dismissed (Admin only)
+ *     tags: [Disputes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Dispute marked as dismissed
+ *       404:
+ *         description: Dispute not found
+ */
+router.patch('/:id/dismiss', restrictTo('admin'), DisputeController.disputeDismissed);
 
 export default router;

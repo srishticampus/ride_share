@@ -3,16 +3,9 @@ import express from 'express';
 import RideController from '../controllers/ride.controller.js';
 import { rideSchema, updateRideSchema } from '../validations/ride.validation.js';
 import { validate } from '../middlewares/validation.middleware.js';
-import {protect,restrictTo} from '../middlewares/auth.middleware.js';
+import { protect } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
-
-/**
- * @swagger
- * tags:
- *   name: Ride
- *   description: Ride management
- */
 
 /**
  * @swagger
@@ -40,7 +33,6 @@ const router = express.Router();
  *           format: date
  *         rideTime:
  *           type: string
- *           pattern: '^([01]\d|2[0-3]):([0-5]\d)$'
  *         price:
  *           type: number
  *         status:
@@ -50,10 +42,19 @@ const router = express.Router();
 
 /**
  * @swagger
- * /rides/newride:
+ * tags:
+ *   name: Rides
+ *   description: Ride management endpoints
+ */
+
+router.use(protect);
+
+/**
+ * @swagger
+ * /rides:
  *   post:
- *     summary: Create a new ride
- *     tags: [Ride]
+ *     summary: Create new ride
+ *     tags: [Rides]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -65,27 +66,26 @@ const router = express.Router();
  *     responses:
  *       201:
  *         description: Ride created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Ride'
  *       400:
- *         description: Bad request
+ *         description: Validation error
  */
-router.post(
-  '/newride',
-  protect,
-  validate(rideSchema),
-  RideController.newRide
-);
+router.post('/', validate(rideSchema), RideController.newRide);
 
 /**
  * @swagger
- * /rides/showAllRide:
+ * /rides:
  *   get:
  *     summary: Get all rides
- *     tags: [Ride]
+ *     tags: [Rides]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of rides
+ *         description: List of all rides
  *         content:
  *           application/json:
  *             schema:
@@ -93,52 +93,44 @@ router.post(
  *               items:
  *                 $ref: '#/components/schemas/Ride'
  */
-router.get(
-  '/showAllRide',
-  protect,
-  RideController.showAllRides
-);
+router.get('/', RideController.showAllRides);
 
 /**
  * @swagger
- * /rides/showAride/{id}:
+ * /rides/{id}:
  *   get:
- *     summary: Get a single ride
- *     tags: [Ride]
+ *     summary: Get ride by ID
+ *     tags: [Rides]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema:
- *           type: string
  *     responses:
  *       200:
- *         description: Ride data
+ *         description: Ride details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Ride'
  *       404:
  *         description: Ride not found
  */
-router.get(
-  '/showAride/:id',
-  protect,
-  RideController.viewAride
-);
+router.get('/:id', RideController.viewAride);
 
 /**
  * @swagger
- * /rides/updateRide/{id}:
+ * /rides/{id}:
  *   patch:
- *     summary: Update a ride
- *     tags: [Ride]
+ *     summary: Update ride
+ *     tags: [Rides]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema:
- *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -151,37 +143,26 @@ router.get(
  *       404:
  *         description: Ride not found
  */
-router.patch(
-  '/updateRide/:id',
-  protect,
-  validate(updateRideSchema),
-  RideController.updateRide
-);
+router.patch('/:id', validate(updateRideSchema), RideController.updateRide);
 
 /**
  * @swagger
- * /rides/deleteRide/{id}:
+ * /rides/{id}:
  *   delete:
- *     summary: Delete a ride
- *     tags: [Ride]
+ *     summary: Delete ride
+ *     tags: [Rides]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema:
- *           type: string
  *     responses:
  *       204:
  *         description: Ride deleted successfully
  *       404:
  *         description: Ride not found
  */
-router.delete(
-  '/deleteRide/:id',
-  protect,
-  RideController.deleteRide
-);
+router.delete('/:id', RideController.deleteRide);
 
 export default router;
