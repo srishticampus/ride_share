@@ -5,6 +5,8 @@ import { TextField, FormLabel, Button } from '@mui/material';
 import '../Style/Login.css'
 function AdminLogin() {
     return (
+        <div>
+
         <div className='admin-login-main-container'>
             <img src={Logo} alt="" />
             <div className='admin-login-form'>
@@ -34,6 +36,8 @@ function AdminLogin() {
                 </Button>            
                 </div>
         </div>
+        </div>
+
     )
 }
 
