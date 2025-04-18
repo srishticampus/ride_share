@@ -1,9 +1,9 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import DriverRegistration from './Components/driver/DriverRegistration'
+import DriverRegistration from './Components/Driver/DriverRegistration'
 import RideRegistration from './Components/Rider/RiderRegistration';
-import AdminLogin from './Components/admin/AdminLogin';
-import AdminDashboard from './Components/admin/AdminDashboard';
+import AdminLogin from './Components/Admin/AdminLogin';
+import AdminDashboard from './Components/Admin/AdminDashboard';
 
 function App() {
   return (
