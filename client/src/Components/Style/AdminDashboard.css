@@ -1,0 +1,77 @@
+.content-wrapper {
+    flex-grow: 1;
+    width: 100%;
+    padding: 0 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; 
+}
+
+.doner-card-dashboard {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background-color: white;
+    padding: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    width: calc(33.33% - 13.33px); 
+    box-sizing: border-box;
+    flex-shrink: 0; 
+}
+.container-search{
+    margin-top: 20px;
+    display: flex;
+    justify-content: end;
+
+}
+.drivers-title{
+    background: linear-gradient(45deg, #00000000, #3A3939);
+    text-align: center;
+    color: yellow;
+    padding: 15px 20px; 
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    left: 0;
+    right: 0;
+}
+/* In your AdminDashboard.css */
+.text-container {
+    flex-grow: 1;
+  }
+  
+  .contact-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 6px 0;
+  }
+  
+  .contact-info span {
+    font-size: 14px;
+  }
+@media (max-width: 1200px) {
+    .doner-card-dashboard {
+        width: calc(50% - 10px); 
+    }
+}
+
+@media (max-width: 768px) {
+    .doner-card-dashboard {
+        width: 100%; /* 1 column */
+    }
+}
+
+.dashboard-main-content {
+    margin-left: 280px;
+    width: calc(100% - 280px);
+    min-height: 100vh;
+    box-sizing: border-box;
+    padding: 80px 20px 20px; 
+    display: flex;
+    flex-direction: column;
+}
