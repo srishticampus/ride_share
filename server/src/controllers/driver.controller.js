@@ -5,9 +5,11 @@ import catchAsync from '../utils/catchAsync.js';
 import { signToken } from '../utils/jwt.js';
 
 export const DriverRegistration = catchAsync(async (req, res, next) => {
-  const { phoneNumber, password, licenseNumber, fullname } = req.body;
+  const {email,vehicleRegNumber ,phoneNumber, password, licenseNumber, fullname } = req.body;
   
   const newDriver = await Driver.create({
+    email,
+    vehicleRegNumber,
     phoneNumber,
     password,
     licenseNumber,

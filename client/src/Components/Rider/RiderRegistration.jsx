@@ -1,148 +1,239 @@
-import React from 'react';
-import Logo from '../../Assets/Logo.png';
-import {
-    TextField,
-    FormLabel,
-    Button,
-    MenuItem,
-    Select,
-    InputLabel,
-    FormControl
-} from '@mui/material';
+import React, { useState } from 'react';
+import { TextField, Button, FormLabel, CircularProgress } from '@mui/material';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
+import Service from '../../Services/apiService';
+import Logo from '../../Assets/RideShare.png';
 import '../Style/DriverRegistration.css';
 
-function RideRegistration() {
-    const [paymentMethod, setPaymentMethod] = React.useState('');
-    const handlePaymentChange = (event) => {
-        setPaymentMethod(event.target.value);
-    };
-    return (
-        <div className="registration-container">
-            <div className="registration-logo">
-                <img src={Logo} alt="Company Logo" />
+function RiderRegistration() {
+  const navigate = useNavigate();
+  const [rider, setRider] = useState({
+    email: '',
+    fullName: '',
+    phoneNumber: '',
+    address: '',
+    password: '',
+    confirmPassword: '',
+    emergencyNo:""
+
+  });
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setRider(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e) => {
+    setProfilePicture(e.target.files[0]);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!rider.email || !rider.fullName || !rider.phoneNumber ||
+      !rider.address || !rider.password || !rider.confirmPassword || !profilePicture) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rider.email)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    if (!/^\d{10}$/.test(rider.phoneNumber)) {
+      toast.error('Please enter a valid 10-digit phone number');
+      return;
+    }
+    if (!/^\d{10}$/.test(rider.emergencyNo)) {
+      toast.error('Please enter a valid 10-digit phone number');
+      return;
+    }
+    if (rider.password !== rider.confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+
+    if (rider.password.length < 6) {
+      toast.error('Password must be at least 6 characters long');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const riderData = {
+        email: rider.email,
+        fullName: rider.fullName,
+        phoneNumber: rider.phoneNumber,
+        emergencyNo: rider.emergencyNo,
+        address: rider.address,
+        password: rider.password,
+        profilePicture: profilePicture
+      };
+
+      const response = await Service.register(riderData);
+      console.log(response);
+
+      if (response.status === 'success') {
+        toast.success('Registration successful!');
+        // navigate('/rider/login');
+      } else {
+        toast.error(response.data.message || 'Registration failed');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      const errorMessage = error.response?.data?.message ||
+        error.message ||
+        'An error occurred during registration';
+      toast.error(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="registration-container">
+      <div className="registration-logo">
+        <img src={Logo} alt="Company Logo" className="logo-image" />
+      </div>
+
+      <div className="registration-form">
+        <h2 className="registration-title">RIDER REGISTRATION</h2>
+
+        <form onSubmit={handleSubmit} encType="multipart/form-data" className="registration-form-container">
+          <div className='reg-main-container'>
+            <div className='reg-left'>
+              <FormLabel className="reg-form-label">Full Name *</FormLabel>
+              <TextField
+                name="fullName"
+                value={rider.fullName}
+                onChange={handleInputChange}
+                className="form-input"
+                fullWidth
+                margin="normal"
+                required
+                placeholder="Enter your full name"
+              />
+
+              <FormLabel className="reg-form-label">Email *</FormLabel>
+              <TextField
+                name="email"
+                type="email"
+                value={rider.email}
+                onChange={handleInputChange}
+                className="form-input"
+                fullWidth
+                margin="normal"
+                required
+                placeholder="Enter your email"
+              />
+
+              <FormLabel className="reg-form-label">Phone Number *</FormLabel>
+              <TextField
+                name="phoneNumber"
+                value={rider.phoneNumber}
+                onChange={handleInputChange}
+                className="form-input"
+                fullWidth
+                margin="normal"
+                required
+                placeholder="Enter 10-digit phone number"
+                inputProps={{ maxLength: 10 }}
+              />
+
+              <FormLabel className="reg-form-label">Emergency Number *</FormLabel>
+              <TextField
+                name="emergencyNo"
+                value={rider.emergencyNo}
+                onChange={handleInputChange}
+                className="form-input"
+                fullWidth
+                margin="normal"
+                required
+                placeholder="Enter 10-digit phone number"
+                inputProps={{ maxLength: 10 }}
+              />
             </div>
 
-            <div className="registration-form">
-                <h2 className="registration-title">REGISTRATION</h2>
-                <div className='reg-main-container'>
-                    <div className='reg-left'>
-                        <FormLabel className="reg-form-label">Name</FormLabel>
-                        <TextField
-                            placeholder='Enter your Full Name'
-                            name='Name'
-                            type='text'
-                            required
-                            margin='normal'
-                            className="form-input"
-                            variant="outlined"
-                        />
+            <div className='reg-right'>
+              <FormLabel className="reg-form-label">Address *</FormLabel>
+              <TextField
+                name="address"
+                value={rider.address}
+                onChange={handleInputChange}
+                className="form-input"
+                fullWidth
+                margin="normal"
+                required
+                placeholder="Enter your address"
+              />
 
-                        <FormLabel className="reg-form-label">E-Mail</FormLabel>
-                        <TextField
-                            name='Email'
-                            placeholder='Enter your Mail ID'
-                            type='email'
-                            required
-                            margin='normal'
-                            className="form-input"
-                            variant="outlined"
-                        />
+              <FormLabel className="reg-form-label">Password *</FormLabel>
+              <TextField
+                name="password"
+                type="password"
+                value={rider.password}
+                onChange={handleInputChange}
+                className="form-input"
+                fullWidth
+                margin="normal"
+                required
+                placeholder="Enter password (min 6 characters)"
+              />
 
-                        <FormLabel className="reg-form-label">Phone Number</FormLabel>
-                        <TextField
-                            name='PhoneNo'
-                            placeholder='Enter your Number'
-                            type='tel'
-                            required
-                            margin='normal'
-                            className="form-input"
-                            variant="outlined"
-                        />
+              <FormLabel className="reg-form-label">Confirm Password *</FormLabel>
+              <TextField
+                name="confirmPassword"
+                type="password"
+                value={rider.confirmPassword}
+                onChange={handleInputChange}
+                className="form-input"
+                fullWidth
+                margin="normal"
+                required
+                placeholder="Confirm your password"
+              />
+              <FormLabel className="reg-form-label">Profile Picture *</FormLabel>
+              <TextField
+                type="file"
+                name="profilePicture"
+                onChange={handleFileChange}
+                className="form-input"
+                fullWidth
+                margin="normal"
+                InputLabelProps={{ shrink: true }}
+                inputProps={{ accept: "image/*" }}
+                required
+              />
 
-                        <FormLabel className="reg-form-label">Contact Number</FormLabel>
-                        <TextField
-                            name='VehicleRegNumber'
-                            placeholder='Enter Register Number'
-                            type='text'
-                            required
-                            margin='normal'
-                            className="form-input"
-                            variant="outlined"
-                        />
-
-                        <FormLabel className="reg-form-label">Address</FormLabel>
-                        <TextField
-                            name='VehicleTypeModel'
-                            placeholder='Enter your Vehicle Type & Model'
-                            type='text'
-                            required
-                            margin='normal'
-                            className="form-input"
-                            variant="outlined"
-                        />
-                    </div>
-
-                    <div className='reg-right'>
-                        <FormLabel className="reg-form-label">Create Password</FormLabel>
-                        <TextField
-                            name='Password'
-                            placeholder='Enter your Password'
-                            type='password'
-                            required
-                            margin='normal'
-                            className="form-input"
-                            variant="outlined"
-                        />
-
-                        <FormLabel className="reg-form-label">Confirm Password</FormLabel>
-                        <TextField
-                            name='ConfirmPassword'
-                            placeholder='Enter your Password'
-                            type='password'
-                            required
-                            margin='normal'
-                            className="form-input"
-                            variant="outlined"
-                        />
-                        <FormLabel className="reg-form-label">Profile Picture</FormLabel>
-                        <TextField
-                            type='file'
-                            name='ProfilePicture'
-                            required
-                            margin='normal'
-                            InputLabelProps={{ shrink: true }}
-                            className="form-input file-input"
-                            variant="outlined"
-                        />
-
-
-
-                        <FormLabel className="reg-form-label">Payment</FormLabel>
-                        <FormControl fullWidth margin="normal" className="form-input">
-                            <Select
-                                value={paymentMethod}
-                                onChange={handlePaymentChange}
-                                required
-                            >
-                                <MenuItem value="credit_card">Cash</MenuItem>
-                                <MenuItem value="debit_card">UPI</MenuItem>
-                                <MenuItem value="bank_transfer">Bank Transfer</MenuItem>
-                            </Select>
-                        </FormControl>
-
-                    </div>
-                </div>
-                <div className="registration-actions">
-                    <Button variant="contained" className="register-button">
-                        Register
-                    </Button>
-                    <span className="login-text">
-                        <p style={{ color: "white" }}> Already have an account? <a href="/login" className="login-link">LOG IN</a></p>
-                    </span>
-                </div>
             </div>
-        </div>
-    );
+          </div>
+
+
+          <div className="registration-actions">
+            <Button
+              type="submit"
+              variant="contained"
+              className="register-button"
+              disabled={isSubmitting}
+              fullWidth
+            >
+              {isSubmitting ? <CircularProgress size={24} className="submit-spinner" /> : 'REGISTER'}
+            </Button>
+
+            <p className="login-text">
+              Already have an account? <a href="/rider/login" className="login-link">Login here</a>
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }
 
-export default RideRegistration;
+export default RiderRegistration;

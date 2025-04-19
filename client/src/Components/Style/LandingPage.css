@@ -1,0 +1,122 @@
+.landing-container {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    position: relative;
+  }
+  
+  .landing-nav {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .landing-nav-image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  
+  .nav-links {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    top:-2px;
+    z-index: 2;
+  }
+  
+  .links-container {
+    background-color: #333;
+    padding: 15px;
+    display: flex;
+    gap: 20px;
+  }
+  
+  .nav-links a {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    font-size: 16px;
+    padding: 5px 10px;
+    transition: all 0.3s ease;
+  }
+  
+  .nav-links a:hover {
+    color: #007bff; 
+  }
+  
+  .landing-bg {
+    width: 100%;
+    position: relative;
+  }
+  
+  .bg-image-container {
+    position: relative;
+    top: -60px;
+    width: 100%;
+    height: 100vh;
+  }
+  
+  .bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  
+  .bg-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    text-align: center;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 60px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    z-index: 1;
+  }
+.achievements-container {
+    background-color: #F7F774;
+    /* padding: 30px; */
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    top: -60px;
+  }
+  
+  .achievements {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    position: relative;
+  }
+  
+.achievement-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s ease-out;
+}
+
+.achievement-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.achievement-item img {
+    width: 200px;
+    height: 150px;
+  }
+  
+  .achievement-item p {
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+  }

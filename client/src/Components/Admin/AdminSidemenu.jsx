@@ -14,7 +14,7 @@ import {
     ExpandLess,
     ExpandMore
 } from '@mui/icons-material';
-import Logo from '../../Assets/Logo.png';
+import Logo from '../../Assets/RideShare.png';
 import '../Style/AdminSidemenu.css';
 
 function AdminSidemenu() {
@@ -29,7 +29,7 @@ function AdminSidemenu() {
             name: 'Manage Users',
             icon: <PersonIcon />,
             subItems: [
-                { name: 'View All Drivers', path: '#' },
+                { name: 'View All Drivers', path: '/admin-view-driver' },
                 { name: 'View All Riders', path: '#' }
             ]
         },
@@ -59,7 +59,7 @@ function AdminSidemenu() {
                     src={Logo}
                     alt="Logo"
                     className='logo'
-                    style={{ width: 180, height: 180, display: 'block' }}
+                    style={{ width: 130, height: 130, display: 'block' }}
                 />
 
                 <Typography variant="h6" align="center">

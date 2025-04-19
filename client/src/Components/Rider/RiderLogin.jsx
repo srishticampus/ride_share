@@ -7,9 +7,9 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../Style/Login.css";
 
-function AdminLogin() {
+function RiderLogin() {
   const [credentials, setCredentials] = useState({
-    email: "",
+    phoneNumber: "",
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -28,13 +28,13 @@ function AdminLogin() {
     setIsLoading(true);
 
     try {
-      const response = await apiService.adminLogin(credentials);
-      localStorage.setItem("adminToken", response.token);
+      const response = await apiService.login(credentials);
+      localStorage.setItem("riderToken", response.token);
 
       toast.success("Login successful! Redirecting...");
 
       setTimeout(() => {
-        // navigate("/admin-dashboard");
+        navigate("/rider-dashboard");
       }, 2000);
     } catch (err) {
       const errorMessage =
@@ -49,16 +49,17 @@ function AdminLogin() {
 
   return (
     <div className="admin-login-main-container">
+      <ToastContainer />
       <img src={Logo} alt="Company Logo" />
       <div className="admin-login-form">
-        <h2>ADMIN LOG IN</h2>
+        <h2>RIDER LOG IN</h2>
         <form onSubmit={handleSubmit}>
-          <FormLabel className="reg-form-label">E-Mail ID</FormLabel>
+          <FormLabel className="reg-form-label">Phone No</FormLabel>
           <TextField
-            placeholder="Enter your Email"
-            name="email"
-            type="email"
-            value={credentials.email}
+            placeholder="Enter your Phone Number"
+            name="phoneNumber"
+            type="number"
+            value={credentials.phoneNumber}
             onChange={handleInputChange}
             required
             margin="normal"
@@ -93,4 +94,4 @@ function AdminLogin() {
   );
 }
 
-export default AdminLogin;
+export default RiderLogin;

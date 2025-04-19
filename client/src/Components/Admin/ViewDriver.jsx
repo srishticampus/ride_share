@@ -1,7 +1,7 @@
 import React from 'react'
 import AdminSidemenu from './AdminSidemenu'
 import AdminNav from './AdminNav'
-import '../Style/AdminDashboard.css'
+import '../Style/ViewDriver.css'
 import SearchBar from './SearchBar'
 import { Avatar } from '@mui/material'
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
@@ -79,7 +79,7 @@ const dummyDrivers = [
     }
 ];
 
-function AdminDashboard() {
+function ViewDriver() {
     return (
         <div className="admin-dashboard-container">
             <AdminNav />
@@ -121,4 +121,4 @@ function AdminDashboard() {
     )
 }
 
-export default AdminDashboard
+export default ViewDriver

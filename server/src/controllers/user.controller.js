@@ -51,7 +51,7 @@ const filterUserData = (user) => {
 // User registration (without transactions)
 export const registerUser = catchAsync(async (req, res, next) => {
   try {
-    const { email, password, fullName, phoneNumber } = req.body;
+    const { email, password, fullName, phoneNumber ,address , emergencyNo} = req.body;
 
     // Check if user exists
     const existingUser = await User.findOne({
@@ -72,8 +72,10 @@ export const registerUser = catchAsync(async (req, res, next) => {
     const newUser = await User.create({
       email,
       fullName,
+      emergencyNo,
       phoneNumber,
       password,
+      address,
       profilePicture: profilePicturePath
     });
 

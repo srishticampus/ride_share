@@ -69,6 +69,14 @@ const DriverSchema = new Schema({
     unique: true,
     required: [true, 'Phone number is required']
   },
+  email: {
+    type: String,
+    required: [true, 'Email is required'],
+  },
+  vehicleRegNumber: {
+    type: String,
+    required: [true, 'Vehicle registration number is required'],
+  },
   password: {
     type: String,
     required: [true, 'Password is required'],

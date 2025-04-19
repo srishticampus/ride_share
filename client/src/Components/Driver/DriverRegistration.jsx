@@ -1,141 +1,217 @@
-import React from 'react';
-import Logo from '../../Assets/Logo.png';
-import { TextField, FormLabel, Button } from '@mui/material';
+import React, { useState } from 'react';
+import { TextField, Button, FormLabel, CircularProgress } from '@mui/material';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
+import Service from '../../Services/apiService';
+import Logo from '../../Assets/RideShare.png';
 import '../Style/DriverRegistration.css';
 
 function DriverRegistration() {
+  const navigate = useNavigate();
+  const [driver, setDriver] = useState({
+    email: '',
+    fullname: '',
+    phoneNumber: '',
+    licenseNumber: '',
+    vehicleRegNumber: '',
+    password: '',
+    confirmPassword: '',
+    driverPic: null
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setDriver(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e) => {
+    setDriver(prev => ({ ...prev, driverPic: e.target.files[0] }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!driver.email || !driver.password || !driver.fullname || 
+        !driver.phoneNumber || !driver.licenseNumber || 
+        !driver.vehicleRegNumber || !driver.driverPic) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(driver.email)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    if (driver.password !== driver.confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const driverData = {
+        email: driver.email,
+        fullname: driver.fullname,
+        phoneNumber: driver.phoneNumber,
+        licenseNumber: driver.licenseNumber,
+        vehicleRegNumber: driver.vehicleRegNumber,
+        password: driver.password,
+        driverPic: driver.driverPic
+      };
+
+      const response = await Service.registerDriver(driverData);
+      console.log(response);
+      
+      if (response.status === 'success') {
+        toast.success('Registration successful!');
+        // navigate('/driver/dashboard');
+      } else {
+        toast.error(response.message || 'Registration failed');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      
+      if (error.message.includes('Cast to Number failed')) {
+        toast.error('Server error: Invalid email format. Please try again or contact support.');
+      } else if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error(error.message || 'An error occurred during registration');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="registration-container">
       <div className="registration-logo">
-        <img src={Logo} alt="Company Logo" />
+        <img src={Logo} alt="Company Logo" className="logo-image" />
       </div>
-      
+
       <div className="registration-form">
-        <h2 className="registration-title">REGISTRATION</h2>
-        <div className='reg-main-container'>
-          <div className='reg-left'>
-            <FormLabel className="reg-form-label">Name</FormLabel>
-            <TextField
-              placeholder='Enter your Full Name'
-              name='Name'
-              type='text'
-              required
-              margin='normal'
-              className="form-input"
-              variant="outlined"
-            />
-            
-            <FormLabel className="reg-form-label">E-Mail</FormLabel>
-            <TextField
-              name='Email'
-              placeholder='Enter your Mail ID'
-              type='email'
-              required
-              margin='normal'
-              className="form-input"
-              variant="outlined"
-            />
-            
-            <FormLabel className="reg-form-label">Phone Number</FormLabel>
-            <TextField
-              name='PhoneNo'
-              placeholder='Enter your Number'
-              type='tel'
-              required
-              margin='normal'
-              className="form-input"
-              variant="outlined"
-            />
-            
-            <FormLabel className="reg-form-label">Vehicle Registration Number</FormLabel>
-            <TextField
-              name='VehicleRegNumber'
-              placeholder='Enter Register Number'
-              type='text'
-              required
-              margin='normal'
-              className="form-input"
-              variant="outlined"
-            />
-            
-            <FormLabel className="reg-form-label">Vehicle Type & Model</FormLabel>
-            <TextField
-              name='VehicleTypeModel'
-              placeholder='Enter your Vehicle Type & Model'
-              type='text'
-              required
-              margin='normal'
-              className="form-input"
-              variant="outlined"
-            />
+        <h2 className="registration-title">DRIVER REGISTRATION</h2>
+        
+        <form onSubmit={handleSubmit} className="registration-form-container">
+          <div className='reg-main-container'>
+            <div className='reg-left'>
+              <FormLabel className="reg-form-label">Full Name *</FormLabel>
+              <TextField
+                name="fullname"
+                value={driver.fullname}
+                onChange={handleInputChange}
+                className="form-input"
+                fullWidth
+                margin="normal"
+                required
+              />
+
+              <FormLabel className="reg-form-label">Email *</FormLabel>
+              <TextField
+                name="email"
+                type="email"
+                value={driver.email}
+                onChange={handleInputChange}
+                className="form-input"
+                fullWidth
+                margin="normal"
+                required
+              />
+
+              <FormLabel className="reg-form-label">Phone Number *</FormLabel>
+              <TextField
+                name="phoneNumber"
+                value={driver.phoneNumber}
+                onChange={handleInputChange}
+                className="form-input"
+                fullWidth
+                margin="normal"
+                required
+                inputProps={{ maxLength: 10 }}
+              />
+
+              <FormLabel className="reg-form-label">Vehicle Registration *</FormLabel>
+              <TextField
+                name="vehicleRegNumber"
+                value={driver.vehicleRegNumber}
+                onChange={handleInputChange}
+                className="form-input"
+                fullWidth
+                margin="normal"
+                required
+              />
+            </div>
+
+            <div className='reg-right'>
+              <FormLabel className="reg-form-label">License Number *</FormLabel>
+              <TextField
+                name="licenseNumber"
+                value={driver.licenseNumber}
+                onChange={handleInputChange}
+                className="form-input"
+                fullWidth
+                margin="normal"
+                required
+              />
+
+              <FormLabel className="reg-form-label">Password *</FormLabel>
+              <TextField
+                name="password"
+                type="password"
+                value={driver.password}
+                onChange={handleInputChange}
+                className="form-input"
+                fullWidth
+                margin="normal"
+                required
+              />
+
+              <FormLabel className="reg-form-label">Confirm Password *</FormLabel>
+              <TextField
+                name="confirmPassword"
+                type="password"
+                value={driver.confirmPassword}
+                onChange={handleInputChange}
+                className="form-input"
+                fullWidth
+                margin="normal"
+                required
+              />
+
+              <FormLabel className="reg-form-label">Profile Photo *</FormLabel>
+              <TextField
+                type="file"
+                onChange={handleFileChange}
+                className="form-input file-input"
+                fullWidth
+                margin="normal"
+                InputLabelProps={{ shrink: true }}
+                inputProps={{ accept: "image/*" }}
+                required
+              />
+            </div>
           </div>
-          
-          <div className='reg-right'>
-            <FormLabel className="reg-form-label">Create Password</FormLabel>
-            <TextField
-              name='Password'
-              placeholder='Enter your Password'
-              type='password'
-              required
-              margin='normal'
-              className="form-input"
-              variant="outlined"
-            />
+
+          <div className="registration-actions">
+            <Button 
+              type="submit" 
+              variant="contained" 
+              className="register-button"
+              disabled={isSubmitting}
+              fullWidth
+            >
+              {isSubmitting ? <CircularProgress size={24} className="submit-spinner" /> : 'REGISTER'}
+            </Button>
             
-            <FormLabel className="reg-form-label">Confirm Password</FormLabel>
-            <TextField
-              name='ConfirmPassword'
-              placeholder='Enter your Password'
-              type='password'
-              required
-              margin='normal'
-              className="form-input"
-              variant="outlined"
-            />
-            
-            <FormLabel className="reg-form-label">Driving License</FormLabel>
-            <TextField
-              name='DrivingLicense'
-              placeholder='Enter your Driving License Number'
-              type='text'
-              required
-              margin='normal'
-              className="form-input"
-              variant="outlined"
-            />
-            
-            <FormLabel className="reg-form-label">Driving Experience</FormLabel>
-            <TextField
-              name='DrivingExperience'
-              placeholder='Enter your Driving Experience'
-              type='number'
-              required
-              margin='normal'
-              inputProps={{ min: 0, max: 50 }}
-              className="form-input"
-              variant="outlined"
-            />
-            
-            <FormLabel className="reg-form-label">Profile Picture</FormLabel>
-            <TextField
-              type='file'
-              name='ProfilePicture'
-              required
-              margin='normal'
-              InputLabelProps={{ shrink: true }}
-              className="form-input file-input"
-              variant="outlined"
-            />
+            <p className="login-text">
+              Already have an account? <a href="/driver/login" className="login-link">Login here</a>
+            </p>
           </div>
-        </div>
-        <div className="registration-actions">
-          <Button variant="contained" className="register-button">
-            Register
-          </Button>
-          <span className="login-text">
-           <p style={{color:"white"}}> Already have an account? <a href="/login" className="login-link">LOG IN</a></p>
-          </span>
-        </div>
+        </form>
       </div>
     </div>
   );

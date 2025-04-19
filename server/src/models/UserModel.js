@@ -72,10 +72,19 @@ const UserSchema = new Schema({
     type: Number,
     required: [true, 'Phone number is required']
   },
+  address: {
+    type: String,
+    required: [true, 'Address is required'],
+    trim: true
+  },
   profilePicture: String,
   isVerified: {
     type: Boolean,
     default: true
+  },
+  emergencyNo:{
+    type: Number,
+    required: [true, 'Emergency number is required']
   },
   commuteStatus: {
     type: Boolean,
