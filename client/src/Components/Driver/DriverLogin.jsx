@@ -34,11 +34,11 @@ function DriverLogin() {
             toast.success("Login successful! Redirecting...");
 
             setTimeout(() => {
-                navigate("/driver-dashboard");
+                navigate("/User-home-page");
             }, 2000);
         } catch (err) {
             const errorMessage =
-                err.response?.data?.message ||
+                err.message ||
                 "Login failed. Please check your credentials.";
             toast.error(errorMessage);
             console.error("Login error:", err);

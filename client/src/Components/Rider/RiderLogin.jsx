@@ -29,16 +29,16 @@ function RiderLogin() {
 
     try {
       const response = await apiService.login(credentials);
-      localStorage.setItem("riderToken", response.token);
+      console.log(response);
 
+      localStorage.setItem("riderData", JSON.stringify(response.data.user))
       toast.success("Login successful! Redirecting...");
-
       setTimeout(() => {
-        navigate("/rider-dashboard");
+        navigate("/User-home-page");
       }, 2000);
     } catch (err) {
       const errorMessage =
-        err.response?.data?.message ||
+        err.message ||
         "Login failed. Please check your credentials.";
       toast.error(errorMessage);
       console.error("Login error:", err);

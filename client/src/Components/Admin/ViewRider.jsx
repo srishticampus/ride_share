@@ -1,85 +1,119 @@
-import React from 'react'
-import AdminSidemenu from './AdminSidemenu'
-import AdminNav from './AdminNav'
-import '../Style/ViewDriver.css'
-import SearchBar from './SearchBar'
-import { Avatar } from '@mui/material'
-import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
-import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
-const dummyDrivers = [
-    {
-        id: 1,
-        fullName: "John Driver",
-        email: "john.driver@email.com",
-        phone: "+1 234 567 890",
-        profilePhoto: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQL7yEGVr0WDqJTtcLbXpUXmUSwwzlHDtF1XA&s"
-    },
-    {
-        id: 2,
-        fullName: "Sarah Wheeler",
-        email: "sarah.wheeler@email.com",
-        phone: "+1 345 678 901",
-        profilePhoto: "https://www.paraglidingassociationofindia.org/wp-content/uploads/2022/02/passport-size.png"
-    },
-    {
-        id: 3,
-        fullName: "Mike Hauler",
-        email: "mike.hauler@email.com",
-        phone: "+1 456 789 012",
-        profilePhoto: "https://png.pngtree.com/png-clipart/20240314/original/pngtree-red-shirt-with-ash-tie-suit-for-mens-passport-size-photo-png-image_14593360.png"
-    },
-    {
-        id: 4,
-        fullName: "Emma Rider",
-        email: "emma.rider@email.com",
-        phone: "+1 567 890 123",
-        profilePhoto: "https://pbs.twimg.com/media/EjY_lxhUcAAqCde.jpg:large"
-    },
-    {
-        id: 5,
-        fullName: "Liam Transporter",
-        email: "liam.transporter@email.com",
-        phone: "+1 678 901 234",
-        profilePhoto: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Jai_Passport_Size_Photo.jpg"
-    },
-    {
-        id: 6,
-        fullName: "Olivia Courier",
-        email: "olivia.courier@email.com",
-        phone: "+1 789 012 345",
-        profilePhoto: "https://lawschoolpolicyreview.com/wp-content/uploads/2018/06/passport-size-photo-2-e1558013566564.jpg?w=596"
-    },
-    {
-        id: 7,
-        fullName: "Noah Racer",
-        email: "noah.racer@email.com",
-        phone: "+1 890 123 456",
-        profilePhoto: "https://www.zica.co.zm/wp-content/uploads/2020/08/Passport-Size-Photo.jpg"
-    },
-    {
-        id: 8,
-        fullName: "Ava Mover",
-        email: "ava.mover@email.com",
-        phone: "+1 901 234 567",
-        profilePhoto: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Amit-akme-passport-size-pic-33-scaled-1220x1755.jpg"
-    },
-    {
-        id: 9,
-        fullName: "William Hauler",
-        email: "william.hauler@email.com",
-        phone: "+1 012 345 678",
-        profilePhoto: "https://c8.alamy.com/comp/2WRYEE9/passport-photo-portrait-of-young-man-on-white-background-2WRYEE9.jpg"
-    },
-    {
-        id: 10,
-        fullName: "Sophia Wheeler",
-        email: "sophia.wheeler@email.com",
-        phone: "+1 123 456 789",
-        profilePhoto: "https://joinindiancoastguard.cdac.in/cgept/assets/img/uploadphoto/a.jpeg"
-    }
-];
+import React, { useState, useEffect } from 'react';
+import AdminSidemenu from './AdminSidemenu';
+import AdminNav from './AdminNav';
+import '../Style/ViewDriver.css';
+import SearchBar from './SearchBar';
+import { 
+  Avatar, 
+  Pagination, 
+  Select, 
+  MenuItem, 
+  FormControl, 
+  InputLabel, 
+  Box,
+  Typography
+} from '@mui/material';
+import '../Style/Table.css';
+import Service from '../../Services/apiService';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function ViewRider() {
+    const [riders, setRiders] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+
+    useEffect(() => {
+        const fetchRiders = async () => {
+            try {
+                const response = await Service.getAllUsers();
+                console.log('API Response:', response);
+                
+                if (response.data && response.data.users) {
+                    setRiders(response.data.users);
+                } else {
+                    throw new Error('Invalid data format received from API');
+                }
+                setLoading(false);
+            } catch (err) {
+                console.error('Error fetching riders:', err);
+                const errorMessage = err.response?.data?.message || err.message;
+                setError(errorMessage);
+                setLoading(false);
+
+                if (err.status === "fail") {
+                    toast.error('Session expired. Please login again.');
+                    setTimeout(() => {
+                        window.location.href = '/admin-login';
+                    }, 2000);
+                }
+            }
+        };
+
+        fetchRiders();
+    }, []);
+
+    const filteredRiders = riders.filter(rider =>
+        rider.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        rider.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        rider.phoneNumber?.toString().includes(searchQuery)
+    );
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentRiders = filteredRiders.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredRiders.length / itemsPerPage);
+
+    const handlePageChange = (event, value) => {
+        setCurrentPage(value);
+    };
+
+    const handleItemsPerPageChange = (event) => {
+        setItemsPerPage(event.target.value);
+        setCurrentPage(1); 
+    };
+
+    const getProfileImageUrl = (profilePicture) => {
+        if (!profilePicture) return null;
+        return `${import.meta.env.VITE_API_URL}${profilePicture}`;
+    };
+console.log(import.meta.env.VITE_API_URL);
+
+    if (loading) {
+        return (
+            <div className="admin-dashboard-container">
+                <AdminNav />
+                <AdminSidemenu />
+                <div className="dashboard-main-content">
+                    <h1 className='drivers-title'>RIDERS</h1>
+                    <div className='container-search'>
+                        <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+                    </div>
+                    <div className="loading-message">Loading riders...</div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="admin-dashboard-container">
+                <AdminNav />
+                <AdminSidemenu />
+                <div className="dashboard-main-content">
+                    <h1 className='drivers-title'>RIDERS</h1>
+                    <div className='container-search'>
+                        <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+                    </div>
+                    <div className="error-message">Error: {error}</div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="admin-dashboard-container">
             <AdminNav />
@@ -88,37 +122,100 @@ function ViewRider() {
             <div className="dashboard-main-content">
                 <h1 className='drivers-title'>RIDERS</h1>
                 <div className='container-search'>
-                    <SearchBar />
+                    <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                 </div>
                 <h3>View All RIDERS</h3>
-                <div className="content-wrapper">
-                    {dummyDrivers.map((driver) => (
-                        <div key={driver.id} className='doner-card-dashboard'>
-                            <div className="avatar-container">
-                                <Avatar
-                                    alt={driver.fullName}
-                                    src={driver.profilePhoto}
-                                    sx={{ width: 120, height: 120 }}
-                                />
-                            </div>
 
-                            <div className="text-container">
-                                <h3>{driver.fullName}</h3>
-                                <div className="contact-info">
-                                    <EmailOutlinedIcon style={{ fontSize: 20, marginRight: 8 }} />
-                                    <span>{driver.email}</span>
-                                </div>
-                                <div className="contact-info">
-                                    <LocalPhoneOutlinedIcon style={{ fontSize: 20, marginRight: 8 }} />
-                                    <span>{driver.phone}</span>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+                <div className="riders-table-container">
+                    <table className="riders-table">
+                        <thead>
+                            <tr>
+                                <th>SL NO</th>
+                                <th>Name</th>
+                                <th>Profile Pic</th>
+                                <th>Email ID</th>
+                                <th>Phone No</th>
+                                <th>Address</th>
+                                <th>Emergency Contact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {currentRiders.map((rider, index) => (
+                                <tr key={rider._id || index}>
+                                    <td>{indexOfFirstItem + index + 1}</td>
+                                    <td>{rider.fullName}</td>
+                                    <td>
+                                        <Avatar
+                                            src={getProfileImageUrl(rider.profilePicture)}
+                                            alt={rider.fullName}
+                                            sx={{ width: 40, height: 40 }}
+                                        >
+                                        </Avatar>
+                                    </td>
+                                    <td>{rider.email}</td>
+                                    <td>{rider.phoneNumber}</td>
+                                    <td>{rider.address}</td>
+                                    <td>{rider.emergencyNo}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    {filteredRiders.length === 0 && (
+                        <div className="no-results">No riders found matching your search criteria</div>
+                    )}
                 </div>
+
+                <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'right', 
+                    alignItems: 'center', 
+                    mt: 3,
+                    p: 2,
+                    borderRadius: 1,
+                    gap:6
+                }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Typography variant="body2" sx={{ mr: 2 }}>
+                            Riders per page:
+                        </Typography>
+                        <FormControl size="small" sx={{ minWidth: 80 }}>
+                            <Select
+                                value={itemsPerPage}
+                                onChange={handleItemsPerPageChange}
+                                displayEmpty
+                                inputProps={{ 'aria-label': 'Items per page' }}
+                            >
+                                <MenuItem value={5}>5</MenuItem>
+                                <MenuItem value={10}>10</MenuItem>
+                                <MenuItem value={20}>20</MenuItem>
+                                <MenuItem value={50}>50</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Box>
+
+
+                    <Typography variant="body2">
+                        Per Page {indexOfFirstItem + 1} - {Math.min(indexOfLastItem, filteredRiders.length)} of {filteredRiders.length}
+                    </Typography>
+                    <Pagination 
+                        count={totalPages} 
+                        page={currentPage} 
+                        onChange={handlePageChange} 
+                        shape="rounded" 
+                        color="primary"
+                        showFirstButton
+                        showLastButton
+                        sx={{ 
+                            '& .MuiPaginationItem-root': {
+                                fontSize: '0.875rem'
+                            }
+                        }}
+                    />
+
+                </Box>
             </div>
         </div>
-    )
+    );
 }
 
-export default ViewRider
+export default ViewRider;

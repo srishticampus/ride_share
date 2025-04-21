@@ -34,7 +34,7 @@ function AdminLogin() {
       toast.success("Login successful! Redirecting...");
 
       setTimeout(() => {
-        // navigate("/admin-dashboard");
+        navigate("/admin-dashboard");
       }, 2000);
     } catch (err) {
       const errorMessage =

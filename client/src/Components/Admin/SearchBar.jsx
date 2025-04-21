@@ -2,13 +2,15 @@ import React from 'react';
 import { TextField, InputAdornment, Box, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
-function SearchBar() {
+function SearchBar({ searchQuery, setSearchQuery }) {
   return (
     <Box sx={{ width: '270px' }}>
       <TextField
         fullWidth
+        placeholder="Search..."
+        value={searchQuery}
         variant="outlined"
-        placeholder="Search."
+        onChange={(e) => setSearchQuery(e.target.value)}
         sx={{
             backgroundColor: '#f5f5f5',
             '& .MuiOutlinedInput-root': {

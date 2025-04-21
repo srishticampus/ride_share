@@ -68,9 +68,9 @@ function DriverRegistration() {
       
       if (response.status === 'success') {
         toast.success('Registration successful!');
-        // navigate('/driver/dashboard');
+        // navigate('/driver-login');
       } else {
-        toast.error(response.message || 'Registration failed');
+        toast.error(response.messag);
       }
     } catch (error) {
       console.error('Registration error:', error);
@@ -103,6 +103,7 @@ function DriverRegistration() {
               <TextField
                 name="fullname"
                 value={driver.fullname}
+                placeholder="Enter your full name"
                 onChange={handleInputChange}
                 className="form-input"
                 fullWidth
@@ -119,6 +120,7 @@ function DriverRegistration() {
                 className="form-input"
                 fullWidth
                 margin="normal"
+                placeholder="Enter your email"
                 required
               />
 
@@ -131,6 +133,7 @@ function DriverRegistration() {
                 fullWidth
                 margin="normal"
                 required
+                placeholder="Enter 10-digit phone number"
                 inputProps={{ maxLength: 10 }}
               />
 
@@ -141,6 +144,8 @@ function DriverRegistration() {
                 onChange={handleInputChange}
                 className="form-input"
                 fullWidth
+                placeholder="Enter Vehicle Registration number"
+
                 margin="normal"
                 required
               />
@@ -154,6 +159,7 @@ function DriverRegistration() {
                 onChange={handleInputChange}
                 className="form-input"
                 fullWidth
+                placeholder="Enter License Number"
                 margin="normal"
                 required
               />
@@ -167,6 +173,8 @@ function DriverRegistration() {
                 className="form-input"
                 fullWidth
                 margin="normal"
+                placeholder="Enter password (min 8 characters)"
+
                 required
               />
 
@@ -178,6 +186,8 @@ function DriverRegistration() {
                 onChange={handleInputChange}
                 className="form-input"
                 fullWidth
+                placeholder="Enter password (min 8 characters)"
+
                 margin="normal"
                 required
               />
@@ -208,7 +218,7 @@ function DriverRegistration() {
             </Button>
             
             <p className="login-text">
-              Already have an account? <a href="/driver/login" className="login-link">Login here</a>
+              Already have an account? <a href="/driver-login" className="login-link">Login here</a>
             </p>
           </div>
         </form>

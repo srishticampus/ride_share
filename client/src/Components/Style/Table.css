@@ -1,0 +1,85 @@
+/* Riders Table Styles */
+.riders-table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.riders-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+.riders-table th, 
+.riders-table td {
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.riders-table th {
+    font-weight: 600;
+    background-color: black;
+    color: white;
+    position: sticky;
+    top: 0;
+}
+
+.riders-table tr:hover {
+    background-color: #f9f9f9;
+}
+.riders-table .MuiAvatar-root {
+    margin-left: 30px;
+  }
+  
+.email-cell, 
+.phone-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.MuiIconButton-root {
+    padding: 8px;
+}
+.no-results{
+    text-align: center;
+    padding: 20px;
+    font-size: 18px;
+    color: #888;
+}
+/* Add to your ViewDriver.css or similar */
+.riders-table-container {
+    margin-bottom: 20px;
+}
+
+.no-results {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+}@media (max-width: 768px) {
+    .pagination-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .pagination-buttons {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .riders-table th, 
+    .riders-table td {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+    
+    .riders-table-container {
+        border-radius: 4px;
+    }
+}

@@ -65,7 +65,7 @@ export const registerUser = catchAsync(async (req, res, next) => {
     // Handle file upload
     let profilePicturePath;
     if (req.file) {
-      profilePicturePath = `/uploads/users/${req.file.filename}`;
+      profilePicturePath = `uploads/users/${req.file.filename}`;
     }
 
     // Create user

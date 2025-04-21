@@ -24,13 +24,13 @@ function AdminSidemenu() {
     const [openSubmenu, setOpenSubmenu] = useState({});
 
     const menuItems = [
-        { name: 'Dashboard', icon: <DashboardIcon />, path: '#' },
+        { name: 'Dashboard', icon: <DashboardIcon />, path: '/admin-dashboard' },
         {
             name: 'Manage Users',
             icon: <PersonIcon />,
             subItems: [
                 { name: 'View All Drivers', path: '/admin-view-driver' },
-                { name: 'View All Riders', path: '#' }
+                { name: 'View All Riders', path: '/admin-view-riders' }
             ]
         },
         { name: 'Complaints', icon: <ErrorOutlineIcon />, path: '#' },

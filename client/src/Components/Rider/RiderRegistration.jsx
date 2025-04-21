@@ -58,8 +58,8 @@ function RiderRegistration() {
       return;
     }
 
-    if (rider.password.length < 6) {
-      toast.error('Password must be at least 6 characters long');
+    if (rider.password.length < 8) {
+      toast.error('Password must be at least 8 characters long');
       return;
     }
 
@@ -81,7 +81,7 @@ function RiderRegistration() {
 
       if (response.status === 'success') {
         toast.success('Registration successful!');
-        // navigate('/rider/login');
+        navigate('/User-login');
       } else {
         toast.error(response.data.message || 'Registration failed');
       }
@@ -183,7 +183,7 @@ function RiderRegistration() {
                 fullWidth
                 margin="normal"
                 required
-                placeholder="Enter password (min 6 characters)"
+                placeholder="Enter password (min 8 characters)"
               />
 
               <FormLabel className="reg-form-label">Confirm Password *</FormLabel>
