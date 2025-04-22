@@ -43,7 +43,7 @@ jobs:
         echo "EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}" >> .env
         echo "EMAIL_FROM=${{ secrets.EMAIL_FROM }}" >> .env
 
-    # Frontend build (modified to output to root)
+    # Frontend build (output to root dist)
     - name: Build React frontend
       working-directory: ./client
       run: |
@@ -56,16 +56,16 @@ jobs:
       run: |
         npm ci --omit=dev
 
-    # Create deployment package (modified for root dist)
+    # Create deployment package (modified structure)
     - name: Create deployment structure
       run: |
-        mkdir -p deploy/client
+        mkdir -p deploy
+        
+        # Copy frontend build files directly to deploy root
+        cp -r dist/* deploy/
+        
+        # Create backend directory and copy files
         mkdir -p deploy/backend
-        
-        # Copy frontend build from root dist
-        cp -r dist/* deploy/client/
-        
-        # Copy backend files (excluding node_modules)
         cp -r server/* deploy/backend/
         rm -rf deploy/backend/node_modules
 
@@ -89,6 +89,9 @@ jobs:
         ssh -o StrictHostKeyChecking=no ${{ env.VPS_USER }}@${{ env.VPS_IP }} << EOF
         # Create directory if not exists
         mkdir -p ${{ env.DEPLOY_DIR }}
+        
+        # Clear existing files (except uploads if needed)
+        rm -rf ${{ env.DEPLOY_DIR }}/*
         
         # Extract files
         tar -xzvf /tmp/ride_share.tar.gz -C ${{ env.DEPLOY_DIR }}
