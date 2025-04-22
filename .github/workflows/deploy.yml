@@ -24,7 +24,6 @@ jobs:
       working-directory: ./client
       run: |
         echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > .env.production
-        # Development .env is not needed for production deployment
 
     - name: Create server environment file
       working-directory: ./server
@@ -44,12 +43,12 @@ jobs:
         echo "EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}" >> .env
         echo "EMAIL_FROM=${{ secrets.EMAIL_FROM }}" >> .env
 
-    # Frontend build
+    # Frontend build (modified to output to root)
     - name: Build React frontend
       working-directory: ./client
       run: |
         npm ci
-        npm run build
+        npm run build -- --outDir=../dist
 
     # Backend preparation
     - name: Prepare backend
@@ -57,14 +56,14 @@ jobs:
       run: |
         npm ci --omit=dev
 
-    # Create deployment package
+    # Create deployment package (modified for root dist)
     - name: Create deployment structure
       run: |
         mkdir -p deploy/client
         mkdir -p deploy/backend
         
-        # Copy frontend build
-        cp -r client/dist/* deploy/client/
+        # Copy frontend build from root dist
+        cp -r dist/* deploy/client/
         
         # Copy backend files (excluding node_modules)
         cp -r server/* deploy/backend/
