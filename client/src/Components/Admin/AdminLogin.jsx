@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../Style/Login.css";
+import LandindNav from "../Common/LandingNav";
 
 function AdminLogin() {
   const [credentials, setCredentials] = useState({
@@ -48,9 +49,10 @@ function AdminLogin() {
   };
 
   return (
-    <div className="admin-login-main-container">
-      <img src={Logo} alt="Company Logo" />
-      <div className="admin-login-form">
+    <div className="admin-login-main-container" >
+      <LandindNav/>
+      <img src={Logo} alt="Company Logo"/>
+      <div className="admin-login-form" >
         <h2>ADMIN LOG IN</h2>
         <form onSubmit={handleSubmit}>
           <FormLabel className="reg-form-label">E-Mail ID</FormLabel>

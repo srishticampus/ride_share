@@ -1,7 +1,7 @@
 import React from 'react';
 import '../Style/ForgotPass.css';
 import LoginNav from '../Common/LoginNav';
-
+import Service from '../../Services/apiService'
 const RiderResetPass = () => {
     return (
         <div className="reset-password-container">

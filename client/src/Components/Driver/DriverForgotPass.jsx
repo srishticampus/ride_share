@@ -3,8 +3,10 @@ import '../Style/ForgotPass.css';
 import Logo from "../../Assets/Logo.png";
 import LoginNav from '../Common/LoginNav';
 import service from '../../Services/apiService';
+import { useNavigate } from 'react-router-dom';
 
 const DriverForgotPass = () => {
+    const navigate = useNavigate()
     const [phoneNumber, setPhoneNumber] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -18,8 +20,13 @@ const DriverForgotPass = () => {
         try {
             const response = await service.FindDriverPh(phoneNumber);
             
-            setSuccess(true);
-            console.log('Password reset instructions sent:', response);
+            if (response.status === 'success') {
+                setSuccess(true);
+                console.log('Driver found:', response.data);
+                navigate(`/driver-Reset-Pass/${response.data.phoneNumber}`)
+            } else {
+                setError(response.message || 'No driver found with this phone number');
+            }
             
         } catch (err) {
             setError(err.message || 'Failed to send reset instructions');
@@ -43,7 +50,7 @@ const DriverForgotPass = () => {
                     {error && <div className="error-message">{error}</div>}
                     {success && (
                         <div className="success-message">
-                            Password reset instructions sent to your phone!
+                            Phone number verified! Redirecting to reset page...
                         </div>
                     )}
                     

@@ -7,7 +7,7 @@ import { uploadDriverPhoto } from '../middlewares/upload.middleware.js';
 import { protect, restrictTo } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
-router.get('/findByDriverPh', driverController.FindByPhonenumber);
+router.post('/findByDriverPh', driverController.FindByPhonenumber);
 router.post('/forgotPass/:phoneNumber' , driverController.ForgotPassword)
 
 /**

@@ -88,7 +88,7 @@ export const EditProfile = catchAsync(async (req, res, next) => {
 });
 
 export const FindByPhonenumber = catchAsync(async (req, res, next) => {
-  const { phoneNumber } = req.query;
+  const { phoneNumber } = req.body;
 
   if (!phoneNumber) {
     return next(new AppError('Phone number is required!', 400));

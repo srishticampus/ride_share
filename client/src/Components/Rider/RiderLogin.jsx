@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../Style/Login.css";
-
+import { Link } from "react-router-dom";
+import LandingNav from "../Common/LandingNav";
 function RiderLogin() {
   const [credentials, setCredentials] = useState({
     phoneNumber: "",
@@ -49,6 +50,7 @@ function RiderLogin() {
 
   return (
     <div className="admin-login-main-container">
+      <LandingNav/>
       <ToastContainer />
       <img src={Logo} alt="Company Logo" />
       <div className="admin-login-form">
