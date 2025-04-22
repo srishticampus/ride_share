@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../Style/Login.css";
-
+import { Link } from "react-router-dom";
 function DriverLogin() {
     const [credentials, setCredentials] = useState({
         phoneNumber: "",
@@ -78,6 +78,7 @@ function DriverLogin() {
                         variant="outlined"
                         className="login-input"
                     />
+                    <Link to='/driver-forgot-pass' style={{ textAlign: "right", color: "#f1b92e", textDecoration: "none", position: 'relative', left: "320px" }}>Forgot Password ?</Link>
                     <div style={{ textAlign: 'center' }}>
                         <Button
                             variant="contained"
@@ -88,7 +89,10 @@ function DriverLogin() {
                             {isLoading ? "Logging in..." : "LOG IN"}
                         </Button>
                     </div>
-                </form>      </div>
+                   <p style={{textAlign:"center",color:"white"}}> Don't you have an Account ? <Link to='/driver-registration' style={{color:"#f1b92e", textDecoration:"none"}}>Sign in</Link></p> 
+
+                </form>      
+                </div>
         </div>
     );
 }

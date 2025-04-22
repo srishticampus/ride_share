@@ -78,6 +78,8 @@ function RiderLogin() {
             variant="outlined"
             className="login-input"
           />
+          <Link to='/User-forgot-pass' style={{ textAlign: "right", color: "#f1b92e", textDecoration: "none", position: 'relative', left: "350px" }}>Forgot Password ?</Link>
+
           <div style={{ textAlign: 'center' }}>
             <Button
               variant="contained"
@@ -88,6 +90,7 @@ function RiderLogin() {
               {isLoading ? "Logging in..." : "LOG IN"}
             </Button>
           </div>
+          <p style={{ textAlign: "center", color: "white" }}> Don't you have an Account ? <Link to='/User-registration' style={{ color: "#f1b92e", textDecoration: "none" }}>Sign in</Link></p>
         </form>
       </div>
     </div>

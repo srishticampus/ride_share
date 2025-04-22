@@ -7,6 +7,8 @@ import { uploadDriverPhoto } from '../middlewares/upload.middleware.js';
 import { protect, restrictTo } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
+router.get('/findByDriverPh', driverController.FindByPhonenumber);
+router.post('/forgotPass/:phoneNumber' , driverController.ForgotPassword)
 
 /**
  * @swagger
@@ -113,6 +115,7 @@ router.post(
  *       401:
  *         description: Invalid credentials
  */
+
 router.post(
   '/login',
   validate(driverValidation.driverLoginSchema),
@@ -174,5 +177,6 @@ router.use(restrictTo('admin'));
 router.patch('/:id/approve', driverController.ApproveDriver);
 
 router.get('/showAllDrivers', driverController.viewDrivers);
+
 
 export default router;

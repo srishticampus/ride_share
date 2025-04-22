@@ -8,7 +8,7 @@ function Footer() {
         <footer className="footer-container">
             <div className="footer-content">
                 <div className="footer-logo">
-                    <img src={Logo} alt="RideShare Logo" className="logo-img" />
+                    <img src={Logo} alt="RideShare Logo" className="logo-img-footer" />
                     <div className="social-icons">
                         <a href="#" aria-label="Facebook"><FaFacebook className="icon" /></a>
                         <a href="#" aria-label="Twitter"><FaTwitter className="icon" /></a>

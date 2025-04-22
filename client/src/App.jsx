@@ -17,6 +17,13 @@ import AboutUs from "./Components/Common/AboutUs";
 import ContactUs from "./Components/Common/ContactUs";
 import  RiderEditProfile  from "./Components/Rider/RiderEditProfile";
 import RiderViewProfile from "./Components/Rider/RiderViewProfile";
+import ViewRide from "./Components/Rider/ViewRide";
+import RiderForgotPass from "./Components/Rider/RiderForgotPass";
+import RiderResetPass from "./Components/Rider/RiderResetPass";
+import DriverResetPass from "./Components/Driver/DriverResetPass";
+import DriverForgotPass from "./Components/Driver/DriverForgotPass";
+import RiderPayment from "./Components/Rider/RiderPayment";
+import ViewDriverComplaints from "./Components/Admin/ViewDriverComplaints";
 
 function App() {
   return (
@@ -48,20 +55,29 @@ function App() {
           <Route path="/admin-view-driver" element={<ViewDriver />} />
           <Route path="/admin-view-riders" element={<ViewRider />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/admin-driver-complaints" element={<ViewDriverComplaints />} />
 
 
           {/* Driver Route */}
           <Route path="/driver-registration" element={<DriverRegistration />} />
           <Route path="/driver-login" element={<DriverLogin />} />
           <Route path="/driver-profile" element={<DriverViewProfile />} />
+          <Route path="/driver-forgot-pass" element={<DriverForgotPass/>}/>
+          <Route path="/driver-Reset-Pass/:phonenumber" element={<DriverResetPass />} />
+
 
 
           {/* User Route */}
           <Route path="/User-registration" element={<RideRegistration />} />
           <Route path="/User-login" element={<RiderLogin />} />
+          <Route path="/User-forgot-pass" element={<RiderForgotPass/>}/>
+          <Route path="/User-Reset-Pass" element={<RiderResetPass />} />
+          <Route path="/User-paymet" element={<RiderPayment />} />
           <Route path="/User-home-page" element={<RiderHomePage />} />
           <Route path="/User-profile" element={<RiderViewProfile/>} />
           <Route path="/User-Edit-profile" element={<RiderEditProfile />} />
+          <Route path="/User-View-Ride" element={<ViewRide />} />
+
 
 
         </Routes>

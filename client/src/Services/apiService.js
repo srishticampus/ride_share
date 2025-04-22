@@ -209,6 +209,17 @@ const approveDriver = async (driverId) => {
     throw error.response?.data || error.message;
   }
 };
+const FindDriverPh = async (phoneNumber) => {
+  try {
+    const response = await apiClient.patch(`/drivers/findByDriverPh`, { phoneNumber }, {
+      // Optionally skip auth token if your backend allows
+      skipAuth: true
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
 
 /**
  * Ride Services
@@ -458,6 +469,7 @@ export default {
   registerDriver,
   driverLogin,
   approveDriver,
+  FindDriverPh,
 
   // Ride
   createRide,

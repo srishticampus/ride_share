@@ -87,8 +87,27 @@ export const EditProfile = catchAsync(async (req, res, next) => {
   });
 });
 
+export const FindByPhonenumber = catchAsync(async (req, res, next) => {
+  const { phoneNumber } = req.query;
+
+  if (!phoneNumber) {
+    return next(new AppError('Phone number is required!', 400));
+  }
+
+  const driver = await Driver.findOne({ phoneNumber }).select('-password -__v');
+
+  if (!driver) {
+    return next(new AppError('No driver found with this phone number.', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: driver, 
+  });
+});
 export const ForgotPassword = catchAsync(async (req, res, next) => {
-  const { phoneNumber, password } = req.body;
+  const {phoneNumber}=req.params
+  const { password } = req.body;
 
   const driver = await Driver.findOneAndUpdate(
     { phoneNumber },
