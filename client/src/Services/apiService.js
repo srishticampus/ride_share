@@ -209,7 +209,27 @@ const approveDriver = async (driverId) => {
     throw error.response?.data || error.message;
   }
 };
+const FindDriverPh = async (phoneNumber) => {
+  try {
+    const response = await apiClient.post('/drivers/findByDriverPh', { phoneNumber }, {
+      skipAuth: true
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
 
+const driverForgotPassword = async (data) => {
+  try {
+    const response = await apiClient.post('/drivers/forgot-password', data, {
+      skipAuth: true
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
 /**
  * Ride Services
  */
@@ -458,6 +478,8 @@ export default {
   registerDriver,
   driverLogin,
   approveDriver,
+  FindDriverPh,
+  driverForgotPassword,
 
   // Ride
   createRide,

@@ -16,7 +16,7 @@ import service1 from '../../Assets/Service1.png';
 import service2 from '../../Assets/Service2.png'; 
 import service3 from '../../Assets/Service3.png';
 import service4 from '../../Assets/Service4.png';   
-
+import LandingNav from './LandingNav';
 import '../Style/LandingPage.css';
 import { Link } from 'react-router-dom';
 import Footer from './Footer';
@@ -40,16 +40,7 @@ function LandingPage() {
 
   return (
     <div className="landing-container">
-      <div className='landing-nav'>
-        <img src={navImage} alt="Navigation header" className='landing-nav-image' />
-      </div>
-      <div className='nav-links'>
-        <div className="links-container">
-          <Link to="/">HOME</Link>
-          <Link to="/about">ABOUT US</Link>
-          <Link to="/contact">CONTACT US</Link>
-        </div>
-      </div>
+     <LandingNav/>
       <div className='landing-bg'>
         <div className="bg-image-container">
           <img src={backgroundImage} alt="Background" className='bg-image' />

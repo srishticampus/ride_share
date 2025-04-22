@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../Style/Login.css";
-
+import { Link } from "react-router-dom";
+import LandingNav from "../Common/LandingNav";
 function RiderLogin() {
   const [credentials, setCredentials] = useState({
     phoneNumber: "",
@@ -49,6 +50,7 @@ function RiderLogin() {
 
   return (
     <div className="admin-login-main-container">
+      <LandingNav/>
       <ToastContainer />
       <img src={Logo} alt="Company Logo" />
       <div className="admin-login-form">
@@ -78,6 +80,8 @@ function RiderLogin() {
             variant="outlined"
             className="login-input"
           />
+          <Link to='/User-forgot-pass' style={{ textAlign: "right", color: "#f1b92e", textDecoration: "none", position: 'relative', left: "350px" }}>Forgot Password ?</Link>
+
           <div style={{ textAlign: 'center' }}>
             <Button
               variant="contained"
@@ -88,6 +92,7 @@ function RiderLogin() {
               {isLoading ? "Logging in..." : "LOG IN"}
             </Button>
           </div>
+          <p style={{ textAlign: "center", color: "white" }}> Don't you have an Account ? <Link to='/User-registration' style={{ color: "#f1b92e", textDecoration: "none" }}>Sign in</Link></p>
         </form>
       </div>
     </div>

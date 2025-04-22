@@ -68,23 +68,10 @@ const RiderEditProfile = () => {
         data.append('profilePicture', formData.profilePicture);
       }
 
-      const response = await service.updateProfile(data);
-      
-      // Update localStorage with new data
-      const updatedUser = { ...riderData };
-      updatedUser.fullName = formData.fullName;
-      updatedUser.email = formData.email;
-      updatedUser.phoneNumber = formData.phoneNumber;
-      updatedUser.emergencyNo = formData.emergencyNo;
-      updatedUser.address = formData.address;
-      if (response.data.profilePicture) {
-        updatedUser.profilePicture = response.data.profilePicture;
-      }
-      
-      localStorage.setItem("riderData", JSON.stringify(updatedUser));
-      
+      const response = await service.updateProfile(formData);
+            
       toast.success('Profile updated successfully!');
-      setTimeout(() => navigate(-1), 1500); // Go back to previous page
+      setTimeout(() => navigate(-1), 1500); 
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to update profile');
       console.error('Update error:', error);

@@ -116,7 +116,24 @@ export const loginUser = catchAsync(async (req, res, next) => {
   // 3) If everything ok, send token to client
   createSendToken(user, 200, res);
 });
+export const FindByPhonenumber = catchAsync(async (req, res, next) => {
+  const { phoneNumber } = req.body;
 
+  if (!phoneNumber) {
+    return next(new AppError('Phone number is required!', 400));
+  }
+
+  const driver = await User.findOne({ phoneNumber }).select('-password -__v');
+
+  if (!driver) {
+    return next(new AppError('No driver found with this phone number.', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: driver, 
+  });
+});
 // Forgot password (without transactions)
 export const forgotPassword = catchAsync(async (req, res, next) => {
   try {
