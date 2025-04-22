@@ -126,7 +126,6 @@ app.get('/api/v1/health', (req, res) => {
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
-
 // Global error handler
 app.use(globalErrorHandler);
 

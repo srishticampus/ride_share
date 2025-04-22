@@ -173,4 +173,6 @@ router.use(restrictTo('admin'));
  */
 router.patch('/:id/approve', driverController.ApproveDriver);
 
+router.get('/showAllDrivers', driverController.viewDrivers);
+
 export default router;

@@ -77,14 +77,16 @@ function AdminLogin() {
             variant="outlined"
             className="login-input"
           />
-          <Button
-            variant="contained"
-            className="Login-button"
-            type="submit"
-            disabled={isLoading}
-          >
-            {isLoading ? "Logging in..." : "LOG IN"}
-          </Button>
+          <div style={{ textAlign: 'center' }}>
+            <Button
+              variant="contained"
+              className="Login-button"
+              type="submit"
+              disabled={isLoading}
+            >
+              {isLoading ? "Logging in..." : "LOG IN"}
+            </Button>
+          </div>
         </form>
       </div>
     </div>

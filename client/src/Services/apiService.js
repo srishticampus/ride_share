@@ -31,7 +31,7 @@ apiClient.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       // Handle unauthorized access
       localStorage.removeItem("token");
-      window.location.href = "/login";
+      // window.location.href = "/login";
     }
     return Promise.reject(error);
   }
@@ -43,6 +43,11 @@ apiClient.interceptors.response.use(
 const login = async (credentials) => {
   try {
     const response = await apiClient.post("/users/login", credentials);
+    if (response.data.token) {
+      localStorage.setItem("riderToken", response.data.token);
+      apiClient.defaults.headers.common["Authorization"] =
+        `Bearer ${response.data.token}`;
+    }
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -106,6 +111,7 @@ const updateProfile = async (userData) => {
     const response = await apiClient.patch("/users/me/update", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
+        'Authorization': `Bearer ${localStorage.getItem('riderToken')}`
       },
     });
     return response.data;
@@ -120,9 +126,23 @@ const updateProfile = async (userData) => {
 const adminLogin = async (credentials) => {
   try {
     const response = await apiClient.post("/admin/login", credentials);
+
+    if (response.data.token) {
+      localStorage.setItem("adminToken", response.data.token);
+      apiClient.defaults.headers.common["Authorization"] =
+        `Bearer ${response.data.token}`;
+    }
+
     return response.data;
+
   } catch (error) {
-    throw error.response?.data || error.message;
+    const errorMessage = error.response?.data?.message ||
+      error.message ||
+      "Login failed. Please try again later.";
+    // Clear auth storage on login failure
+    localStorage.removeItem("adminToken");
+    delete apiClient.defaults.headers.common["Authorization"];
+    throw new Error(errorMessage);
   }
 };
 
@@ -136,6 +156,16 @@ const getAllUsers = async (page = 1, limit = 10) => {
     throw error.response?.data || error.message;
   }
 };
+
+const getAllDrivers = async () => {
+  try {
+    const response = await apiClient.get("/drivers/showAllDrivers");
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
 
 /**
  * Driver Services
@@ -414,51 +444,52 @@ export default {
   login,
   register,
   forgotPassword,
-  
+
   // User
   getCurrentUser,
   updateProfile,
-  
+
   // Admin
   adminLogin,
   getAllUsers,
-  
+  getAllDrivers,
+
   // Driver
   registerDriver,
   driverLogin,
   approveDriver,
-  
+
   // Ride
   createRide,
   getAllRides,
   getRideById,
-  
+
   // Ride Request
   createRideRequest,
   acceptRideRequest,
   rejectRideRequest,
-  
+
   // Payment
   createPayment,
   confirmPayment,
   getCompletedPayments,
-  
+
   // Dispute
   createDispute,
   getAllDisputes,
   solveDispute,
   dismissDispute,
-  
+
   // Vehicle
   registerVehicle,
   updateVehicle,
   getAllVehicles,
-  
+
   // Profile
   createProfile,
   updateProfileDetails,
   getAllProfiles,
-  
+
   // Rating
   createRating,
   updateRating,
