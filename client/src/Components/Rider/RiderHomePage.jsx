@@ -1,7 +1,7 @@
 import React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Rating from '@mui/material/Rating';
-import navImage from '../../Assets/LandingTOp.png';
+import navImage from '../../Assets/LandingTOP.png';
 import backgroundImage from '../../Assets/RiderHomePage.png';
 import landingimg1 from '../../Assets/Rider img.png';
 import service1 from '../../Assets/Service1.png';

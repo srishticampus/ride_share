@@ -11,7 +11,7 @@ import { validate } from '../middlewares/validation.middleware.js';
 import { protect, restrictTo } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
-
+router.post('/findByUserPh',UserController.)
 /**
  * @swagger
  * components:

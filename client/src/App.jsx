@@ -41,7 +41,7 @@ function App() {
         theme="light"
         transition={Bounce}
       />
-      <Router>
+      <Router basename="ride_share">
         <Routes>
         <Route path="/" element={<LandingPage />} />
           <Route path="/about" element={<AboutUs />} />
