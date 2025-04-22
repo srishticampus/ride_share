@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Rating from '@mui/material/Rating';
-import navImage from '../../Assets/LandingTOp.png';
+import navImage from '../../Assets/LandingTOP.png';
 import backgroundImage from '../../Assets/AboutBg.png';
 import about1 from '../../Assets/about1.png';
 import about2 from '../../Assets/about2.png';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import navImage from '../../Assets/LandingTOp.png'; 
+import navImage from '../../Assets/LandingTOP.png'; 
 import '../Style/LandingPage.css'; 
 import Footer from './Footer';
 
