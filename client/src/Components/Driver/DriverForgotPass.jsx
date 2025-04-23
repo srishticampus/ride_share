@@ -4,32 +4,34 @@ import Logo from "../../Assets/Logo.png";
 import LoginNav from '../Common/LoginNav';
 import service from '../../Services/apiService';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from "react-toastify";
 
 const DriverForgotPass = () => {
     const navigate = useNavigate()
     const [phoneNumber, setPhoneNumber] = useState('');
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(null);
         setLoading(true);
 
         try {
             const response = await service.FindDriverPh(phoneNumber);
+            console.log(response);
             
             if (response.status === 'success') {
-                setSuccess(true);
+                toast.success("Phone number verified! Redirecting...");
                 console.log('Driver found:', response.data);
-                navigate(`/driver-Reset-Pass/${response.data.phoneNumber}`)
+                setTimeout(() => {
+                    navigate(`/driver-Reset-Pass/${response.data.phoneNumber}`)
+                }, 2000);
+    
             } else {
-                setError(response.message || 'No driver found with this phone number');
+                toast.error(response.message || 'No driver found with this phone number');
             }
             
         } catch (err) {
-            setError(err.message || 'Failed to send reset instructions');
+            toast.error(err.message || 'Failed to send reset instructions');
             console.error('Error:', err);
         } finally {
             setLoading(false);
@@ -38,6 +40,7 @@ const DriverForgotPass = () => {
 
     return (
         <div className="forgot-password-container">
+            <ToastContainer/>
             <LoginNav />
             <main className="forgot-password-main">
                 <h1 className="forgot-password-title">FORGOT PASSWORD?</h1>
@@ -46,13 +49,6 @@ const DriverForgotPass = () => {
                         Please enter the phone number associated with your account and we'll send you
                         password reset instructions.
                     </p>
-                    
-                    {error && <div className="error-message">{error}</div>}
-                    {success && (
-                        <div className="success-message">
-                            Phone number verified! Redirecting to reset page...
-                        </div>
-                    )}
                     
                     <label className="email-label" htmlFor="phoneNumber">Enter Your Phone Number</label>
                     <input

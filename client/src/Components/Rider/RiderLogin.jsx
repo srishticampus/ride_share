@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Logo from "../../Assets/Logo.png";
+import Logo from '../../Assets/RideShare.png';
 import { TextField, FormLabel, Button } from "@mui/material";
 import apiService from "../../Services/apiService";
 import { useNavigate } from "react-router-dom";
@@ -80,7 +80,7 @@ function RiderLogin() {
             variant="outlined"
             className="login-input"
           />
-          <Link to='/User-forgot-pass' style={{ textAlign: "right", color: "#f1b92e", textDecoration: "none", position: 'relative', left: "350px" }}>Forgot Password ?</Link>
+          <Link to='/User-forgot-pass' style={{ textAlign: "right", color: "#f1b92e", textDecoration: "none", position: 'relative', left: "320px" }}>Forgot Password ?</Link>
 
           <div style={{ textAlign: 'center' }}>
             <Button

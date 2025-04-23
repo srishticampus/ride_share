@@ -3,17 +3,20 @@ import '../Style/ForgotPass.css';
 import LoginNav from '../Common/LoginNav';
 import Service from '../../Services/apiService';
 import { useParams, useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const RiderResetPass = () => {
+const DriverResetPass = () => {
+    
     const [formData, setFormData] = useState({
         password: '',
         confirmPassword: ''
     });
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    
+
     const { phoneNumber } = useParams();
+    console.log(phoneNumber);
+    
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -26,51 +29,48 @@ const RiderResetPass = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
-        
-        // Validation
+
+        if (!phoneNumber) {
+            toast.error('Phone number is missing');
+            return;
+          }
+      
         if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
-            return;
+          toast.error('Passwords do not match');
+          return;
         }
-        
-        if (formData.password.length < 6) {
-            setError('Password must be at least 6 characters');
-            return;
+      
+        if (formData.password.length < 8) {
+          toast.error('Password must be at least 8 characters');
+          return;
         }
-
+      
         try {
-            setIsLoading(true);
-                        await Service.driverForgotPassword({
-                phoneNumber,
-                password: formData.password
-            });
-            
-            setSuccess(true);
-            // Redirect to login after 2 seconds
-            setTimeout(() => {
-                navigate('/rider-login');
-            }, 2000);
+          setIsLoading(true);
+          await Service.driverForgotPassword(phoneNumber, formData.password);
+      
+          toast.success("Password reset successfully");
+          setTimeout(() => {
+            navigate('/driver-login');
+          }, 2000);
         } catch (err) {
-            setError(err.message || 'Failed to reset password. Please try again.');
+            console.log(err);
+            
+          toast.error(err.message || 'Failed to reset password. Please try again.');
         } finally {
-            setIsLoading(false);
+          setIsLoading(false);
         }
-    };
-
+      };
     return (
         <div className="reset-password-container">
             <LoginNav />
-
+            <ToastContainer />
             <main className="reset-password-main">
                 <h1 className="reset-password-title">RESET PASSWORD</h1>
                 <form className="reset-password-form" autoComplete="off" noValidate onSubmit={handleSubmit}>
                     <p className="form-instructions">
                         Enter New Password To Reset.
                     </p>
-
-                    {error && <div className="error-message">{error}</div>}
-                    {success && <div className="success-message">Password reset successfully! Redirecting to login...</div>}
 
                     <div className="input-group">
                         <label className="input-label" htmlFor="password">New Password</label>
@@ -101,8 +101,8 @@ const RiderResetPass = () => {
                     </div>
 
                     <div className="submit-container">
-                        <button 
-                            className="submit-btn" 
+                        <button
+                            className="submit-btn"
                             type="submit"
                             disabled={isLoading}
                         >
@@ -115,4 +115,4 @@ const RiderResetPass = () => {
     );
 };
 
-export default RiderResetPass;
+export default DriverResetPass;

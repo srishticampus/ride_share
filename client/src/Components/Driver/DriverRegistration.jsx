@@ -68,17 +68,17 @@ function DriverRegistration() {
       
       if (response.status === 'success') {
         toast.success('Registration successful!');
-        // navigate('/driver-login');
+        navigate('/driver-login');
       } else {
-        toast.error(response.messag);
+        toast.error(response.message);
       }
     } catch (error) {
       console.error('Registration error:', error);
       
       if (error.message.includes('Cast to Number failed')) {
         toast.error('Server error: Invalid email format. Please try again or contact support.');
-      } else if (error.response?.data?.message) {
-        toast.error(error.response.data.message);
+      } else if (error.message) {
+        toast.error(error.message);
       } else {
         toast.error(error.message || 'An error occurred during registration');
       }
