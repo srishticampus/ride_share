@@ -35,10 +35,10 @@
     "nodemailer": "^6.9.8",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
-    "validator": "^13.11.0"
+    "validator": "^13.11.0",
+    "cross-env": "^7.0.3"
   },
   "devDependencies": {
-    "cross-env": "^7.0.3",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
