@@ -68,7 +68,10 @@ function DriverRegistration() {
 
       if (response.status == "success") {
         toast.success('Registration successful!');
-        navigate('/driver-login');
+        setTimeout(() => {
+          navigate('/driver-login');
+        }, 2000);
+  
       } else {
         toast.error(response.message);
       }

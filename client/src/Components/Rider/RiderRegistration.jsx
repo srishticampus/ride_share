@@ -82,7 +82,10 @@ function RiderRegistration() {
 
       if (response.status === 'success') {
         toast.success('Registration successful!');
-        navigate('/User-login');
+        setTimeout(() => {
+          navigate('/User-login');
+        }, 2000);
+
       } else {
         toast.error(response.data.message || 'Registration failed');
       }
