@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Logo from '../../Assets/RideShare.png';
-import { TextField, FormLabel, Button } from "@mui/material";
+import { TextField, FormLabel, Button, InputAdornment, IconButton } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import apiService from "../../Services/apiService";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -8,12 +9,14 @@ import "react-toastify/dist/ReactToastify.css";
 import "../Style/Login.css";
 import { Link } from "react-router-dom";
 import LandingNav from "../Common/LandingNav";
+
 function RiderLogin() {
   const [credentials, setCredentials] = useState({
     phoneNumber: "",
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -22,6 +25,14 @@ function RiderLogin() {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
   };
 
   const handleSubmit = async (e) => {
@@ -72,13 +83,30 @@ function RiderLogin() {
           <TextField
             placeholder="Enter your Password"
             name="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             value={credentials.password}
             onChange={handleInputChange}
             required
             margin="normal"
             variant="outlined"
             className="login-input"
+            style={{width:"450px"}}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                    style={{ color: '#f1b92e' }} 
+
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
           <Link to='/User-forgot-pass' style={{ textAlign: "right", color: "#f1b92e", textDecoration: "none", position: 'relative', left: "320px" }}>Forgot Password ?</Link>
 

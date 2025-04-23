@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { TextField, Button, FormLabel, CircularProgress } from '@mui/material';
-import { toast , ToastContainer } from 'react-toastify';
+import { TextField, Button, FormLabel, CircularProgress , InputAdornment, IconButton} from '@mui/material';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import Service from '../../Services/apiService';
 import Logo from '../../Assets/RideShare.png';
 import '../Style/DriverRegistration.css';
 import LandindNav from '../Common/LandingNav';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 function RiderRegistration() {
   const navigate = useNavigate();
@@ -17,11 +18,20 @@ function RiderRegistration() {
     address: '',
     password: '',
     confirmPassword: '',
-    emergencyNo:""
+    emergencyNo: ""
 
   });
   const [profilePicture, setProfilePicture] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleClickShowConfirmPassword = () => setShowConfirmPassword((show) => !show);
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -100,8 +110,8 @@ function RiderRegistration() {
 
   return (
     <div className="registration-container">
-      <LandindNav/>
-      <ToastContainer/>
+      <LandindNav />
+      <ToastContainer />
       <div className="registration-logo">
         <img src={Logo} alt="Company Logo" className="logo-image" />
       </div>
@@ -180,7 +190,7 @@ function RiderRegistration() {
               <FormLabel className="reg-form-label">Password *</FormLabel>
               <TextField
                 name="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={rider.password}
                 onChange={handleInputChange}
                 className="form-input"
@@ -188,12 +198,28 @@ function RiderRegistration() {
                 margin="normal"
                 required
                 placeholder="Enter password (min 8 characters)"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                        style={{ color: '#f1b92e' }} 
+
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }}
               />
 
               <FormLabel className="reg-form-label">Confirm Password *</FormLabel>
               <TextField
                 name="confirmPassword"
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 value={rider.confirmPassword}
                 onChange={handleInputChange}
                 className="form-input"
@@ -201,8 +227,23 @@ function RiderRegistration() {
                 margin="normal"
                 required
                 placeholder="Confirm your password"
-              />
-              <FormLabel className="reg-form-label">Profile Picture *</FormLabel>
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle confirm password visibility"
+                        onClick={handleClickShowConfirmPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                        style={{ color: '#f1b92e' }} 
+
+                      >
+                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }}
+              />              <FormLabel className="reg-form-label">Profile Picture *</FormLabel>
               <TextField
                 type="file"
                 name="profilePicture"

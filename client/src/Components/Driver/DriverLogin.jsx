@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Logo from '../../Assets/RideShare.png';
-import { TextField, FormLabel, Button } from "@mui/material";
+import { TextField, FormLabel, Button, InputAdornment, IconButton } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material"; 
 import apiService from "../../Services/apiService";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -8,12 +9,14 @@ import "react-toastify/dist/ReactToastify.css";
 import "../Style/Login.css";
 import { Link } from "react-router-dom";
 import LandingNav from "../Common/LandingNav";
+
 function DriverLogin() {
     const [credentials, setCredentials] = useState({
         phoneNumber: "",
         password: "",
     });
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false); 
     const navigate = useNavigate();
 
     const handleInputChange = (e) => {
@@ -24,18 +27,29 @@ function DriverLogin() {
         }));
     };
 
+    const handleClickShowPassword = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
 
         try {
             const response = await apiService.driverLogin(credentials);
+            console.log(response);
+            
             localStorage.setItem("driverToken", response.token);
+            localStorage.setItem("driverData", JSON.stringify(response.data.driver))
 
             toast.success("Login successful! Redirecting...");
 
             setTimeout(() => {
-                navigate("/User-home-page");
+                navigate("/driver-home-page");
             }, 2000);
         } catch (err) {
             const errorMessage =
@@ -72,13 +86,30 @@ function DriverLogin() {
                     <TextField
                         placeholder="Enter your Password"
                         name="password"
-                        type="password"
+                        type={showPassword ? "text" : "password"} 
                         value={credentials.password}
                         onChange={handleInputChange}
                         required
                         margin="normal"
                         variant="outlined"
                         className="login-input"
+                        style={{width:"450px"}}
+
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={handleClickShowPassword}
+                                        onMouseDown={handleMouseDownPassword}
+                                        edge="end"
+                                        style={{ color: '#f1b92e' }} 
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
                     />
                     <Link to='/driver-forgot-pass' style={{ textAlign: "right", color: "#f1b92e", textDecoration: "none", position: 'relative', left: "320px" }}>Forgot Password ?</Link>
                     <div style={{ textAlign: 'center' }}>
@@ -92,9 +123,8 @@ function DriverLogin() {
                         </Button>
                     </div>
                    <p style={{textAlign:"center",color:"white"}}> Don't you have an Account ? <Link to='/driver-registration' style={{color:"#f1b92e", textDecoration:"none"}}>Sign in</Link></p> 
-
                 </form>      
-                </div>
+            </div>
         </div>
     );
 }

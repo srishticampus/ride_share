@@ -3,22 +3,14 @@ import { Link } from 'react-router-dom';
 import navImage from '../../Assets/LandingTOP.png'; 
 import '../Style/LandingPage.css'; 
 import Footer from './Footer';
+import LandindNav from './LandingNav';
 
 function ContactUs() {
   return (
     <div className="contact-page">
-      <div className='landing-nav'>
-        <img src={navImage} alt="Navigation header" className='landing-nav-image' />
-      </div>
-      <div className='nav-links'>
-        <div className="links-container">
-          <Link to="/">HOME</Link>
-          <Link to="/about">ABOUT US</Link>
-          <Link to="/contact">CONTACT US</Link>
-        </div>
-      </div>
+    <LandindNav/>
 
-      <div className="contact-container">
+      <div className="contact-container" style={{marginTop:"100px"}}>
         <h1>Contact Us</h1>
         <form className="contact-form">
           <div className="input-row">
