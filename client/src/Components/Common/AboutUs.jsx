@@ -16,20 +16,12 @@ import service4 from '../../Assets/Service4.png';
 import '../Style/LandingPage.css';
 import { Link } from 'react-router-dom';
 import Footer from './Footer';
+import LandindNav from './LandingNav';
 
 function AboutUs() {
   return (
     <div className="landing-container">
-      <div className='landing-nav'>
-        <img src={navImage} alt="Navigation header" className='landing-nav-image' />
-      </div>
-      <div className='nav-links'>
-        <div className="links-container">
-          <Link to="/">HOME</Link>
-          <Link to="/about">ABOUT US</Link>
-          <Link to="/contact">CONTACT US</Link>
-        </div>
-      </div>
+      <LandindNav/>
       <div className='landing-bg'>
         <div className="bg-image-container">
           <img src={backgroundImage} alt="Background" className='bg-image' />

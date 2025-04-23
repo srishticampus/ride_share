@@ -5,19 +5,27 @@ import Service from '../../Services/apiService';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { TextField, IconButton, InputAdornment, Button } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const RiderResetPass = () => {
-    
     const [formData, setFormData] = useState({
         password: '',
         confirmPassword: ''
     });
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const { phoneNumber } = useParams();
-    console.log(phoneNumber);
-    
     const navigate = useNavigate();
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+    const handleClickShowConfirmPassword = () => setShowConfirmPassword((show) => !show);
+    
+    const handleMouseDownPassword = (e) => {
+        e.preventDefault();
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -61,6 +69,7 @@ const RiderResetPass = () => {
           setIsLoading(false);
         }
       };
+
     return (
         <div className="reset-password-container">
             <LoginNav />
@@ -73,30 +82,61 @@ const RiderResetPass = () => {
                     </p>
 
                     <div className="input-group">
-                        <label className="input-label" htmlFor="password">New Password</label>
-                        <input
-                            className="password-input"
-                            id="password"
+                    <label className="input-label" htmlFor="confirmPassword">Password</label>
+
+                        <TextField
+                            fullWidth
+                            variant="outlined"
                             name="password"
-                            placeholder="Enter New Password"
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             value={formData.password}
                             onChange={handleChange}
                             required
+                            style={{border:"1px solid white"}}
+
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={handleClickShowPassword}
+                                            onMouseDown={handleMouseDownPassword}
+                                            edge="end"
+                                        >
+                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                )
+                            }}
                         />
                     </div>
 
                     <div className="input-group">
-                        <label className="input-label" htmlFor="confirmPassword">Confirm Password</label>
-                        <input
-                            className="password-input"
-                            id="confirmPassword"
+                    <label className="input-label" htmlFor="confirmPassword">Confirm Password</label>
+
+                        <TextField
+                            fullWidth
                             name="confirmPassword"
-                            placeholder="Enter Confirm Password"
-                            type="password"
+                            type={showConfirmPassword ? "text" : "password"}
                             value={formData.confirmPassword}
                             onChange={handleChange}
                             required
+                            style={{border:"1px solid white"}}
+
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle confirm password visibility"
+                                            onClick={handleClickShowConfirmPassword}
+                                            onMouseDown={handleMouseDownPassword}
+                                            edge="end"
+                                        >
+                                            {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                )
+                            }}
                         />
                     </div>
 

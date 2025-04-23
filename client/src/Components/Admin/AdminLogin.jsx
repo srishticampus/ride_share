@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Logo from '../../Assets/RideShare.png';
-import { TextField, FormLabel, Button } from "@mui/material";
+import { TextField, FormLabel, Button, InputAdornment, IconButton } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material"; // Added icons
 import apiService from "../../Services/apiService";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -14,6 +15,7 @@ function AdminLogin() {
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); 
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -22,6 +24,14 @@ function AdminLogin() {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
   };
 
   const handleSubmit = async (e) => {
@@ -39,7 +49,7 @@ function AdminLogin() {
       }, 2000);
     } catch (err) {
       const errorMessage =
-        err.response?.data?.message ||
+        err.message ||
         "Login failed. Please check your credentials.";
       toast.error(errorMessage);
       console.error("Login error:", err);
@@ -49,10 +59,11 @@ function AdminLogin() {
   };
 
   return (
-    <div className="admin-login-main-container" >
+    <div className="admin-login-main-container">
       <LandindNav/>
-      <img src={Logo} alt="Company Logo"/>
-      <div className="admin-login-form" >
+      <ToastContainer /> 
+      <img src={Logo} alt="Company Logo" />
+      <div className="admin-login-form" style={{marginBottom:"80px"}}>
         <h2>ADMIN LOG IN</h2>
         <form onSubmit={handleSubmit}>
           <FormLabel className="reg-form-label">E-Mail ID</FormLabel>
@@ -71,13 +82,30 @@ function AdminLogin() {
           <TextField
             placeholder="Enter your Password"
             name="password"
-            type="password"
+            type={showPassword ? "text" : "password"} 
             value={credentials.password}
             onChange={handleInputChange}
             required
             margin="normal"
             variant="outlined"
             className="login-input"
+            style={{width:"450px"}}
+
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                    style={{ color: '#f1b92e' }} 
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
           <div style={{ textAlign: 'center' }}>
             <Button

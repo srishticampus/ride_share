@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { TextField, Button, FormLabel, CircularProgress } from '@mui/material';
+import { TextField, Button, FormLabel, CircularProgress, InputAdornment, IconButton } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import Service from '../../Services/apiService';
 import Logo from '../../Assets/RideShare.png';
 import '../Style/DriverRegistration.css';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 function DriverRegistration() {
   const navigate = useNavigate();
@@ -20,6 +21,16 @@ function DriverRegistration() {
     driverPic: null
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleClickShowConfirmPassword = () => setShowConfirmPassword((show) => !show);
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -172,14 +183,29 @@ function DriverRegistration() {
               <FormLabel className="reg-form-label">Password *</FormLabel>
               <TextField
                 name="password"
-                type="password"
                 value={driver.password}
+                type={showPassword ? "text" : "password"}
                 onChange={handleInputChange}
                 className="form-input"
                 fullWidth
                 margin="normal"
                 placeholder="Enter password (min 8 characters)"
+InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                        style={{ color: '#f1b92e' }} 
 
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }}
                 required
               />
 
@@ -192,6 +218,22 @@ function DriverRegistration() {
                 className="form-input"
                 fullWidth
                 placeholder="Enter password (min 8 characters)"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                        style={{ color: '#f1b92e' }} 
+
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }}
 
                 margin="normal"
                 required

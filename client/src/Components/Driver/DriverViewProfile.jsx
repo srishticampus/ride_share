@@ -1,26 +1,33 @@
 import React from 'react';
 import '../Style/Profile.css';
 import { Button } from '@mui/material';
+import { Link } from 'react-router-dom';
+import DriverNav from './DriverNav'; 
 
 function DriverViewProfile() {
+  const driverData = JSON.parse(localStorage.getItem("driverData"));   
+  console.log(driverData);
+    
   return (
     <div>
-        <h1>View Profile</h1>
-    <div className="profile-card">
-      <img 
-        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQL7yEGVr0WDqJTtcLbXpUXmUSwwzlHDtF1XA&s" 
-        alt="Profile" 
-      />
-      <div className='profile-details'>
-      <h2>Sarath R S</h2>
-      <h4>ADDRESS: Varkala</h4>
-      <h4>E-MAIL ID: Sarath@123@gmail.com</h4>
-      <p>PHONE NO: 1234567890</p>
-
+      <DriverNav/>
+      <h1>View Profile</h1>
+      <div className="profile-card">
+        <img 
+          src={`http://localhost:4040/api/v1/${driverData.driverPic
+          }`}
+          alt={driverData.fullname} 
+        />
+        <div className='profile-details'>
+          <h2>{driverData.fullname}</h2>
+          <h4>ADDRESS: {driverData.address}</h4>
+          <h4>E-MAIL ID: {driverData.email}</h4>
+          <p>PHONE NO: {driverData.phoneNumber}</p>
+        </div>
+        <Link to='/driver-edit-profile'>
+          <Button variant="contained">Edit</Button>
+        </Link>
       </div>
-      <Button variant="contained">Edit</Button>
-    </div>
-
     </div>
   );
 }
