@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TextField, Button, FormLabel, CircularProgress } from '@mui/material';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import Service from '../../Services/apiService';
@@ -32,10 +32,10 @@ function DriverRegistration() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!driver.email || !driver.password || !driver.fullname || 
-        !driver.phoneNumber || !driver.licenseNumber || 
-        !driver.vehicleRegNumber || !driver.driverPic) {
+
+    if (!driver.email || !driver.password || !driver.fullname ||
+      !driver.phoneNumber || !driver.licenseNumber ||
+      !driver.vehicleRegNumber || !driver.driverPic) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -65,8 +65,8 @@ function DriverRegistration() {
 
       const response = await Service.registerDriver(driverData);
       console.log(response);
-      
-      if (response.status === 'success') {
+
+      if (response.status == "success") {
         toast.success('Registration successful!');
         navigate('/driver-login');
       } else {
@@ -74,14 +74,15 @@ function DriverRegistration() {
       }
     } catch (error) {
       console.error('Registration error:', error);
-      
+
       if (error.message.includes('Cast to Number failed')) {
         toast.error('Server error: Invalid email format. Please try again or contact support.');
-      } else if (error.message) {
-        toast.error(error.message);
-      } else {
-        toast.error(error.message || 'An error occurred during registration');
-      }
+      } else
+        if (error.message) {
+          toast.error(error.message);
+        } else {
+          toast.error(error.message || 'An error occurred during registration');
+        }
     } finally {
       setIsSubmitting(false);
     }
@@ -89,13 +90,14 @@ function DriverRegistration() {
 
   return (
     <div className="registration-container">
+      <ToastContainer />
       <div className="registration-logo">
         <img src={Logo} alt="Company Logo" className="logo-image" />
       </div>
 
       <div className="registration-form">
         <h2 className="registration-title">DRIVER REGISTRATION</h2>
-        
+
         <form onSubmit={handleSubmit} className="registration-form-container">
           <div className='reg-main-container'>
             <div className='reg-left'>
@@ -207,16 +209,16 @@ function DriverRegistration() {
           </div>
 
           <div className="registration-actions">
-            <Button 
-              type="submit" 
-              variant="contained" 
+            <Button
+              type="submit"
+              variant="contained"
               className="register-button"
               disabled={isSubmitting}
               fullWidth
             >
               {isSubmitting ? <CircularProgress size={24} className="submit-spinner" /> : 'REGISTER'}
             </Button>
-            
+
             <p className="login-text">
               Already have an account? <a href="/driver-login" className="login-link">Login here</a>
             </p>
