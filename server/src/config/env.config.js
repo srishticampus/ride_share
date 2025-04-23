@@ -54,7 +54,7 @@ export const mongooseConfig = {
   url: MONGO_URI,
   options: {
     useNewUrlParser: true,
-    useUnifiedTopology: true,pm2 
+    useUnifiedTopology: true,
     serverSelectionTimeoutMS: 5000
   }
 };
