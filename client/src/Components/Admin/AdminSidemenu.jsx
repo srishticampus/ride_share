@@ -49,7 +49,7 @@ function AdminSidemenu() {
     const handleLogout = () => {
         setOpenLogoutDialog(false);
         localStorage.removeItem('adminToken');
-        navigate('/admin/login');
+        navigate('/admin-login');
     };
 
     return (

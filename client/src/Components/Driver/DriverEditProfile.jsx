@@ -70,7 +70,7 @@ const DriverEditProfile = () => {
         data.append('driverPic', formData.profilePicture);
       }
 
-      const response = await service.updateDriverProfile(data);
+      const response = await service.u(data);
             
       toast.success('Profile updated successfully!');
       setTimeout(() => navigate(-1), 1500); 

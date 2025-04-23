@@ -3,7 +3,6 @@ import AdminSidemenu from './AdminSidemenu';
 import AdminNav from './AdminNav';
 import '../Style/ViewDriver.css';
 import SearchBar from './SearchBar';
-import {VITE_API_URL} from '../../env.production'
 import { 
   Avatar, 
   Pagination, 

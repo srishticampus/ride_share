@@ -153,10 +153,10 @@ const getCurrentUser = async () => {
 const updateProfile = async (userData) => {
   try {
     const formData = new FormData();
-    Object.keys(userData).forEach((key) => {
-      if (key === "profilePicture" && userData[key]) {
-        formData.append(key, userData[key]);
-      } else {
+    
+    // Append all fields to formData
+    Object.keys(userData).forEach(key => {
+      if (userData[key] !== null && userData[key] !== undefined) {
         formData.append(key, userData[key]);
       }
     });
@@ -172,7 +172,6 @@ const updateProfile = async (userData) => {
     throw error.response?.data || error.message;
   }
 };
-
 /**
  * Admin Services
  */
