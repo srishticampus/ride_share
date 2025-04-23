@@ -111,10 +111,10 @@ app.use(expressStatic(join(__dirname, "./uploads")));
 setupSwagger(app);
 
 // Routes
-app.use("/ride_share_api/api/v1", routes);
+app.use("/ride_share_api/", routes);
 
 // Health check
-app.get('/ride_share_api/api/v1/health', (req, res) => {
+app.get('/ride_share_api/health', (req, res) => {
   res.status(200).json({
     status: 'success',
     message: 'API is healthy',
