@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { TextField, Button, FormLabel, CircularProgress } from '@mui/material';
-import { toast } from 'react-toastify';
+import { toast , ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import Service from '../../Services/apiService';
 import Logo from '../../Assets/RideShare.png';
 import '../Style/DriverRegistration.css';
+import LandindNav from '../Common/LandingNav';
 
 function RiderRegistration() {
   const navigate = useNavigate();
@@ -87,9 +88,7 @@ function RiderRegistration() {
       }
     } catch (error) {
       console.error('Registration error:', error);
-      const errorMessage = error.response?.data?.message ||
-        error.message ||
-        'An error occurred during registration';
+      const errorMessage = error.message || 'An error occurred during registration';
       toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -98,6 +97,8 @@ function RiderRegistration() {
 
   return (
     <div className="registration-container">
+      <LandindNav/>
+      <ToastContainer/>
       <div className="registration-logo">
         <img src={Logo} alt="Company Logo" className="logo-image" />
       </div>

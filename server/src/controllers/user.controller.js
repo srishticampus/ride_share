@@ -123,36 +123,42 @@ export const FindByPhonenumber = catchAsync(async (req, res, next) => {
     return next(new AppError('Phone number is required!', 400));
   }
 
-  const driver = await User.findOne({ phoneNumber }).select('-password -__v');
+  const user = await User.findOne({ phoneNumber }).select('-password -__v');
 
-  if (!driver) {
+  if (!user) {
     return next(new AppError('No driver found with this phone number.', 404));
   }
 
   res.status(200).json({
     status: 'success',
-    data: driver, 
+    data: user, 
   });
 });
 // Forgot password (without transactions)
-export const forgotPassword = catchAsync(async (req, res, next) => {
-  try {
-    const { phoneNumber, newPassword } = req.body;
+export const ForgotPassword = catchAsync(async (req, res, next) => {
+  const phoneNumber = decodeURIComponent(req.params.phoneNumber);
+  const { password } = req.body;
 
-    const user = await User.findOne({ phoneNumber });
-    if (!user) {
-      return next(new AppError('No user found with that phone number', 404));
-    }
-
-    user.password = newPassword;
-    await user.save();
+  if (!phoneNumber) {
+    return next(new AppError('Phone number is required', 400));
     
-    createSendToken(user, 200, res);
-  } catch (err) {
-    return next(new AppError('Password reset failed. Please try again.', 500));
-  }
-});
+  }  const user = await User.findOneAndUpdate(
+    { phoneNumber },
+    { password },
+    { new: true, runValidators: true }
+  );
 
+  if (!user) {
+    return next(new AppError('No driver found with this phone number', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user
+    }
+  });
+});
 // Update profile with file handling (without transactions)
 export const updateProfile = catchAsync(async (req, res, next) => {
   if (req.body.password) {
@@ -252,7 +258,8 @@ export const getMe = catchAsync(async (req, res, next) => {
 export default {
   registerUser,
   loginUser,
-  forgotPassword,
+  FindByPhonenumber,
+  ForgotPassword,
   updateProfile,
   getAllUsers,
   getUser,

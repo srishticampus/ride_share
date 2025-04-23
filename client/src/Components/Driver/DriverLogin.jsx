@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Logo from "../../Assets/Logo.png";
+import Logo from '../../Assets/RideShare.png';
 import { TextField, FormLabel, Button } from "@mui/material";
 import apiService from "../../Services/apiService";
 import { useNavigate } from "react-router-dom";

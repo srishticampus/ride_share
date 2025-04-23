@@ -76,15 +76,68 @@ const register = async (userData) => {
   }
 };
 
-const forgotPassword = async (data) => {
+const userForgotPassword = async (phoneNumber, newPassword) => {
   try {
-    const response = await apiClient.post("/users/forgot-password", data);
+    const response = await apiClient.post(
+      `/users/forgotPass/${phoneNumber}`,
+      { password: newPassword },
+      { 
+        skipAuth: true,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    const errorMessage = error.response?.data?.message ||
+      error.message ||
+      'Failed to reset password';
+    throw new Error(errorMessage);
+  }
+};const FindUserPh = async (phoneNumber) => {
+  try {
+    const response = await apiClient.post('/users/findByUserPh', { phoneNumber }, {
+      skipAuth: true
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
   }
 };
 
+
+const FindDriverPh = async (phoneNumber) => {
+  try {
+    const response = await apiClient.post('/drivers/findByDriverPh', { phoneNumber }, {
+      skipAuth: true
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+const driverForgotPassword = async (phoneNumber, newPassword) => {
+  try {
+    const response = await apiClient.post(
+      `/drivers/forgotPass/${phoneNumber}`,
+      { password: newPassword },
+      { 
+        skipAuth: true,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    const errorMessage = error.response?.data?.message ||
+      error.message ||
+      'Failed to reset password';
+    throw new Error(errorMessage);
+  }
+};
 /**
  * User Services
  */
@@ -139,7 +192,6 @@ const adminLogin = async (credentials) => {
     const errorMessage = error.response?.data?.message ||
       error.message ||
       "Login failed. Please try again later.";
-    // Clear auth storage on login failure
     localStorage.removeItem("adminToken");
     delete apiClient.defaults.headers.common["Authorization"];
     throw new Error(errorMessage);
@@ -209,27 +261,7 @@ const approveDriver = async (driverId) => {
     throw error.response?.data || error.message;
   }
 };
-const FindDriverPh = async (phoneNumber) => {
-  try {
-    const response = await apiClient.post('/drivers/findByDriverPh', { phoneNumber }, {
-      skipAuth: true
-    });
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
-};
 
-const driverForgotPassword = async (data) => {
-  try {
-    const response = await apiClient.post('/drivers/forgot-password', data, {
-      skipAuth: true
-    });
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
-};
 /**
  * Ride Services
  */
@@ -463,11 +495,12 @@ export default {
   // Auth
   login,
   register,
-  forgotPassword,
+  userForgotPassword,
 
   // User
   getCurrentUser,
   updateProfile,
+  FindUserPh,
 
   // Admin
   adminLogin,

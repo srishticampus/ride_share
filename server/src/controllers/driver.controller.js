@@ -106,17 +106,20 @@ export const FindByPhonenumber = catchAsync(async (req, res, next) => {
   });
 });
 export const ForgotPassword = catchAsync(async (req, res, next) => {
-  const {phoneNumber}=req.params
+  const phoneNumber = decodeURIComponent(req.params.phoneNumber);
   const { password } = req.body;
 
-  const driver = await Driver.findOneAndUpdate(
+  if (!phoneNumber) {
+    return next(new AppError('Phone number is required', 400));
+    
+  }  const driver = await Driver.findOneAndUpdate(
     { phoneNumber },
     { password },
     { new: true, runValidators: true }
   );
 
   if (!driver) {
-    return next(new AppError('Invalid User ID', 401));
+    return next(new AppError('No driver found with this phone number', 404));
   }
 
   res.status(200).json({
@@ -126,7 +129,6 @@ export const ForgotPassword = catchAsync(async (req, res, next) => {
     }
   });
 });
-
 export const ApproveDriver = catchAsync(async (req, res, next) => {
   const driver = await Driver.findByIdAndUpdate(
     req.params.id,

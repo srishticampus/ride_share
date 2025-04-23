@@ -11,7 +11,9 @@ import { validate } from '../middlewares/validation.middleware.js';
 import { protect, restrictTo } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
-router.post('/findByUserPh',UserController.)
+router.post('/findByUserPh',UserController.FindByPhonenumber)
+router.post('/forgotPass/:phoneNumber' , UserController.ForgotPassword)
+
 /**
  * @swagger
  * components:
@@ -154,11 +156,7 @@ router.post(
  *       404:
  *         description: User not found
  */
-router.post(
-  '/forgot-password',
-  validate(forgotPasswordSchema),
-  UserController.forgotPassword
-);
+
 
 router.use(protect);
 

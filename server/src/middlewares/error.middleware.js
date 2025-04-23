@@ -27,7 +27,7 @@ const handleJWTExpiredError = () => (
 );
 
 const sendErrorDev = (err, req, res) => {
-  // A) API
+  // Always return JSON in development for API routes
   if (req.originalUrl.startsWith('/api')) {
     return res.status(err.statusCode).json({
       status: err.status,
@@ -37,11 +37,12 @@ const sendErrorDev = (err, req, res) => {
     });
   }
 
-  // B) RENDERED WEBSITE
+  // For non-API routes, return JSON since we're not rendering views
   console.error('ERROR 💥', err);
-  return res.status(err.statusCode).render('error', {
-    title: 'Something went wrong!',
-    msg: err.message
+  return res.status(err.statusCode).json({
+    status: err.status,
+    message: err.message,
+    stack: err.stack
   });
 };
 
@@ -67,11 +68,11 @@ const sendErrorProd = (err, req, res) => {
     });
   }
 
-  // B) RENDERED WEBSITE
+  // B) For non-API routes, return JSON instead of rendering views
   if (err.isOperational) {
-    return res.status(err.statusCode).render('error', {
-      title: 'Something went wrong!',
-      msg: err.message
+    return res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message
     });
   }
   
@@ -80,9 +81,9 @@ const sendErrorProd = (err, req, res) => {
   console.error('ERROR 💥', err);
   
   // 2) Send generic message
-  return res.status(err.statusCode).render('error', {
-    title: 'Something went wrong!',
-    msg: 'Please try again later.'
+  return res.status(500).json({
+    status: 'error',
+    message: 'Something went wrong! Please try again later.'
   });
 };
 
