@@ -30,7 +30,7 @@ jobs:
     - name: Prepare backend
       working-directory: ./server
       run: |
-        npm ci --omit=dev
+        npm i
 
     # Create deployment package with proper .env handling
     - name: Create deployment structure
