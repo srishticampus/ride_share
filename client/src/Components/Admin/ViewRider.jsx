@@ -3,6 +3,7 @@ import AdminSidemenu from './AdminSidemenu';
 import AdminNav from './AdminNav';
 import '../Style/ViewDriver.css';
 import SearchBar from './SearchBar';
+import {VITE_API_URL} from '../../env.production'
 import { 
   Avatar, 
   Pagination, 
@@ -17,14 +18,15 @@ import '../Style/Table.css';
 import Service from '../../Services/apiService';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 function ViewRider() {
+    const navigate = useNavigate()
     const [riders, setRiders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(10);
 
     useEffect(() => {
         const fetchRiders = async () => {
@@ -47,7 +49,7 @@ function ViewRider() {
                 if (err.status === "fail") {
                     toast.error('Session expired. Please login again.');
                     setTimeout(() => {
-                        window.location.href = '/admin-login';
+                        navigate("/admin-login")
                     }, 2000);
                 }
             }

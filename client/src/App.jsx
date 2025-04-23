@@ -66,7 +66,6 @@ function App() {
           <Route path="/driver-home-page" element={<DriverHomePage />} />
           <Route path="/driver-profile" element={<DriverViewProfile />} />
           <Route path="/driver-edit-profile" element={<DriverEditProfile />} />
-
           <Route path="/driver-forgot-pass" element={<DriverForgotPass/>}/>
           <Route path="/driver-Reset-Pass/:phoneNumber" element={<DriverResetPass />} />
 
@@ -77,7 +76,7 @@ function App() {
           <Route path="/User-login" element={<RiderLogin />} />
           <Route path="/User-forgot-pass" element={<RiderForgotPass/>}/>
           <Route path="/User-Reset-Pass/:phoneNumber" element={<RiderResetPass />} />
-          <Route path="/User-paymet" element={<RiderPayment />} />
+          <Route path="/User-payment" element={<RiderPayment />} />
           <Route path="/User-home-page" element={<RiderHomePage />} />
           <Route path="/User-profile" element={<RiderViewProfile/>} />
           <Route path="/User-Edit-profile" element={<RiderEditProfile />} />

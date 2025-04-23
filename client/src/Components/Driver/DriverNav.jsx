@@ -66,7 +66,7 @@ export default function DriverNav() {
                         <Button
                             color="inherit"
                             component={Link}
-                            // to="/Driver-home"
+                            to="/driver-home-page"
                             style={{ color: 'white' }}
                         >
                             HOME
@@ -155,7 +155,7 @@ export default function DriverNav() {
                 <DialogTitle
                     id="alert-dialog-title"
                     style={{
-                        backgroundColor: '#FFFF00',
+                        backgroundColor: '#F1B92E',
                         color: 'black',
                         fontWeight: 'bold',
                         padding: '16px 24px'
@@ -184,8 +184,8 @@ export default function DriverNav() {
                         onClick={handleCloseLogoutDialog}
                         variant="outlined"
                         style={{
-                            color: '#FFFF00',
-                            border: '2px solid #FFFF00',
+                            color: '#F1B92E',
+                            border: '2px solid #F1B92E',
                             backgroundColor: 'white',
                             borderRadius: '8px',
                             padding: '8px 24px',
@@ -202,7 +202,7 @@ export default function DriverNav() {
                         autoFocus
                         variant="contained"
                         style={{
-                            backgroundColor: '#FFFF00',
+                            backgroundColor: '#F1B92E',
                             color: 'black',
                             borderRadius: '8px',
                             padding: '8px 24px',
