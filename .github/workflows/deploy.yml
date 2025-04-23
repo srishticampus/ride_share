@@ -46,7 +46,7 @@ jobs:
         rm -rf deploy/backend/node_modules
         
         # Create .env file directly in deploy/backend
-        echo "NODE_ENV=production" > deploy/backend/.env
+        echo "NODE_ENV=${{ secrets.NODE_ENV }}" > deploy/backend/.env
         echo "PORT=${{ secrets.PORT }}" >> deploy/backend/.env
         echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> deploy/backend/.env
         echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> deploy/backend/.env
