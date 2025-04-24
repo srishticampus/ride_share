@@ -111,16 +111,15 @@ export const ForgotPassword = catchAsync(async (req, res, next) => {
 
   if (!phoneNumber) {
     return next(new AppError('Phone number is required', 400));
-    
-  }  const driver = await Driver.findOneAndUpdate(
-    { phoneNumber },
-    { password },
-    { new: true, runValidators: true }
-  );
+  }
 
+  const driver = await Driver.findOne({ phoneNumber });
   if (!driver) {
     return next(new AppError('No driver found with this phone number', 404));
   }
+
+  driver.password = password;
+  await driver.save(); 
 
   res.status(200).json({
     status: 'success',

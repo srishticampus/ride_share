@@ -21,7 +21,17 @@ export const updateProfileSchema = Joi.object({
   phoneNumber: Joi.string()
 });
 
+export const findByPhoneSchema = Joi.object({
+  phoneNumber: Joi.string().required().messages({
+    'string.empty': 'Phone number is required',
+    'any.required': 'Phone number is required'
+  })
+});
+
 export const forgotPasswordSchema = Joi.object({
-  phoneNumber: Joi.string().required(),
-  newPassword: Joi.string().min(6).required()
+  password: Joi.string().min(6).required().messages({
+    'string.empty': 'Password is required',
+    'string.min': 'Password must be at least 6 characters long',
+    'any.required': 'Password is required'
+  })
 });
