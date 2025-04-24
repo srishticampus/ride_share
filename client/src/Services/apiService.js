@@ -40,6 +40,7 @@ apiClient.interceptors.response.use(
 /**
  * Auth Services
  */
+
 const login = async (credentials) => {
   try {
     const response = await apiClient.post("/users/login", credentials);
@@ -145,7 +146,13 @@ const driverForgotPassword = async (phoneNumber, newPassword) => {
  */
 const getCurrentUser = async () => {
   try {
-    const response = await apiClient.get("/users/me");
+    const token = localStorage.getItem("riderToken"); 
+    const response = await apiClient.get("/users/me", {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      }
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;

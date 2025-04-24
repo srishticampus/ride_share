@@ -120,7 +120,6 @@ router.post(
   driverController.login
 );
 
-router.use(protect);
 
 /**
  * @swagger
@@ -152,7 +151,6 @@ router.patch(
   driverController.EditProfile
 );
 
-router.use(restrictTo('admin'));
 
 /**
  * @swagger
@@ -279,6 +277,9 @@ router.post(
  *         message:
  *         type: string
 */
+router.use(restrictTo('admin'));
+router.use(protect);
+
 router.patch('/:id/approve', driverController.ApproveDriver);
 /**
  * @swagger

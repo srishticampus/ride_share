@@ -1,7 +1,7 @@
 //server/src/routes/user.routes.js
 import express from 'express';
 import UserController from '../controllers/user.controller.js';
-import { 
+import {
   registerSchema,
   loginSchema,
   updateProfileSchema,
@@ -155,6 +155,86 @@ router.post(
  *       404:
  *         description: User not found
  */
+/**
+ * @swagger
+ * /users/findByUserPh:
+ *   post:
+ *     summary: Find user by phone number
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - phoneNumber
+ *             properties:
+ *               phoneNumber:
+ *                 type: string
+ *                 description: User's phone number
+ *     responses:
+ *       200:
+ *         description: User found successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Phone number is required
+ *       404:
+ *         description: No user found with this phone number
+ */
+router.post(
+  '/findByUserPh',
+  validate(findByPhoneSchema),
+  UserController.FindByPhonenumber
+);
+/**
+ * @swagger
+ * /users/forgotPass/{phoneNumber}:
+ *   post:
+ *     summary: Reset user's password
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: phoneNumber
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User's phone number
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - password
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 6
+ *                 description: New password
+ *     responses:
+ *       200:
+ *         description: Password updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Phone number is required
+ *       404:
+ *         description: No user found with this phone number
+ */
+
+router.post(
+  '/forgotPass/:phoneNumber',
+  validate(forgotPasswordSchema),
+  UserController.ForgotPassword
+);
 
 
 router.use(protect);
@@ -267,85 +347,5 @@ router.get('/', UserController.getAllUsers);
  *         description: User not found
  */
 router.get('/:id', UserController.getUser);
-/**
- * @swagger
- * /users/findByUserPh:
- *   post:
- *     summary: Find user by phone number
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - phoneNumber
- *             properties:
- *               phoneNumber:
- *                 type: string
- *                 description: User's phone number
- *     responses:
- *       200:
- *         description: User found successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'
- *       400:
- *         description: Phone number is required
- *       404:
- *         description: No user found with this phone number
- */
-router.post(
-  '/findByUserPh',
-  validate(findByPhoneSchema),
-  UserController.FindByPhonenumber
-);
-/**
- * @swagger
- * /users/forgotPass/{phoneNumber}:
- *   post:
- *     summary: Reset user's password
- *     tags: [Users]
- *     parameters:
- *       - in: path
- *         name: phoneNumber
- *         required: true
- *         schema:
- *           type: string
- *         description: User's phone number
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - password
- *             properties:
- *               password:
- *                 type: string
- *                 format: password
- *                 minLength: 6
- *                 description: New password
- *     responses:
- *       200:
- *         description: Password updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'
- *       400:
- *         description: Phone number is required
- *       404:
- *         description: No user found with this phone number
- */
-
-router.post(
-  '/forgotPass/:phoneNumber',
-  validate(forgotPasswordSchema),
-  UserController.ForgotPassword
-);
 
 export default router;

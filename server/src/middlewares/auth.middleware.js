@@ -14,7 +14,7 @@ export const protect = catchAsync(async (req, res, next) => {
   // 1) Get token from header or cookie
   let token;
   if (req.headers.authorization?.startsWith('Bearer')) {
-    token = req.headers.authorization.split(' ')[1];
+    token = req.headers.authorization.split(" ")[1].replace(/"/g,"")
   } else if (req.cookies?.jwt) {
     token = req.cookies.jwt;
   }
@@ -66,11 +66,11 @@ export const protect = catchAsync(async (req, res, next) => {
   }
 
   // 5) Check if user changed password after token was issued
-  if (currentUser.changedPasswordAfter(decoded.iat)) {
-    return next(
-      new AppError('User recently changed password! Please log in again.', 401)
-    );
-  }
+  // if (currentUser.changedPasswordAfter(decoded.iat)) {
+  //   return next(
+  //     new AppError('User recently changed password! Please log in again.', 401)
+  //   );
+  // }
 
   // 6) Grant access
   req.user = {

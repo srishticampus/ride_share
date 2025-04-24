@@ -160,36 +160,51 @@ export const ForgotPassword = catchAsync(async (req, res, next) => {
 });
 // Update profile with file handling (without transactions)
 export const updateProfile = catchAsync(async (req, res, next) => {
+  // Debug: Log incoming data
+  console.log('Received data:', req.body);
+  console.log('Received file:', req.file);
+
   if (req.body.password) {
-    return next(new AppError('This route is not for password updates. Please use /forgot-password', 400));
+    return next(new AppError('This route is not for password updates', 400));
   }
 
   const filteredBody = {
     email: req.body.email,
     fullName: req.body.fullName,
     phoneNumber: req.body.phoneNumber,
-    emergencyNo:req.body.emergencyNo,
-    address:req.body.address
-
+    emergencyNo: req.body.emergencyNo,
+    address: req.body.address
   };
-  
+
   // Handle file upload
   if (req.file) {
-    // Delete old profile picture if exists
     const user = await User.findById(req.user.id);
+    
+    // Delete old profile picture if exists
     if (user.profilePicture) {
-      const oldFilePath = path.join('./uploads', user.profilePicture);
+      const oldFilePath = path.join(__dirname, '..', '..', 'public', user.profilePicture);
       if (fs.existsSync(oldFilePath)) {
         fs.unlinkSync(oldFilePath);
       }
     }
+    
     filteredBody.profilePicture = `/uploads/users/${req.file.filename}`;
   }
 
-  const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
-    new: true,
-    runValidators: true
-  });
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user.id,
+    filteredBody,
+    {
+      new: true,
+      runValidators: true
+    }
+  );
+
+  if (!updatedUser) {
+    return next(new AppError('User not found', 404));
+  }
+
+  console.log('Updated user:', updatedUser); // Debug
 
   res.status(200).json({
     status: 'success',
@@ -198,7 +213,6 @@ export const updateProfile = catchAsync(async (req, res, next) => {
     }
   });
 });
-
 // Get all users (admin only) with pagination
 export const getAllUsers = catchAsync(async (req, res, next) => {
   // Pagination
