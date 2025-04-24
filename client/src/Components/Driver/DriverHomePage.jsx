@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Rating from '@mui/material/Rating';
 import navImage from '../../Assets/LandingTOP.png';
@@ -11,16 +11,30 @@ import service4 from '../../Assets/Service4.png';
 import car1 from '../../Assets/car1.png';
 import car2 from '../../Assets/car2.png';
 import car3 from '../../Assets/car3.png';
-
+import { ClickAwayListener } from '@mui/material';
 import '../Style/LandingPage.css';
 import { Link } from 'react-router-dom';
 import Footer from '../Common/Footer';
 import DriverNav from './DriverNav';
-
+import DriverViewProfile from './DriverViewProfile'
+import DriverEditProfile from './DriverEditProfile'
 function DriverHomePage() {
+    const [showProfileCard, setShowProfileCard] = useState(false);
+    const onAvatarClick = () => {
+        setShowProfileCard(prev => !prev);
+        if (!showProfileCard) {
+            setShowProfileEditCard(false);
+        }
+    };
+        const [showProfileEditCard, setShowProfileEditCard] = useState(false);
+        const onEditClick = () => {
+            setShowProfileEditCard(true);
+            setShowProfileCard(false);
+        };
+    
     return (
         <div className="landing-container">
-            <DriverNav/>
+            <DriverNav onAvatarClick={onAvatarClick}/>
             <div className='landing-bg'>
                 <div className="bg-image-container">
                     <img src={backgroundImage} alt="Background" className='bg-image' />
@@ -168,6 +182,22 @@ function DriverHomePage() {
                     <p>"Great city tour experience with knowledgeable drivers. Highly recommend!"</p>
                 </div>
             </div>
+            {showProfileCard && (
+                <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
+                    <div style={{ position: "absolute", top: "40px", right: "20px" }}>
+                        <DriverViewProfile onEditClick={onEditClick}/>
+                    </div>
+                </ClickAwayListener>
+            )}
+ {showProfileEditCard && (
+                <ClickAwayListener onClickAway={() => setShowProfileEditCard(false)}>
+                    <div style={{ position: "absolute", top: "10vh", left: "250px", backgroundColor: "white", zIndex: "5",borderRadius:"25px"}}>
+                        <DriverEditProfile setShowProfileEditCard={setShowProfileEditCard}/>
+
+                    </div>
+                </ClickAwayListener>
+            )}
+
             <Footer />
         </div>
     );
