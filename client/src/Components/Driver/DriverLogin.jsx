@@ -111,7 +111,7 @@ function DriverLogin() {
                             ),
                         }}
                     />
-                    <Link to='/driver-forgot-pass' style={{ textAlign: "right", color: "#f1b92e", textDecoration: "none", position: 'relative', left: "320px" }}>Forgot Password ?</Link>
+                    <Link to='/driver-forgot-pass'  className="forgot-password-link">Forgot Password ?</Link>
                     <div style={{ textAlign: 'center' }}>
                         <Button
                             variant="contained"
@@ -122,7 +122,7 @@ function DriverLogin() {
                             {isLoading ? "Logging in..." : "LOG IN"}
                         </Button>
                     </div>
-                   <p style={{textAlign:"center",color:"white"}}> Don't you have an Account ? <Link to='/driver-registration' style={{color:"#f1b92e", textDecoration:"none"}}>Sign in</Link></p> 
+                   <p style={{textAlign:"center",color:"white"}}> Don't you have an Account ? <Link to='/driver-registration' className="reg-link">Sign in</Link></p> 
                 </form>      
             </div>
         </div>

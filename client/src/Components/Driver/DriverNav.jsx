@@ -63,38 +63,56 @@ export default function DriverNav() {
                     </Link>
 
                     <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                        <Button
-                            color="inherit"
-                            component={Link}
-                            to="/driver-home-page"
-                            style={{ color: 'white' }}
-                        >
-                            HOME
-                        </Button>
-                        <Button
-                            color="inherit"
-                            component={Link}
-                            // to="/Ride-requests"
-                            style={{ color: 'white' }}
-                        >
-                            RIDE REQUESTS
-                        </Button>
-                        <Button
-                            color="inherit"
-                            component={Link}
-                            to="/Complaints"
-                            style={{ color: 'white' }}
-                        >
-                            COMPLAINTS
-                        </Button>
-                        <Button
-                            color="inherit"
-                            style={{ color: 'white' }}
-                            onClick={handleHistoryClick}
-                            endIcon={<ArrowDropDownIcon />}
-                        >
-                            HISTORY
-                        </Button>
+                    <Button
+  component={Link}
+  to="/driver-home-page"
+  sx={{
+    color: 'white',
+    '&:hover': {
+      backgroundColor: '#333',
+      color: '#FFD05A'
+    }
+  }}
+>
+  HOME
+</Button>
+<Button
+  sx={{
+    color: 'white',
+    '&:hover': {
+      backgroundColor: '#333',
+      color: '#FFD05A'
+    }
+  }}
+>
+  RIDE REQUESTS
+</Button>
+<Button
+  component={Link}
+  to="/Complaints"
+  sx={{
+    color: 'white',
+    '&:hover': {
+      backgroundColor: '#333',
+      color: '#FFD05A'
+    }
+  }}
+>
+  COMPLAINTS
+</Button>
+<Button
+  sx={{
+    color: 'white',
+    '&:hover': {
+      backgroundColor: '#333',
+      color: '#FFD05A'
+    }
+  }}
+  onClick={handleHistoryClick}
+  endIcon={<ArrowDropDownIcon />}
+>
+  HISTORY
+</Button>
                         <Menu
                             anchorEl={historyAnchorEl}
                             open={historyOpen}
@@ -119,11 +137,14 @@ export default function DriverNav() {
 
                         <Button
                             variant="contained"
-                            style={{
+                            sx={{
                                 backgroundColor: '#FFD05A',
                                 color: 'white',
                                 marginLeft: '10px',
-                                fontWeight: 'bold'
+                                '&:hover': {
+                                    backgroundColor: '#e6bb42',
+                                    color: 'black'
+                                }
                             }}
                             onClick={handleLogoutClick}
                         >

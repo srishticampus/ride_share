@@ -24,46 +24,80 @@ export default function LandindNav() {
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="fixed" style={{ backgroundColor: 'black', zIndex: '2' }}>
                 <Toolbar>
-                    {/* Logo on the left side */}
                     <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
                         <Link to="/">
-                            <img 
-                                src={Logo} 
-                                alt="RideShare Logo" 
-                                style={{ 
-                                    height: '50px', 
+                            <img
+                                src={Logo}
+                                alt="RideShare Logo"
+                                style={{
+                                    height: '50px',
                                     marginRight: '20px',
                                     cursor: 'pointer'
-                                }} 
+                                }}
                             />
                         </Link>
                     </Box>
 
-                    <Box sx={{ 
-                        display: 'flex', 
-                        gap: '10px', 
+                    <Box sx={{
+                        display: 'flex',
+                        gap: '10px',
                         color: 'white',
                         flexGrow: 1,
                         justifyContent: 'right'
                     }}>
-                        <Link to='/' style={{ color: "white" }}> 
-                            <Button color="white">Home</Button>
+                        <Link to='/' style={{ textDecoration: 'none' }}>
+                            <Button
+                                sx={{
+                                    color: 'white',
+                                    '&:hover': {
+                                        backgroundColor: '#333',
+                                        color: '#FFD05A',
+                                    }
+                                }}
+                            >
+                                Home
+                            </Button>
                         </Link>
-                        <Link to='/about' style={{ color: "white" }}> 
-                            <Button color="white">ABOUT US</Button>
+                        <Link to='/about' style={{ textDecoration: 'none' }}>
+                            <Button
+                                sx={{
+                                    color: 'white',
+                                    '&:hover': {
+                                        backgroundColor: '#333',
+                                        color: '#FFD05A',
+                                    }
+                                }}
+                            >
+                                ABOUT US
+                            </Button>
                         </Link>
-                        <Link to='/contact' style={{ color: "white" }}>  
-                            <Button color="inherit">CONTACT US</Button>
+                        <Link to='/contact' style={{ textDecoration: 'none' }}>
+                            <Button
+                                sx={{
+                                    color: 'white',
+                                    '&:hover': {
+                                        backgroundColor: '#333',
+                                        color: '#FFD05A',
+                                    }
+                                }}
+                            >
+                                CONTACT US
+                            </Button>
                         </Link>
                     </Box>
 
                     <Box sx={{ display: 'flex', gap: '10px', alignItems: 'right' }}>
                         <Button
                             variant="contained"
-                            style={{
+
+                            sx={{
                                 backgroundColor: '#FFD05A',
                                 color: 'white',
-                                marginLeft: '10px'
+                                marginLeft: '10px',
+                                '&:hover': {
+                                    backgroundColor: '#e6bb42',
+                                    color: 'black'
+                                }
                             }}
                             onClick={handleClick}
                         >
@@ -73,19 +107,50 @@ export default function LandindNav() {
                             anchorEl={anchorEl}
                             open={open}
                             onClose={handleClose}
-                           
+
                             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                         >
-                            <MenuItem component={Link} to="/admin-login" onClick={handleClose}>
+                            <MenuItem
+                                component={Link}
+                                to="/admin-login"
+                                onClick={handleClose}
+                                sx={{
+                                    '&:hover': {
+                                        backgroundColor: '#f5f5f5',
+                                        color: '#1976d2',
+                                    }
+                                }}
+                            >
                                 Admin
                             </MenuItem>
-                            <MenuItem component={Link} to="/User-login" onClick={handleClose}>
+                            <MenuItem
+                                component={Link}
+                                to="/User-login"
+                                onClick={handleClose}
+                                sx={{
+                                    '&:hover': {
+                                        backgroundColor: '#f5f5f5',
+                                        color: '#1976d2',
+                                    }
+                                }}
+                            >
                                 Rider
                             </MenuItem>
-                            <MenuItem component={Link} to="/driver-login" onClick={handleClose}>
+                            <MenuItem
+                                component={Link}
+                                to="/driver-login"
+                                onClick={handleClose}
+                                sx={{
+                                    '&:hover': {
+                                        backgroundColor: '#f5f5f5',
+                                        color: '#1976d2',
+                                    }
+                                }}
+                            >
                                 Driver
                             </MenuItem>
+
                         </Menu>
                     </Box>
                 </Toolbar>

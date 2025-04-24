@@ -19,30 +19,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # Create environment files from GitHub Secrets
-    - name: Create client environment files
-      working-directory: ./client
-      run: |
-        echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > .env.production
-
-    - name: Create server environment file
-      working-directory: ./server
-      run: |
-        echo "NODE_ENV=production" > .env
-        echo "PORT=${{ secrets.PORT }}" >> .env
-        echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> .env
-        echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-        echo "JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }}" >> .env
-        echo "JWT_COOKIE_EXPIRES_IN=${{ secrets.JWT_COOKIE_EXPIRES_IN }}" >> .env
-        echo "UPLOAD_LIMIT=${{ secrets.UPLOAD_LIMIT }}" >> .env
-        echo "RATE_LIMIT_WINDOW=${{ secrets.RATE_LIMIT_WINDOW }}" >> .env
-        echo "RATE_LIMIT_MAX=${{ secrets.RATE_LIMIT_MAX }}" >> .env
-        echo "EMAIL_HOST=${{ secrets.EMAIL_HOST }}" >> .env
-        echo "EMAIL_PORT=${{ secrets.EMAIL_PORT }}" >> .env
-        echo "EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}" >> .env
-        echo "EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}" >> .env
-        echo "EMAIL_FROM=${{ secrets.EMAIL_FROM }}" >> .env
-
     # Frontend build (output to root dist)
     - name: Build React frontend
       working-directory: ./client
@@ -54,9 +30,9 @@ jobs:
     - name: Prepare backend
       working-directory: ./server
       run: |
-        npm ci --omit=dev
+        npm i
 
-    # Create deployment package (modified structure)
+    # Create deployment package with proper .env handling
     - name: Create deployment structure
       run: |
         mkdir -p deploy
@@ -68,6 +44,22 @@ jobs:
         mkdir -p deploy/backend
         cp -r server/* deploy/backend/
         rm -rf deploy/backend/node_modules
+        
+        # Create .env file directly in deploy/backend
+        echo "NODE_ENV=${{ secrets.NODE_ENV }}" > deploy/backend/.env
+        echo "PORT=${{ secrets.PORT }}" >> deploy/backend/.env
+        echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> deploy/backend/.env
+        echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> deploy/backend/.env
+        echo "JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }}" >> deploy/backend/.env
+        echo "JWT_COOKIE_EXPIRES_IN=${{ secrets.JWT_COOKIE_EXPIRES_IN }}" >> deploy/backend/.env
+        echo "UPLOAD_LIMIT=${{ secrets.UPLOAD_LIMIT }}" >> deploy/backend/.env
+        echo "RATE_LIMIT_WINDOW=${{ secrets.RATE_LIMIT_WINDOW }}" >> deploy/backend/.env
+        echo "RATE_LIMIT_MAX=${{ secrets.RATE_LIMIT_MAX }}" >> deploy/backend/.env
+        echo "EMAIL_HOST=${{ secrets.EMAIL_HOST }}" >> deploy/backend/.env
+        echo "EMAIL_PORT=${{ secrets.EMAIL_PORT }}" >> deploy/backend/.env
+        echo "EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}" >> deploy/backend/.env
+        echo "EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}" >> deploy/backend/.env
+        echo "EMAIL_FROM=${{ secrets.EMAIL_FROM }}" >> deploy/backend/.env
 
     # Compress for transfer
     - name: Compress deployment package

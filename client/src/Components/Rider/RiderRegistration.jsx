@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { TextField, Button, FormLabel, CircularProgress , InputAdornment, IconButton} from '@mui/material';
+import { TextField, Button, FormLabel, CircularProgress, InputAdornment, IconButton } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Service from '../../Services/apiService';
 import Logo from '../../Assets/RideShare.png';
 import '../Style/DriverRegistration.css';
@@ -19,7 +19,6 @@ function RiderRegistration() {
     password: '',
     confirmPassword: '',
     emergencyNo: ""
-
   });
   const [profilePicture, setProfilePicture] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,6 +35,14 @@ function RiderRegistration() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setRider(prev => ({ ...prev, [name]: value }));
+  };
+
+  // Only allow numeric input for phone numbers
+  const handlePhoneNumberChange = (e) => {
+    const { name, value } = e.target;
+    // Remove all non-digit characters
+    const numericValue = value.replace(/\D/g, '');
+    setRider(prev => ({ ...prev, [name]: numericValue }));
   };
 
   const handleFileChange = (e) => {
@@ -61,7 +68,7 @@ function RiderRegistration() {
       return;
     }
     if (!/^\d{10}$/.test(rider.emergencyNo)) {
-      toast.error('Please enter a valid 10-digit phone number');
+      toast.error('Please enter a valid 10-digit emergency number');
       return;
     }
     if (rider.password !== rider.confirmPassword) {
@@ -95,7 +102,6 @@ function RiderRegistration() {
         setTimeout(() => {
           navigate('/User-login');
         }, 2000);
-
       } else {
         toast.error(response.data.message || 'Registration failed');
       }
@@ -130,7 +136,6 @@ function RiderRegistration() {
                 className="form-input"
                 fullWidth
                 margin="normal"
-                required
                 placeholder="Enter your full name"
               />
 
@@ -143,34 +148,41 @@ function RiderRegistration() {
                 className="form-input"
                 fullWidth
                 margin="normal"
-                required
                 placeholder="Enter your email"
               />
 
               <FormLabel className="reg-form-label">Phone Number *</FormLabel>
               <TextField
                 name="phoneNumber"
+                type="tel"
                 value={rider.phoneNumber}
-                onChange={handleInputChange}
+                onChange={handlePhoneNumberChange}
                 className="form-input"
                 fullWidth
                 margin="normal"
-                required
                 placeholder="Enter 10-digit phone number"
-                inputProps={{ maxLength: 10 }}
+                inputProps={{ 
+                  maxLength: 10,
+                  pattern: "[0-9]*",
+                  inputMode: "numeric"
+                }}
               />
 
               <FormLabel className="reg-form-label">Emergency Number *</FormLabel>
               <TextField
                 name="emergencyNo"
+                type="tel"
                 value={rider.emergencyNo}
-                onChange={handleInputChange}
+                onChange={handlePhoneNumberChange}
                 className="form-input"
                 fullWidth
                 margin="normal"
-                required
                 placeholder="Enter 10-digit phone number"
-                inputProps={{ maxLength: 10 }}
+                inputProps={{ 
+                  maxLength: 10,
+                  pattern: "[0-9]*",
+                  inputMode: "numeric"
+                }}
               />
             </div>
 
@@ -183,7 +195,6 @@ function RiderRegistration() {
                 className="form-input"
                 fullWidth
                 margin="normal"
-                required
                 placeholder="Enter your address"
               />
 
@@ -196,7 +207,6 @@ function RiderRegistration() {
                 className="form-input"
                 fullWidth
                 margin="normal"
-                required
                 placeholder="Enter password (min 8 characters)"
                 InputProps={{
                   endAdornment: (
@@ -206,8 +216,7 @@ function RiderRegistration() {
                         onClick={handleClickShowPassword}
                         onMouseDown={handleMouseDownPassword}
                         edge="end"
-                        style={{ color: '#f1b92e' }} 
-
+                        style={{ color: '#f1b92e' }}
                       >
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
@@ -225,7 +234,6 @@ function RiderRegistration() {
                 className="form-input"
                 fullWidth
                 margin="normal"
-                required
                 placeholder="Confirm your password"
                 InputProps={{
                   endAdornment: (
@@ -235,15 +243,15 @@ function RiderRegistration() {
                         onClick={handleClickShowConfirmPassword}
                         onMouseDown={handleMouseDownPassword}
                         edge="end"
-                        style={{ color: '#f1b92e' }} 
-
+                        style={{ color: '#f1b92e' }}
                       >
                         {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
                   )
                 }}
-              />              <FormLabel className="reg-form-label">Profile Picture *</FormLabel>
+              />
+              <FormLabel className="reg-form-label">Profile Picture *</FormLabel>
               <TextField
                 type="file"
                 name="profilePicture"
@@ -253,12 +261,9 @@ function RiderRegistration() {
                 margin="normal"
                 InputLabelProps={{ shrink: true }}
                 inputProps={{ accept: "image/*" }}
-                required
               />
-
             </div>
           </div>
-
 
           <div className="registration-actions">
             <Button
@@ -272,7 +277,7 @@ function RiderRegistration() {
             </Button>
 
             <p className="login-text">
-              Already have an account? <a href="/rider/login" className="login-link">Login here</a>
+              Already have an account ? <Link to="/User-login" className="reg-link">Login here</Link>
             </p>
           </div>
         </form>
