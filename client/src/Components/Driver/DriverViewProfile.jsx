@@ -23,7 +23,7 @@ function DriverViewProfile({onEditClick}) {
         />
         <div className='profile-details'>
           <h2>{driverData.fullname}</h2>
-          <h4>ADDRESS: {driverData.address}</h4>
+          <h4> vehicleRegNumber: {driverData.vehicleRegNumber}</h4>
           <h4>E-MAIL ID: {driverData.email}</h4>
           <p>PHONE NO: {driverData.phoneNumber}</p>
         </div>

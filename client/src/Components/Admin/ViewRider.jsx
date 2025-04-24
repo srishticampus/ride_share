@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import AdminSidemenu from './AdminSidemenu';
 import AdminNav from './AdminNav';
@@ -26,6 +27,7 @@ function ViewRider() {
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(5);
 
     useEffect(() => {
         const fetchRiders = async () => {

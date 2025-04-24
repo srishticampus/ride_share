@@ -38,20 +38,17 @@ function RiderHomePage() {
         setShowProfileCard(false);
     };
     const [currentUser, setCurrentUser] = useState(null);
-    const fetchCurrentUser = async () => {
-        try {
-            const userData = await apiService.getCurrentUser();
-            console.log(userData);
-            
-            setCurrentUser(userData.data.user);
-        } catch (err) {
-            console.log(err);
-
-        } finally {
-        }
-    };
-
     useEffect(() => {
+        const fetchCurrentUser = async () => {
+            try {
+                const userData = await apiService.getCurrentUser();
+                console.log(userData);
+                setCurrentUser(userData.data.user);
+            } catch (err) {
+                console.log(err);
+            }
+        };
+
         fetchCurrentUser();
     }, []);
 
@@ -213,19 +210,24 @@ function RiderHomePage() {
             {showProfileCard && (
                 <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
                     <div style={{ position: "absolute", top: "40px", right: "20px" }}>
-                        <RiderViewProfile onEditClick={onEditClick} />
+                        <RiderViewProfile
+                            onEditClick={onEditClick}
+                            currentUser={currentUser}
+                        />
                     </div>
                 </ClickAwayListener>
             )}
             {showProfileEditCard && (
                 <ClickAwayListener onClickAway={() => setShowProfileEditCard(false)}>
                     <div style={{ position: "absolute", top: "10vh", left: "250px", backgroundColor: "white", zIndex: "5", borderRadius: "25px" }}>
-                        <RiderEditProfile setShowProfileEditCard={setShowProfileEditCard} />
-
+                        <RiderEditProfile
+                            setShowProfileEditCard={setShowProfileEditCard}
+                            currentUser={currentUser}
+                            setCurrentUser={setCurrentUser}
+                        />
                     </div>
                 </ClickAwayListener>
             )}
-
             <Footer />
         </div>
     );

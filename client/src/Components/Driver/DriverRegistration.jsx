@@ -82,7 +82,7 @@ function DriverRegistration() {
         setTimeout(() => {
           navigate('/driver-login');
         }, 2000);
-  
+
       } else {
         toast.error(response.message);
       }
@@ -104,7 +104,7 @@ function DriverRegistration() {
 
   return (
     <div className="registration-container">
-      <LandingNav/>
+      <LandingNav />
       <ToastContainer />
       <div className="registration-logo">
         <img src={Logo} alt="Company Logo" className="logo-image" />
@@ -193,7 +193,7 @@ function DriverRegistration() {
                 margin="normal"
                 autoComplete="new-password"
                 placeholder="Enter password (min 8 characters)"
-InputProps={{
+                InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
@@ -201,7 +201,7 @@ InputProps={{
                         onClick={handleClickShowPassword}
                         onMouseDown={handleMouseDownPassword}
                         edge="end"
-                        style={{ color: '#f1b92e' }} 
+                        style={{ color: '#f1b92e' }}
 
                       >
                         {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -215,7 +215,7 @@ InputProps={{
               <FormLabel className="reg-form-label">Confirm Password *</FormLabel>
               <TextField
                 name="confirmPassword"
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}  // Changed from showPassword to showConfirmPassword
                 value={driver.confirmPassword}
                 onChange={handleInputChange}
                 className="form-input"
@@ -230,15 +230,13 @@ InputProps={{
                         onClick={handleClickShowConfirmPassword}
                         onMouseDown={handleMouseDownPassword}
                         edge="end"
-                        style={{ color: '#f1b92e' }} 
-
+                        style={{ color: '#f1b92e' }}
                       >
                         {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
                   )
                 }}
-
                 margin="normal"
                 required
               />
