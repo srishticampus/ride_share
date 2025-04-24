@@ -7,7 +7,7 @@ import Service from '../../Services/apiService';
 import Logo from '../../Assets/RideShare.png';
 import '../Style/DriverRegistration.css';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-
+import LandingNav from '../Common/LandingNav'
 function DriverRegistration() {
   const navigate = useNavigate();
   const [driver, setDriver] = useState({
@@ -104,6 +104,7 @@ function DriverRegistration() {
 
   return (
     <div className="registration-container">
+      <LandingNav/>
       <ToastContainer />
       <div className="registration-logo">
         <img src={Logo} alt="Company Logo" className="logo-image" />

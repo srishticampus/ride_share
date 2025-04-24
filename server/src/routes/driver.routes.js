@@ -178,5 +178,5 @@ router.patch('/:id/approve', driverController.ApproveDriver);
 
 router.get('/showAllDrivers', driverController.viewDrivers);
 
-
+router.patch('/editDriverProfile',driverController.EditProfile)
 export default router;

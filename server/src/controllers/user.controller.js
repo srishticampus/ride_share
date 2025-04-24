@@ -168,7 +168,10 @@ export const updateProfile = catchAsync(async (req, res, next) => {
   const filteredBody = {
     email: req.body.email,
     fullName: req.body.fullName,
-    phoneNumber: req.body.phoneNumber
+    phoneNumber: req.body.phoneNumber,
+    emergencyNo:req.body.emergencyNo,
+    address:req.body.address
+
   };
   
   // Handle file upload

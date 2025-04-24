@@ -7,11 +7,11 @@ import Button from '@mui/material/Button';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import { IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import Logo from '../../Assets/Logo1.png';
-import { toast , ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function RiderNav() {
-  const navigate= useNavigate()
+  const navigate = useNavigate()
   const [openLogoutDialog, setOpenLogoutDialog] = React.useState(false);
 
   const handleLogoutClick = () => {
@@ -34,23 +34,77 @@ export default function RiderNav() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <ToastContainer/>
+      <ToastContainer />
       <AppBar position="fixed" style={{ backgroundColor: 'black', zIndex: '2' }}>
         <Toolbar style={{ display: 'flex', justifyContent: 'right' }}>
           <div style={{ display: 'flex', gap: '10px' }}>
-            <Button color="inherit">HOME</Button>
-            <Button color="inherit">RIDE</Button>
-            <Button color="inherit">COMPLAINTS</Button>
-            <Button color="inherit">PAYMENT</Button>
-            <Button color="inherit">RIDE HISTORY</Button>
+            <Button
+              sx={{
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: '#333',
+                  color: '#FFD05A'
+                }
+              }}
+            >
+              HOME
+            </Button>
+            <Button
+              sx={{
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: '#333',
+                  color: '#FFD05A'
+                }
+              }}
+            >
+              RIDE
+            </Button>
+            <Button
+              sx={{
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: '#333',
+                  color: '#FFD05A'
+                }
+              }}
+            >
+              COMPLAINTS
+            </Button>
+            <Button
+              sx={{
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: '#333',
+                  color: '#FFD05A'
+                }
+              }}
+            >
+              PAYMENT
+            </Button>
+            <Button
+              sx={{
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: '#333',
+                  color: '#FFD05A'
+                }
+              }}
+            >
+              RIDE HISTORY
+            </Button>
           </div>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             <Button
               variant="contained"
-              style={{
+              sx={{
                 backgroundColor: '#FFD05A',
                 color: 'white',
-                marginLeft: '10px'
+                marginLeft: '10px',
+                '&:hover': {
+                  backgroundColor: '#e6bb42',
+                  color: 'black'
+                }
               }}
               onClick={handleLogoutClick}
             >
@@ -72,16 +126,16 @@ export default function RiderNav() {
         aria-describedby="alert-dialog-description"
         PaperProps={{
           style: {
-            minWidth: '400px',  // Increased width
+            minWidth: '400px',
             borderRadius: '12px',
             overflow: 'hidden'
           }
         }}
       >
-        <DialogTitle 
-          id="alert-dialog-title" 
-          style={{ 
-            backgroundColor: 'F1B92E', 
+        <DialogTitle
+          id="alert-dialog-title"
+          style={{
+            backgroundColor: '#F1B92E',
             color: 'black',
             fontWeight: 'bold',
             padding: '16px 24px'
@@ -90,9 +144,9 @@ export default function RiderNav() {
           Confirm Logout
         </DialogTitle>
         <DialogContent style={{ backgroundColor: 'white', padding: '20px 24px' }}>
-          <DialogContentText 
-            id="alert-dialog-description" 
-            style={{ 
+          <DialogContentText
+            id="alert-dialog-description"
+            style={{
               color: 'black',
               fontSize: '16px'
             }}
@@ -100,13 +154,13 @@ export default function RiderNav() {
             Are you sure you want to logout?
           </DialogContentText>
         </DialogContent>
-        <DialogActions style={{ 
-          backgroundColor: 'white', 
+        <DialogActions style={{
+          backgroundColor: 'white',
           padding: '16px 24px',
           justifyContent: 'center',
           gap: '20px'
         }}>
-          <Button 
+          <Button
             onClick={handleCloseLogoutDialog}
             variant="outlined"
             style={{
@@ -123,12 +177,12 @@ export default function RiderNav() {
           >
             No
           </Button>
-          <Button 
-            onClick={handleConfirmLogout} 
+          <Button
+            onClick={handleConfirmLogout}
             autoFocus
             variant="contained"
             style={{
-              backgroundColor: '#FFFF00',
+              backgroundColor: '#F1B92E',
               color: 'black',
               borderRadius: '8px',
               padding: '8px 24px',

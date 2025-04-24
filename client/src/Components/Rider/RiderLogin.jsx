@@ -43,7 +43,7 @@ function RiderLogin() {
       const response = await apiService.login(credentials);
       console.log(response);
 
-      localStorage.setItem("riderData", JSON.stringify(response.data.user))
+      localStorage.setItem("riderData", JSON.stringify(response.data?.user) || "")
       toast.success("Login successful! Redirecting...");
       setTimeout(() => {
         navigate("/User-home-page");
@@ -108,7 +108,7 @@ function RiderLogin() {
               ),
             }}
           />
-          <Link to='/User-forgot-pass' style={{ textAlign: "right", color: "#f1b92e", textDecoration: "none", position: 'relative', left: "320px" }}>Forgot Password ?</Link>
+          <Link to='/User-forgot-pass'className="forgot-password-link">Forgot Password ?</Link>
 
           <div style={{ textAlign: 'center' }}>
             <Button
@@ -120,7 +120,7 @@ function RiderLogin() {
               {isLoading ? "Logging in..." : "LOG IN"}
             </Button>
           </div>
-          <p style={{ textAlign: "center", color: "white" }}> Don't you have an Account ? <Link to='/User-registration' style={{ color: "#f1b92e", textDecoration: "none" }}>Sign in</Link></p>
+          <p style={{ textAlign: "center", color: "white" }}> Don't you have an Account ? <Link to='/User-registration' className="reg-link">Sign in</Link></p>
         </form>
       </div>
     </div>

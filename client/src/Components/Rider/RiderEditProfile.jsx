@@ -32,7 +32,7 @@ const RiderEditProfile = () => {
   
   const [avatarSrc, setAvatarSrc] = useState(
     riderData.profilePicture 
-      ? `http://localhost:4040/${riderData.profilePicture}`
+      ? `http://localhost:4052/ride_share_api/api/v1${riderData.profilePicture}`
       : 'https://passport-photo.online/images/cms/prepare_light_b364e3ec37.webp?quality=80&format=webp&width=1920'
   );
 
@@ -59,25 +59,29 @@ const RiderEditProfile = () => {
     
     try {
       const data = new FormData();
+      
       data.append('fullName', formData.fullName);
       data.append('email', formData.email);
       data.append('phoneNumber', formData.phoneNumber);
       data.append('emergencyNo', formData.emergencyNo);
       data.append('address', formData.address);
+      
       if (formData.profilePicture) {
         data.append('profilePicture', formData.profilePicture);
       }
-
-      const response = await service.updateProfile(formData);
-            
+  
+      const response = await service.updateProfile(data);
+      
+      const updatedUser = { ...riderData, ...response.data.user };
+      localStorage.setItem('riderData', JSON.stringify(updatedUser));
+      
       toast.success('Profile updated successfully!');
-      setTimeout(() => navigate(-1), 1500); 
+      setTimeout(() => navigate(-1), 1500);
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to update profile');
+      toast.error(error.message || 'Failed to update profile');
       console.error('Update error:', error);
     }
   };
-
   return (
     <Box className="styled-container">
       <ToastContainer />

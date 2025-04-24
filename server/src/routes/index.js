@@ -12,12 +12,12 @@ import ratingRoutes from "./rating.routes.js";
 import disputeRoutes from "./disputes.routes.js";
 
 const router = express.Router();
-router.use("/", (req, res) => {
-  res.status(200).json({
-    status: "success",
-    message: "Welcome to the Ride Share API",
-  });
-});
+// router.use("/", (req, res) => {
+//   res.status(200).json({
+//     status: "success",
+//     message: "Welcome to the Ride Share API",
+//   });
+// });
 router.use("/admin", adminRoutes);
 router.use("/drivers", driverRoutes);
 router.use("/users", userRoutes);
