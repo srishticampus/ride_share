@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TextField, Button, FormLabel, CircularProgress, InputAdornment, IconButton } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Service from '../../Services/apiService';
 import Logo from '../../Assets/RideShare.png';
 import '../Style/DriverRegistration.css';
@@ -227,13 +227,13 @@ InputProps={{
                     <InputAdornment position="end">
                       <IconButton
                         aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
+                        onClick={handleClickShowConfirmPassword}
                         onMouseDown={handleMouseDownPassword}
                         edge="end"
                         style={{ color: '#f1b92e' }} 
 
                       >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
                   )
@@ -269,7 +269,7 @@ InputProps={{
             </Button>
 
             <p className="login-text">
-              Already have an account? <a href="/driver-login" className="login-link">Login here</a>
+              Already have an account? <Link to={"/driver-login"} className="login-link">Login here</Link>
             </p>
           </div>
         </form>
