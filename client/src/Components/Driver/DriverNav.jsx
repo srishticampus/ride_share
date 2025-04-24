@@ -20,7 +20,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
-export default function DriverNav() {
+export default function DriverNav({ onAvatarClick }) {
     const navigate = useNavigate();
     const [openLogoutDialog, setOpenLogoutDialog] = React.useState(false);
     const [historyAnchorEl, setHistoryAnchorEl] = React.useState(null);
@@ -37,7 +37,7 @@ export default function DriverNav() {
     const handleConfirmLogout = () => {
         localStorage.removeItem("driverData");
         toast.success('Driver logged out');
-        
+
         setOpenLogoutDialog(false);
         setTimeout(() => {
             navigate("/Driver-login");
@@ -63,56 +63,56 @@ export default function DriverNav() {
                     </Link>
 
                     <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                    <Button
-  component={Link}
-  to="/driver-home-page"
-  sx={{
-    color: 'white',
-    '&:hover': {
-      backgroundColor: '#333',
-      color: '#FFD05A'
-    }
-  }}
->
-  HOME
-</Button>
-<Button
-  sx={{
-    color: 'white',
-    '&:hover': {
-      backgroundColor: '#333',
-      color: '#FFD05A'
-    }
-  }}
->
-  RIDE REQUESTS
-</Button>
-<Button
-  component={Link}
-  to="/Complaints"
-  sx={{
-    color: 'white',
-    '&:hover': {
-      backgroundColor: '#333',
-      color: '#FFD05A'
-    }
-  }}
->
-  COMPLAINTS
-</Button>
-<Button
-  sx={{
-    color: 'white',
-    '&:hover': {
-      backgroundColor: '#333',
-      color: '#FFD05A'
-    }
-  }}
-  onClick={handleHistoryClick}
-  endIcon={<ArrowDropDownIcon />}
->
-  HISTORY
-</Button>
+                        <Button
+                            component={Link}
+                            to="/driver-home-page"
+                            sx={{
+                                color: 'white',
+                                '&:hover': {
+                                    backgroundColor: '#333',
+                                    color: '#FFD05A'
+                                }
+                            }}
+                        >
+                            HOME
+                        </Button>
+                        <Button
+                            sx={{
+                                color: 'white',
+                                '&:hover': {
+                                    backgroundColor: '#333',
+                                    color: '#FFD05A'
+                                }
+                            }}
+                        >
+                            RIDE REQUESTS
+                        </Button>
+                        <Button
+                            component={Link}
+                            to="/Complaints"
+                            sx={{
+                                color: 'white',
+                                '&:hover': {
+                                    backgroundColor: '#333',
+                                    color: '#FFD05A'
+                                }
+                            }}
+                        >
+                            COMPLAINTS
+                        </Button>
+                        <Button
+                            sx={{
+                                color: 'white',
+                                '&:hover': {
+                                    backgroundColor: '#333',
+                                    color: '#FFD05A'
+                                }
+                            }}
+                            onClick={handleHistoryClick}
+                            endIcon={<ArrowDropDownIcon />}
+                        >
+                            HISTORY
+                        </Button>
                         <Menu
                             anchorEl={historyAnchorEl}
                             open={historyOpen}
@@ -122,14 +122,14 @@ export default function DriverNav() {
                             <MenuItem
                                 onClick={handleHistoryClose}
                                 component={Link}
-                                // to="/Ride-history"
+                            // to="/Ride-history"
                             >
                                 Ride History
                             </MenuItem>
                             <MenuItem
                                 onClick={handleHistoryClose}
                                 component={Link}
-                                // to="/Payment-history"
+                            // to="/Payment-history"
                             >
                                 Payment History
                             </MenuItem>
@@ -150,11 +150,10 @@ export default function DriverNav() {
                         >
                             LOGOUT
                         </Button>
-                        <Link to="/Driver-profile" style={{ color: "white" }}>
-                            <IconButton color="inherit">
-                                <AccountCircleOutlinedIcon style={{ color: "#FFFF00", fontSize: '32px' }} />
-                            </IconButton>
-                        </Link>
+                        <IconButton color="inherit" onClick={onAvatarClick}>
+                            <AccountCircleOutlinedIcon style={{ color: "#FFFF00" }} />
+                        </IconButton>
+
                     </div>
                 </Toolbar>
 

@@ -145,6 +145,7 @@ function DriverRegistration() {
               <TextField
                 name="phoneNumber"
                 value={driver.phoneNumber}
+                autoComplete="off"
                 onChange={handleInputChange}
                 className="form-input"
                 fullWidth
@@ -190,6 +191,7 @@ function DriverRegistration() {
                 className="form-input"
                 fullWidth
                 margin="normal"
+                autoComplete="new-password"
                 placeholder="Enter password (min 8 characters)"
 InputProps={{
                   endAdornment: (
@@ -218,6 +220,7 @@ InputProps={{
                 onChange={handleInputChange}
                 className="form-input"
                 fullWidth
+                autoComplete="new-password"
                 placeholder="Enter password (min 8 characters)"
                 InputProps={{
                   endAdornment: (

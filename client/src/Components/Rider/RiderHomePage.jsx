@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Rating from '@mui/material/Rating';
 import navImage from '../../Assets/LandingTOP.png';
@@ -11,21 +11,62 @@ import service4 from '../../Assets/Service4.png';
 import car1 from '../../Assets/car1.png';
 import car2 from '../../Assets/car2.png';
 import car3 from '../../Assets/car3.png';
-
+import RiderViewProfile from './RiderViewProfile';
 import '../Style/LandingPage.css';
 import { Link } from 'react-router-dom';
 import Footer from '../Common/Footer';
 import RiderNav from './RiderNav';
+import { ClickAwayListener } from '@mui/material';
+import RiderEditProfile from './RiderEditProfile'
+import apiService from '../../Services/apiService'
 
 function RiderHomePage() {
+    const riderData = (localStorage.getItem("riderToken"));
+    console.log(riderData);
+
+    const [showProfileCard, setShowProfileCard] = useState(false);
+    const onAvatarClick = () => {
+        setShowProfileCard(prev => !prev);
+        if (!showProfileCard) {
+            setShowProfileEditCard(false);
+        }
+    };
+
+    const [showProfileEditCard, setShowProfileEditCard] = useState(false);
+    const onEditClick = () => {
+        setShowProfileEditCard(true);
+        setShowProfileCard(false);
+    };
+    const [currentUser, setCurrentUser] = useState(null);
+    const fetchCurrentUser = async () => {
+        try {
+            const userData = await apiService.getCurrentUser();
+            console.log(userData);
+            
+            setCurrentUser(userData.data.user);
+        } catch (err) {
+            console.log(err);
+
+        } finally {
+        }
+    };
+
+    useEffect(() => {
+        fetchCurrentUser();
+    }, []);
+
+    console.log(currentUser);
+
     return (
         <div className="landing-container">
-            <RiderNav/>
+            <RiderNav onAvatarClick={onAvatarClick} />
             <div className='landing-bg'>
                 <div className="bg-image-container">
+
                     <img src={backgroundImage} alt="Background" className='bg-image' />
                     <h1 className="bg-text">YOUR RIDE ON TIME EVERY TIME</h1>
                 </div>
+
             </div>
             <h1 className='service'>OUR SERVICES</h1>
             <div className='service-container'>
@@ -33,7 +74,8 @@ function RiderHomePage() {
                     <img src={service4} alt="" />
                     <h3>Local Rides</h3>
                     <p>
-                        Quick and convenient rides across the city          </p>
+                        Quick and convenient rides across the city
+                    </p>
                 </div>
                 <div className='service-item'>
                     <img src={service3} alt="" />
@@ -168,6 +210,22 @@ function RiderHomePage() {
                     <p>"Great city tour experience with knowledgeable drivers. Highly recommend!"</p>
                 </div>
             </div>
+            {showProfileCard && (
+                <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
+                    <div style={{ position: "absolute", top: "40px", right: "20px" }}>
+                        <RiderViewProfile onEditClick={onEditClick} />
+                    </div>
+                </ClickAwayListener>
+            )}
+            {showProfileEditCard && (
+                <ClickAwayListener onClickAway={() => setShowProfileEditCard(false)}>
+                    <div style={{ position: "absolute", top: "10vh", left: "250px", backgroundColor: "white", zIndex: "5", borderRadius: "25px" }}>
+                        <RiderEditProfile setShowProfileEditCard={setShowProfileEditCard} />
+
+                    </div>
+                </ClickAwayListener>
+            )}
+
             <Footer />
         </div>
     );

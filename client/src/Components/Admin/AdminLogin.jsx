@@ -15,7 +15,7 @@ function AdminLogin() {
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -60,14 +60,15 @@ function AdminLogin() {
 
   return (
     <div className="admin-login-main-container">
-      <LandindNav/>
-      <ToastContainer /> 
+      <LandindNav />
+      <ToastContainer />
       <img src={Logo} alt="Company Logo" />
-      <div className="admin-login-form" style={{marginBottom:"80px"}}>
+      <div className="admin-login-form" style={{ marginBottom: "80px" }}>
         <h2>ADMIN LOG IN</h2>
         <form onSubmit={handleSubmit}>
           <FormLabel className="reg-form-label">E-Mail ID</FormLabel>
           <TextField
+            autoComplete="off"
             placeholder="Enter your Email"
             name="email"
             type="email"
@@ -77,20 +78,21 @@ function AdminLogin() {
             margin="normal"
             variant="outlined"
             className="login-input"
+
           />
           <FormLabel className="reg-form-label">Password</FormLabel>
           <TextField
             placeholder="Enter your Password"
             name="password"
-            type={showPassword ? "text" : "password"} 
+            type={showPassword ? "text" : "password"}
             value={credentials.password}
             onChange={handleInputChange}
             required
             margin="normal"
             variant="outlined"
             className="login-input"
-            style={{width:"450px"}}
-
+            style={{ width: "450px" }}
+            autoComplete="new-password"
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -99,7 +101,7 @@ function AdminLogin() {
                     onClick={handleClickShowPassword}
                     onMouseDown={handleMouseDownPassword}
                     edge="end"
-                    style={{ color: '#f1b92e' }} 
+                    style={{ color: '#f1b92e' }}
                   >
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>

@@ -1,11 +1,12 @@
-/* RiderEditProfile.css */
 
 .styled-container {
   display: flex;
   flex-direction: column;
   background-color: var(--mui-palette-background-paper);
-  height: 654px;
+  height: 554px;
   overflow: auto;
+  width: 1000px;
+  border-radius: 25px;
 }
 
 .styled-header {
@@ -30,7 +31,7 @@
   flex-direction: column;
   align-items: center;
   padding: 24px;
-  max-width: 778px;
+  max-width: 800px;
   margin: 0 auto;
 }
 
@@ -45,8 +46,8 @@
 }
 
 .styled-avatar {
-  width: 198px !important;
-  height: 198px !important;
+  width: 128px !important;
+  height: 128px !important;
   background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.09) 38.18%,

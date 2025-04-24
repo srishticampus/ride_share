@@ -9,8 +9,9 @@ import { IconButton, Dialog, DialogActions, DialogContent, DialogContentText, Di
 import Logo from '../../Assets/Logo1.png';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import RiderViewProfile from './RiderViewProfile';
 
-export default function RiderNav() {
+export default function RiderNav({onAvatarClick}) {
   const navigate = useNavigate()
   const [openLogoutDialog, setOpenLogoutDialog] = React.useState(false);
 
@@ -35,7 +36,7 @@ export default function RiderNav() {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <ToastContainer />
-      <AppBar position="fixed" style={{ backgroundColor: 'black', zIndex: '2' }}>
+      <AppBar position="fixed" style={{ backgroundColor: 'black', zIndex: '10' }}>
         <Toolbar style={{ display: 'flex', justifyContent: 'right' }}>
           <div style={{ display: 'flex', gap: '10px' }}>
             <Button
@@ -110,11 +111,9 @@ export default function RiderNav() {
             >
               LOGOUT
             </Button>
-            <Link to="/User-profile" style={{ color: "white" }}>
-              <IconButton color="inherit">
+              <IconButton color="inherit" onClick={onAvatarClick}>
                 <AccountCircleOutlinedIcon style={{ color: "#FFFF00" }} />
               </IconButton>
-            </Link>
           </div>
         </Toolbar>
       </AppBar>
@@ -199,6 +198,7 @@ export default function RiderNav() {
           </Button>
         </DialogActions>
       </Dialog>
+      {/* {showProfile && <RiderViewProfile onClose={handleCloseProfile} />} */}
     </Box>
   );
 }

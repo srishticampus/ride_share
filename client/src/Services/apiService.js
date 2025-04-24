@@ -43,6 +43,8 @@ apiClient.interceptors.response.use(
 const login = async (credentials) => {
   try {
     const response = await apiClient.post("/users/login", credentials);
+    console.log(response);
+    
     if (response.data.token) {
       localStorage.setItem("riderToken", response.data.token);
       apiClient.defaults.headers.common["Authorization"] =

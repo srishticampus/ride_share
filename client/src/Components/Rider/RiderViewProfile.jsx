@@ -4,17 +4,21 @@ import { Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import RiderNav from './RiderNav';
 
-function RiderViewProfile() {
+function RiderViewProfile({onEditClick}) {
   const riderData = JSON.parse(localStorage.getItem("riderData"));   
    console.log(riderData);
     
+   const UserProfile = riderData.ProfilePhoto?.filename 
+   ? `http://localhost:4040/api/v1/${riderData.profilePicture}`
+   : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"; 
+
+
   return (
     <div>
       <RiderNav/>
-        <h1>View Profile</h1>
     <div className="profile-card">
       <img 
-        src={`http://localhost:4040/api/v1/${riderData.profilePicture}`}
+        src={UserProfile}
         alt={riderData.fullName} 
       />
       <div className='profile-details'>
@@ -24,10 +28,8 @@ function RiderViewProfile() {
       <p>PHONE NO: {riderData.phoneNumber}</p>
 
       </div>
-      <Link to='/User-Edit-profile'>
-      <Button variant="contained">Edit</Button>
+      <Button variant="contained" onClick={onEditClick}>Edit</Button>
 
-      </Link>
     </div>
 
     </div>

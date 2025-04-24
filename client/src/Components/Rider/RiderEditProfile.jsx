@@ -16,7 +16,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import service from '../../Services/apiService';
 import { useNavigate } from 'react-router-dom';
 
-const RiderEditProfile = () => {
+const RiderEditProfile = ({setShowProfileEditCard}) => {
   const navigate = useNavigate();
   const riderData = JSON.parse(localStorage.getItem("riderData"));
   const fileInputRef = useRef(null);
@@ -76,7 +76,7 @@ const RiderEditProfile = () => {
       localStorage.setItem('riderData', JSON.stringify(updatedUser));
       
       toast.success('Profile updated successfully!');
-      setTimeout(() => navigate(-1), 1500);
+      setShowProfileEditCard(false)
     } catch (error) {
       toast.error(error.message || 'Failed to update profile');
       console.error('Update error:', error);
@@ -84,10 +84,21 @@ const RiderEditProfile = () => {
   };
   return (
     <Box className="styled-container">
-      <ToastContainer />
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                style={{ marginTop: "60px" }}
+            />
       <Box className="styled-header">
         <Typography className="header-title" variant="h6">EDIT PROFILE</Typography>
-        <IconButton className="close-button" onClick={() => navigate(-1)}>
+        <IconButton className="close-button" style={{zIndex:"5" , color:"wheat"}} onClick={()=>setShowProfileEditCard(false)}>
           <CloseIcon />
         </IconButton>
       </Box>
