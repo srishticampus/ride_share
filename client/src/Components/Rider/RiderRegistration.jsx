@@ -159,6 +159,7 @@ function RiderRegistration() {
                 onChange={handlePhoneNumberChange}
                 className="form-input"
                 fullWidth
+                autoComplete="off"
                 margin="normal"
                 placeholder="Enter 10-digit phone number"
                 inputProps={{ 
@@ -201,6 +202,7 @@ function RiderRegistration() {
               <FormLabel className="reg-form-label">Password *</FormLabel>
               <TextField
                 name="password"
+                autoComplete="new-password"
                 type={showPassword ? "text" : "password"}
                 value={rider.password}
                 onChange={handleInputChange}
@@ -228,6 +230,7 @@ function RiderRegistration() {
               <FormLabel className="reg-form-label">Confirm Password *</FormLabel>
               <TextField
                 name="confirmPassword"
+                autoComplete="new-password"
                 type={showConfirmPassword ? "text" : "password"}
                 value={rider.confirmPassword}
                 onChange={handleInputChange}

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Logo from '../../Assets/RideShare.png';
 import { TextField, FormLabel, Button, InputAdornment, IconButton } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material"; 
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import apiService from "../../Services/apiService";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -16,7 +16,7 @@ function DriverLogin() {
         password: "",
     });
     const [isLoading, setIsLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false); 
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
     const handleInputChange = (e) => {
@@ -42,7 +42,7 @@ function DriverLogin() {
         try {
             const response = await apiService.driverLogin(credentials);
             console.log(response);
-            
+
             localStorage.setItem("driverToken", response.token);
             localStorage.setItem("driverData", JSON.stringify(response.data.driver))
 
@@ -64,7 +64,7 @@ function DriverLogin() {
 
     return (
         <div className="admin-login-main-container">
-            <LandingNav/>
+            <LandingNav />
             <ToastContainer />
             <img src={Logo} alt="Company Logo" />
             <div className="admin-login-form">
@@ -72,6 +72,7 @@ function DriverLogin() {
                 <form onSubmit={handleSubmit}>
                     <FormLabel className="reg-form-label">Phone No</FormLabel>
                     <TextField
+                        autoComplete="off"
                         placeholder="Enter your Phone Number"
                         name="phoneNumber"
                         type="number"
@@ -86,14 +87,15 @@ function DriverLogin() {
                     <TextField
                         placeholder="Enter your Password"
                         name="password"
-                        type={showPassword ? "text" : "password"} 
+                        type={showPassword ? "text" : "password"}
                         value={credentials.password}
                         onChange={handleInputChange}
                         required
                         margin="normal"
                         variant="outlined"
                         className="login-input"
-                        style={{width:"450px"}}
+                        style={{ width: "450px" }}
+                        autoComplete="new-password"
 
                         InputProps={{
                             endAdornment: (
@@ -103,7 +105,7 @@ function DriverLogin() {
                                         onClick={handleClickShowPassword}
                                         onMouseDown={handleMouseDownPassword}
                                         edge="end"
-                                        style={{ color: '#f1b92e' }} 
+                                        style={{ color: '#f1b92e' }}
                                     >
                                         {showPassword ? <VisibilityOff /> : <Visibility />}
                                     </IconButton>
@@ -111,7 +113,7 @@ function DriverLogin() {
                             ),
                         }}
                     />
-                    <Link to='/driver-forgot-pass'  className="forgot-password-link">Forgot Password ?</Link>
+                    <Link to='/driver-forgot-pass' className="forgot-password-link">Forgot Password ?</Link>
                     <div style={{ textAlign: 'center' }}>
                         <Button
                             variant="contained"
@@ -122,8 +124,8 @@ function DriverLogin() {
                             {isLoading ? "Logging in..." : "LOG IN"}
                         </Button>
                     </div>
-                   <p style={{textAlign:"center",color:"white"}}> Don't you have an Account ? <Link to='/driver-registration' className="reg-link">Sign in</Link></p> 
-                </form>      
+                    <p style={{ textAlign: "center", color: "white" }}> Don't you have an Account ? <Link to='/driver-registration' className="reg-link">Sign-up</Link></p>
+                </form>
             </div>
         </div>
     );

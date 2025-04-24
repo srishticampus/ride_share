@@ -71,6 +71,7 @@ function RiderLogin() {
           <TextField
             placeholder="Enter your Phone Number"
             name="phoneNumber"
+            autoComplete="off"
             type="number"
             value={credentials.phoneNumber}
             onChange={handleInputChange}
@@ -91,6 +92,7 @@ function RiderLogin() {
             variant="outlined"
             className="login-input"
             style={{width:"450px"}}
+            autoComplete="new-password"
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -120,7 +122,7 @@ function RiderLogin() {
               {isLoading ? "Logging in..." : "LOG IN"}
             </Button>
           </div>
-          <p style={{ textAlign: "center", color: "white" }}> Don't you have an Account ? <Link to='/User-registration' className="reg-link">Sign in</Link></p>
+          <p style={{ textAlign: "center", color: "white" }}> Don't you have an Account ? <Link to='/User-registration' className="reg-link">Sign-up</Link></p>
         </form>
       </div>
     </div>
