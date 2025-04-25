@@ -130,8 +130,8 @@ export const ForgotPassword = catchAsync(async (req, res, next) => {
 });
 
 
-export const getMe = catchAsync(async (req, res, next) => {
-  const driver = await Driver.findById(req.driver.id).select('-password -__v');
+export const getDriver = catchAsync(async (req, res, next) => {
+  const driver = await Driver.findById(req.user.id).select('-password -__v');
   
   if (!driver) {
     return next(new AppError('No driver found with that ID', 404));

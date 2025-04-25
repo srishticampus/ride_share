@@ -1,3 +1,56 @@
+//server/src/models/RideModel.js
+import { Schema, model } from "mongoose";
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Ride:
+ *       type: object
+ *       required:
+ *         - riderId
+ *         - origin
+ *         - distination
+ *         - rideDate
+ *         - rideTime
+ *         - price
+ *       properties:
+ *         driverId:
+ *           type: string
+ *           description: ID of the driver (optional)
+ *         riderId:
+ *           type: string
+ *           description: ID of the rider
+ *         origin:
+ *           type: string
+ *           description: Starting location of the ride
+ *         distination:
+ *           type: string
+ *           description: Destination of the ride
+ *         rideDate:
+ *           type: string
+ *           format: date
+ *           description: Date of the ride
+ *         rideTime:
+ *           type: string
+ *           description: Time of the ride (format HH:MM)
+ *         status:
+ *           type: string
+ *           enum: [Pending, Accepted, Cancelled]
+ *           default: Pending
+ *           description: Current status of the ride
+ *         price:
+ *           type: number
+ *           description: Price for the ride
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Date when ride was created
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: Date when ride was last updated
+ */
 const RideSchema = new Schema({
   driverId: {
     type: Schema.Types.ObjectId,

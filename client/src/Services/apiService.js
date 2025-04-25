@@ -257,11 +257,9 @@ const driverLogin = async (credentials) => {
     const response = await apiClient.post("/drivers/login", credentials);
     console.log(response);
 
-    if (response.data.token) {
       localStorage.setItem("driverToken", response.data.token);
       apiClient.defaults.headers.common["Authorization"] =
         `Bearer ${response.data.token}`;
-    }
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -278,8 +276,8 @@ const getCurrentDriver = async () => {
 
     const response = await apiClient.get("/drivers/getDriver", {
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       }
     });
 

@@ -39,22 +39,19 @@ function RiderHomePage() {
     };
     const [currentUser, setCurrentUser] = useState(null);
     useEffect(() => {
-        const fetchDriverData = async () => {
-          try {
-            const driverData = await getCurrentDriver();
-            setCurrentDriver(driverData.data.driver);
-          } catch (err) {
-            setError(err.message || "Failed to load driver data");
-            if (err.status === 'fail' && err.message.includes('permission')) {
-            //   window.location.href = '/driver-login';
+        const fetchCurrentUser = async () => {
+            try {
+                const userData = await apiService.getCurrentUser();
+                console.log(userData);
+                setCurrentUser(userData.data.user);
+            } catch (err) {
+                console.log(err);
             }
-          } finally {
-            setLoading(false);
-          }
         };
-    
-        fetchDriverData();
-      }, []);
+
+        fetchCurrentUser();
+    }, []);
+
     console.log(currentUser);
 
     return (
