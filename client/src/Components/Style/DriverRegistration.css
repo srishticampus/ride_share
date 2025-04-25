@@ -1,0 +1,119 @@
+.registration-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-image: linear-gradient(
+      rgba(0, 0, 0, 0.449),
+      rgba(18, 17, 17, 0.619)
+    ),
+    url("../../Assets/DriverRegBg.png");
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+}
+
+.registration-logo {
+  /* margin-top: -80px; */
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.registration-logo img {
+  position: relative;
+  top: 35px;
+  max-width: 200px;
+}
+.registration-title{
+    color: #c7b600;
+    text-align: center;
+    font-size: 30px;
+}
+
+.registration-form {
+  width: 100%;
+  max-width: 1200px;
+  padding: 30px;
+  background-color: rgba(0, 0, 0, 0.686);
+  border-radius: 10px;
+}
+
+.reg-main-container {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  flex-wrap: wrap;
+}
+
+.reg-left,
+.reg-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 300px;
+}
+
+.reg-form-label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: white !important;
+  width: 100%;
+}
+
+.form-input {
+  width: 300px;
+  padding: 10px;
+  border-radius: 5px;
+  /* border: 1px solid white; */
+  color: black;
+  font-size: 16px;
+}
+.form-input .MuiOutlinedInput-root {
+  color: white;
+}
+
+.form-input .MuiOutlinedInput-notchedOutline {
+  border-color: white;
+}
+.form-input .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: white 
+  }
+  
+  .form-input .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: white;
+    border-width: 1px 
+  }
+.registration-actions {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  width: 100%;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.registration-actions button {
+  background: linear-gradient(45deg, #c7b600, #3f3f01);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  width: 200px;
+  border-radius: 25px;
+}
+
+.login-link {
+  margin-left: 10px;
+  color: #c7b600;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
+.login-text{
+  color: white;
+}

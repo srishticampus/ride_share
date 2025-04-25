@@ -1,0 +1,71 @@
+.sidemenu-container {
+    width: 280px;
+    height: 100vh;
+    background-color: #000000;
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 5 !important;
+}
+
+.Admin-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background-color: black;
+}
+
+ .MuiTypography-h6 {
+    color: #FFFF00;
+}
+
+.sidemenu-options {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.menu-item, .MuiListItem-root.menu-item {
+    padding: 14px 25px;
+    font-size: 17.5px;
+    font-weight: 500;
+    color: white;
+    cursor: pointer;
+}
+
+.menu-item:hover {
+    background-color: #FFFF00 !important;
+    color: black !important;
+}
+
+.menu-item.active {
+    background-color: #FFFF00;
+    color: black;
+    font-weight: 600;
+}
+
+.submenu-item {
+    padding: 10px 50px;
+    font-size: 15px;
+    font-weight: 500;
+    color: white;
+    transition: all 0.2s ease;
+}
+
+.submenu-item:hover {
+    background-color: #FFFF00 !important;
+    color: black;
+}
+
+.submenu-item.active-sub {
+    background-color: #FFFF00;
+    color: black;
+    font-weight: 600;
+}
+
+.MuiListItemIcon-root svg {
+    font-size: 30px;
+}

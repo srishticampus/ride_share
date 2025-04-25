@@ -1,0 +1,169 @@
+.forgot-password-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, #f4b800 0%, #000000 100%);
+    font-family: Arial, sans-serif;
+    color: white;
+  }
+  
+  
+  .forgot-password-main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  
+  .forgot-password-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 3rem;
+  }
+  
+  .forgot-password-form {
+    width: 100%;
+    max-width: 64rem;
+    border: 1px solid white;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    margin-bottom: 100px;
+  }
+  
+  .form-instructions {
+    margin-bottom: 2rem;
+    font-size: 1rem;
+    max-width: 48rem;
+  }
+  
+  .email-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 12px;
+    font-weight: 400;
+  }
+  
+  .email-input {
+    width: 100%;
+    border: 1px solid white;
+    background-color: transparent;
+    color: white;
+    font-size: 14px;
+    padding: 10px;
+    margin-bottom: 2rem;
+    outline: none;
+  }
+  
+  .email-input:focus {
+    box-shadow: 0 0 0 1px #f59e0b;
+  }
+  
+  .submit-container {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .submit-btn {
+    background-color: #f59e0b;
+    color: black;
+    font-size: 12px;
+    font-weight: 400;
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.25rem;
+    border: none;
+    cursor: pointer;
+  }
+
+.reset-password-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, #f5b800 0%, #000000 100%);
+    font-family: Arial, sans-serif;
+    color: white;
+
+  }
+  
+
+  .reset-password-main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+  }
+  
+  .reset-password-title {
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 4rem;
+    letter-spacing: -0.025em;
+  }
+  
+  .reset-password-form {
+    width: 100%;
+    max-width: 48rem;
+    border: 1px solid white;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    margin-bottom: 80px;
+  }
+  
+  .form-instructions {
+    color: white;
+    font-size: 1rem;
+    font-weight: 400;
+    margin-bottom: 2rem;
+  }
+  
+  .input-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .input-label {
+    display: block;
+    color: white;
+    font-size: 12px;
+    font-weight: 400;
+    margin-bottom: 0.25rem;
+  }
+  
+  .password-input {
+    width: 100%;
+    background-color: transparent;
+    border: 1px solid white;
+    color: white;
+    padding: 10px;
+
+    font-size: 12px;
+  }
+  
+  .password-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .password-input:focus {
+    outline: none;
+    box-shadow: none;
+  }
+  
+  .submit-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 2.5rem;
+  }
+  
+  .submit-btn {
+    background-color: #f59e0b;
+    color: black;
+    font-size: 12px;
+    font-weight: 400;
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.25rem;
+    border: none;
+    cursor: pointer;
+  }

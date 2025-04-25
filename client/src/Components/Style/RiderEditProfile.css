@@ -1,0 +1,102 @@
+
+.styled-container {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--mui-palette-background-paper);
+  height: 554px;
+  overflow: auto;
+  width: 1000px;
+  border-radius: 25px;
+}
+
+.styled-header {
+  background-color: black;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-button {
+  color: white;
+}
+
+.header-title {
+  color: white;
+  font-weight: 700;
+}
+
+.styled-main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.profile-section {
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.avatar-container {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.styled-avatar {
+  width: 128px !important;
+  height: 128px !important;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.09) 38.18%,
+    rgba(0, 0, 0, 0.09) 100%
+  );
+}
+
+.styled-edit-icon {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background-color: #f1b92e;
+  border-radius: 50%;
+  padding: 4px;
+}
+
+.name-text {
+  color: #f1b92e;
+  font-weight: 700;
+}
+
+.left-label,
+.right-label {
+  margin-bottom: 8px !important;
+  margin-top: 5px !important;
+}
+
+.left-label {
+  text-align: left;
+}
+
+.right-label {
+  text-align: left;
+}
+
+.styled-textfield {
+  width: 350px !important;
+  margin-bottom: 16px;
+}
+
+.gradient-button {
+  background: linear-gradient(180deg, #f1b92e 0%, #ffd05a 100%);
+  color: white;
+  border-radius: 10px;
+  text-transform: none;
+  font-weight: 600;
+  padding: 10px 20px;
+}
+
+.gradient-button:hover {
+  background: linear-gradient(180deg, #dda526 0%, #e6b845 100%);
+}

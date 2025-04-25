@@ -1,0 +1,92 @@
+.admin-login-main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-image: linear-gradient(
+      rgba(0, 0, 0, 0.449),
+      rgba(18, 17, 17, 0.619)
+    ),
+    url("../../Assets/AdminLogBg.png");
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  box-sizing: border-box;
+  width: 100%;
+  /* position: fixed; */
+}
+.admin-login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 500px;
+  padding: 30px;
+  background-color: rgba(0, 0, 0, 0.442);
+  border-radius: 10px;
+}
+.admin-login-form input {
+  width: 420px;
+  color: white;
+}
+.login-input .MuiOutlinedInput-notchedOutline {
+  border-color: white;
+}
+.login-input .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: white;
+}
+
+.login-input
+  .MuiOutlinedInput-root.Mui-focused
+  .MuiOutlinedInput-notchedOutline {
+  border-color: white;
+  border-width: 1px;
+}
+.Login-button {
+    background: linear-gradient(45deg, #c7b600, #3f3f01);
+    color: black !important;
+    border: none;
+    padding: 10px 20px;
+    width: 150px;
+    border-radius: 25px;
+    margin-top: 10px !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }.Login-button:hover {
+    background: linear-gradient(45deg, #e5d300, #5a5a00); /* lighter gradient on hover */
+    color: white !important;
+  }
+.login-input ::placeholder {
+  color: white !important;
+}
+.admin-login-form h2 {
+  color: #c7b600;
+  font-size: 30px;
+}
+.reg-link {
+  color: #f1b92e;
+  font-size: 18px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.reg-link:hover {
+    color: #c08104; 
+    font-weight: 600;
+  }
+
+  .forgot-password-link {
+    font-weight: 600;
+    color: #f1b92e;
+    text-decoration: none;
+    position: relative;
+    left: 165px;
+    transition: color 0.3s ease;
+  }
+  
+  .forgot-password-link:hover {
+    color: #d18c00; 
+}
+  
