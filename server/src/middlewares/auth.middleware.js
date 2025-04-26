@@ -77,23 +77,14 @@ const handleDriverAuth = async (decoded, req, next) => {
     );
   }
 
-  // Check if driver account is active
-  if (!currentDriver.isActive) {
-    return next(
-      new AppError('Your driver account is not active. Please contact support.', 403)
-    );
-  }
-
   req.user = {
     id: currentDriver._id,
     role: 'driver',
     isDriver: true,
-    isAdmin: false,
-    ...currentDriver.toObject()
+    ...currentDriver.toObject() // Include all driver details
   };
   next();
 };
-
 // Helper function for regular user authentication
 const handleUserAuth = async (decoded, req, next) => {
   const currentUser = await User.findById(decoded.id);

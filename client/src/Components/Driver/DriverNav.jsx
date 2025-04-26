@@ -89,7 +89,7 @@ export default function DriverNav({ onAvatarClick }) {
                                 }}
 
                             >
-                                ADD VEHICLE
+                                VEHICLE
                             </Button>
                         </Link>
                         <Link to="/driver-Add-Ride">
@@ -107,21 +107,23 @@ export default function DriverNav({ onAvatarClick }) {
                             </Button>
                         </Link>
 
+                        <Link to="/driver-View-Requets">
+                            <Button
+                                sx={{
+                                    color: 'white',
+                                    '&:hover': {
+                                        backgroundColor: '#333',
+                                        color: '#FFD05A'
+                                    }
+                                }}
+                            >
+                                RIDE REQUESTS
+                            </Button>
+                        </Link>
 
                         <Button
-                            sx={{
-                                color: 'white',
-                                '&:hover': {
-                                    backgroundColor: '#333',
-                                    color: '#FFD05A'
-                                }
-                            }}
-                        >
-                            RIDE REQUESTS
-                        </Button>
-                        <Button
                             component={Link}
-                            to="/Complaints"
+                            to="/driver-Add-complaints"
                             sx={{
                                 color: 'white',
                                 '&:hover': {

@@ -45,13 +45,10 @@ const AddRide = () => {
         route: formData.route.trim()
       };
 
-      // Call the API service
       const response = await service.createRide(rideData);
       
-      // Handle successful submission
       console.log('Ride created successfully:', response.data);
       
-      // Reset form
       setFormData({
         origin: '',
         destination: '',
@@ -68,7 +65,6 @@ const AddRide = () => {
       alert('Ride added successfully!');
     } catch (error) {
       console.error('Error creating ride:', error);
-      setError(error.response?.data?.message || 'Failed to add ride. Please try again.');
     } 
   };
   return (

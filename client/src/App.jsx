@@ -28,6 +28,8 @@ import DriverHomePage from "./Components/Driver/DriverHomePage";
 import DriverEditProfile from "./Components/Driver/DriverEditProfile";
 import AddVehicle from "./Components/Driver/AddVehicle";
 import AddRide from "./Components/Driver/AddRide";
+import AddComplaints from "./Components/Driver/AddComplaints";
+import ViewRequest from "./Components/Driver/ViewRequest";
 
 function App() {
   return (
@@ -72,6 +74,8 @@ function App() {
           <Route path="/driver-Reset-Pass/:phoneNumber" element={<DriverResetPass />} />
           <Route path="/driver-Add-Vehicle" element={<AddVehicle />} />
           <Route path="/driver-Add-Ride" element={<AddRide />} />
+          <Route path="/driver-Add-complaints" element={<AddComplaints />} />
+          <Route path="/driver-View-Requets" element={<ViewRequest />} />
 
 
 

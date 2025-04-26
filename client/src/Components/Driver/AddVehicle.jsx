@@ -5,9 +5,12 @@ import Footer from '../Common/Footer';
 import DriverNav from './DriverNav';
 import service from '../../Services/apiService';
 
+const driverData = JSON.parse(localStorage.getItem("driverData"));   
+console.log(driverData);
+
 const AddVehicle = () => {
   const [formData, setFormData] = useState({
-    vehicleRegistrationNo: '',
+    vehicleRegistrationNo: driverData.vehicleRegNumber,
     vehicleMake: '',
     vehicleModel: '',
     vehicleYear: '',
@@ -15,7 +18,7 @@ const AddVehicle = () => {
     vehicleType: '',
     vehicleCapacity: '',
     vehicleFuelType: '',
-    driverId: '',
+    driverId: driverData._id,
     insuranceStatus: 'active' 
   });
 
@@ -67,6 +70,7 @@ const AddVehicle = () => {
                   type="text"
                   value={formData.vehicleRegistrationNo}
                   onChange={handleChange}
+                  readOnly
                   required
                 />
               </div>
@@ -186,6 +190,8 @@ const AddVehicle = () => {
                   value={formData.driverId}
                   onChange={handleChange}
                   required
+                  readOnly
+
                 />
               </div>
 

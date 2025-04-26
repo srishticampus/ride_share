@@ -305,7 +305,7 @@ const approveDriver = async (driverId) => {
  */
 const createRide = async (rideData) => {
   try {
-    const response = await apiClient.post("/rides", rideData);
+    const response = await apiClient.post("/drivers/rides", rideData);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;

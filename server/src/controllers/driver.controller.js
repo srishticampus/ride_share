@@ -131,6 +131,10 @@ export const ForgotPassword = catchAsync(async (req, res, next) => {
 
 
 export const getDriver = catchAsync(async (req, res, next) => {
+  if (!req.user || !req.user.id) {
+    return next(new AppError('Authentication failed. Please log in again.', 401));
+  }
+
   const driver = await Driver.findById(req.user.id).select('-password -__v');
   
   if (!driver) {
