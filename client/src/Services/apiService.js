@@ -9,7 +9,7 @@ const apiClient = axios.create({
     "Content-Type": "application/json",
   },
 });
-
+export const imageBaseUrl = import.meta.env.VITE_API_URL;
 // Add request interceptor to include auth token
 apiClient.interceptors.request.use(
   (config) => {
