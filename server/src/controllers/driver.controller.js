@@ -1,12 +1,12 @@
 //server/src/controllers/driver.controller.js
-import { Driver } from '../models/index.js';
+import {Driver} from '../models/index.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 import { signToken } from '../utils/jwt.js';
 
 export const DriverRegistration = catchAsync(async (req, res, next) => {
-  const { email, vehicleRegNumber, phoneNumber, password, licenseNumber, fullname } = req.body;
-
+  const {email,vehicleRegNumber ,phoneNumber, password, licenseNumber, fullname } = req.body;
+  
   const newDriver = await Driver.create({
     email,
     vehicleRegNumber,
@@ -102,7 +102,7 @@ export const FindByPhonenumber = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    data: driver,
+    data: driver, 
   });
 });
 export const ForgotPassword = catchAsync(async (req, res, next) => {
@@ -119,7 +119,7 @@ export const ForgotPassword = catchAsync(async (req, res, next) => {
   }
 
   driver.password = password;
-  await driver.save();
+  await driver.save(); 
 
   res.status(200).json({
     status: 'success',
@@ -128,46 +128,6 @@ export const ForgotPassword = catchAsync(async (req, res, next) => {
     }
   });
 });
-
-
-export const getDriver = catchAsync(async (req, res, next) => {
-  if (!req.user || !req.user.id) {
-    return next(new AppError('Authentication failed. Please log in again.', 401));
-  }
-
-  const driver = await Driver.findById(req.user.id).select('-password -__v');
-
-  if (!driver) {
-    return next(new AppError('No driver found with that ID', 404));
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      driver
-    }
-  });
-});
-export const rejectDriver = catchAsync(async (req, res, next) => {
-  const driver = await Driver.findByIdAndDelete(
-    req.params.id,
-    { backgroundCheck: true },
-    { new: true }
-  );
-
-  if (!driver) {
-    return next(new AppError('No driver found with that ID', 404));
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      driver
-    }
-  });
-});
-
-
 export const ApproveDriver = catchAsync(async (req, res, next) => {
   const driver = await Driver.findByIdAndUpdate(
     req.params.id,
@@ -239,6 +199,77 @@ export const viewDrivers = catchAsync(async (req, res, next) => {
 
 export const viewADriver = catchAsync(async (req, res, next) => {
   const driver = await Driver.findById(req.params.id);
+
+  if (!driver) {
+    return next(new AppError('No driver found with that ID', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      driver
+    }
+  });
+});
+
+// Get current driver profile
+export const getCurrentDriver = catchAsync(async (req, res, next) => {
+  const driver = await Driver.findById(req.user.id).select('-password -__v');
+  
+  if (!driver) {
+    return next(new AppError('No driver found', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      driver
+    }
+  });
+});
+
+// Update current driver profile 
+export const updateCurrentDriver = catchAsync(async (req, res, next) => {
+  // Filter out unwanted fields (excluding vehicleRegNumber)
+  const filteredBody = {
+    fullname: req.body.fullname,
+    phoneNumber: req.body.phoneNumber,
+    email: req.body.email
+    // vehicleRegNumber is intentionally excluded
+  };
+
+  // Handle file upload if exists
+  if (req.file) {
+    filteredBody.driverPic = req.file.filename;
+  }
+
+  const updatedDriver = await Driver.findByIdAndUpdate(
+    req.user.id,
+    filteredBody,
+    {
+      new: true,
+      runValidators: true
+    }
+  ).select('-password -__v -vehicleRegNumber'); // Also exclude from response
+
+  if (!updatedDriver) {
+    return next(new AppError('No driver found with that ID', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      driver: updatedDriver
+    }
+  });
+});
+
+export const rejectDriver = catchAsync(async (req, res, next) => {
+  const driver = await Driver.findByIdAndDelete(
+    req.params.id,
+    { backgroundCheck: true },
+    { new: true }
+  );
 
   if (!driver) {
     return next(new AppError('No driver found with that ID', 404));

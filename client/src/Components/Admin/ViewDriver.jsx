@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Service from '../../Services/apiService';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import { imageBaseUrl} from '../../Services/apiService';
 
 function ViewDriver() {
     const [drivers, setDrivers] = useState([]);
@@ -42,6 +43,9 @@ function ViewDriver() {
 
         fetchDrivers();
     }, []);
+  const UserProfile = drivers.driverPic 
+    ? `${imageBaseUrl}${drivers.driverPic}`
+    : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"; 
 
     const toggleExpand = (driverId) => {
         if (expandedDriverId === driverId) {
@@ -88,7 +92,7 @@ function ViewDriver() {
                                     <div className="avatar-container">
                                         <Avatar
                                             alt={driver.fullname}
-                                            src={`http://localhost:4052/ride_share_api/${driver.driverPic}`}
+                                            src={UserProfile}
                                             sx={{ width: 120, height: 120 }}
                                         />
                                     </div>

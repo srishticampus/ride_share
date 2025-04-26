@@ -9,7 +9,7 @@ const apiClient = axios.create({
     "Content-Type": "application/json",
   },
 });
-
+export const imageBaseUrl = import.meta.env.VITE_API_URL;
 // Add request interceptor to include auth token
 apiClient.interceptors.request.use(
   (config) => {
@@ -45,7 +45,7 @@ const login = async (credentials) => {
   try {
     const response = await apiClient.post("/users/login", credentials);
     console.log(response);
-
+    
     if (response.data.token) {
       localStorage.setItem("riderToken", response.data.token);
       apiClient.defaults.headers.common["Authorization"] =
@@ -84,7 +84,7 @@ const userForgotPassword = async (phoneNumber, newPassword) => {
     const response = await apiClient.post(
       `/users/forgotPass/${phoneNumber}`,
       { password: newPassword },
-      {
+      { 
         skipAuth: true,
         headers: {
           'Content-Type': 'application/json'
@@ -98,7 +98,7 @@ const userForgotPassword = async (phoneNumber, newPassword) => {
       'Failed to reset password';
     throw new Error(errorMessage);
   }
-}; const FindUserPh = async (phoneNumber) => {
+};const FindUserPh = async (phoneNumber) => {
   try {
     const response = await apiClient.post('/users/findByUserPh', { phoneNumber }, {
       skipAuth: true
@@ -126,7 +126,7 @@ const driverForgotPassword = async (phoneNumber, newPassword) => {
     const response = await apiClient.post(
       `/drivers/forgotPass/${phoneNumber}`,
       { password: newPassword },
-      {
+      { 
         skipAuth: true,
         headers: {
           'Content-Type': 'application/json'
@@ -146,11 +146,11 @@ const driverForgotPassword = async (phoneNumber, newPassword) => {
  */
 const getCurrentUser = async () => {
   try {
-    const token = localStorage.getItem("riderToken");
+    const token = localStorage.getItem("riderToken"); 
     const response = await apiClient.get("/users/me", {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}` 
       }
     });
     return response.data;
@@ -162,7 +162,7 @@ const getCurrentUser = async () => {
 const updateProfile = async (userData) => {
   try {
     const formData = new FormData();
-
+    
     // Append all fields to formData
     Object.keys(userData).forEach(key => {
       if (userData[key] !== null && userData[key] !== undefined) {
@@ -265,32 +265,6 @@ const driverLogin = async (credentials) => {
     throw error.response?.data || error.message;
   }
 };
-const getCurrentDriver = async () => {
-  try {
-    const token = localStorage.getItem("driverToken");
-    console.log("Retrieved token:", token); 
-    
-    if (!token) {
-      throw new Error("No authentication token found");
-    }
-
-    const response = await apiClient.get("/drivers/getDriver", {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error("Error details:", {
-      message: error.message,
-      response: error.response?.data,
-      status: error.response?.status
-    });
-    throw error.response?.data || { message: error.message };
-  }
-};
 const approveDriver = async (driverId) => {
   try {
     const response = await apiClient.patch(`/drivers/${driverId}/approve`);
@@ -308,12 +282,29 @@ const rejectDriver = async (driverId) => {
   }
 };
 
+const getCurrentDriver = async () => {
+  try {
+    const token = localStorage.getItem("driverToken"); 
+    console.log(token);
+    
+    const response = await apiClient.post("/drivers/me", {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
 /**
  * Ride Services
  */
 const createRide = async (rideData) => {
   try {
-    const response = await apiClient.post("/drivers/rides", rideData);
+    const response = await apiClient.post("/rides", rideData);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -556,11 +547,11 @@ export default {
   // Driver
   registerDriver,
   driverLogin,
-  getCurrentDriver,
   approveDriver,
   FindDriverPh,
   driverForgotPassword,
   rejectDriver,
+  getCurrentDriver,
 
   // Ride
   createRide,

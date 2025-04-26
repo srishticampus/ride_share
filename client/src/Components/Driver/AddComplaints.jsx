@@ -44,15 +44,16 @@ const AddComplaints = () => {
       formDataToSend.append('driverId', driverId);
 
       const response = await axios.post(
-        'http://localhost:4052/ride_share_api/driver-complaints/complaints',
+        'http://localhost:4052/ride_share_api/driver-complaints/complanints',
         formDataToSend,
         {
           headers: {
             'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${localStorage.getItem('driverToken')}`
           }
         }
       );
+console.log(response);
 
       if (response.data.success) {
         navigate('/driver/complaints/confirmation');

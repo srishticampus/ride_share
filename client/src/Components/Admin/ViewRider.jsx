@@ -20,6 +20,10 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 
+  const UserProfile = da.driverPic 
+    ? `${imageBaseUrl}${drivers.driverPic}`
+    : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"; 
+
 function ViewRider() {
     const navigate = useNavigate()
     const [riders, setRiders] = useState([]);
@@ -58,6 +62,9 @@ function ViewRider() {
 
         fetchRiders();
     }, []);
+    const UserProfile = riders.data.users 
+    ? `${imageBaseUrl}${riders.data.users}`
+    : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"; 
 
     const filteredRiders = riders.filter(rider =>
         rider.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -79,10 +86,6 @@ function ViewRider() {
         setCurrentPage(1); 
     };
 
-    const getProfileImageUrl = (profilePicture) => {
-        if (!profilePicture) return null;
-        return `${import.meta.env.VITE_API_URL}${profilePicture}`;
-    };
 console.log(import.meta.env.VITE_API_URL);
 
     if (loading) {
@@ -149,7 +152,7 @@ console.log(import.meta.env.VITE_API_URL);
                                     <td>{rider.fullName}</td>
                                     <td>
                                         <Avatar
-                                            src={getProfileImageUrl(rider.profilePicture)}
+                                            src={UserProfile}
                                             alt={rider.fullName}
                                             sx={{ width: 40, height: 40 }}
                                         >

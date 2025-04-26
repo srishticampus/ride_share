@@ -3,10 +3,11 @@ import '../Style/Profile.css';
 import { Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import RiderNav from './RiderNav';
+import { imageBaseUrl} from '../../Services/apiService';
 
 function RiderViewProfile({ onEditClick, currentUser }) {
   const UserProfile = currentUser.profilePicture.file 
-    ? `http://localhost:4052/ride_share_api/${currentUser.profilePicture}`
+    ? `${imageBaseUrl}${currentUser.profilePicture}`
     : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"; 
 
   return (

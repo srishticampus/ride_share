@@ -43,7 +43,6 @@ function DriverLogin() {
             const response = await apiService.driverLogin(credentials);
             console.log(response);
 
-            // localStorage.setItem("driverToken", response.token);
             localStorage.setItem("driverData", JSON.stringify(response.data.driver))
 
             toast.success("Login successful! Redirecting...");
