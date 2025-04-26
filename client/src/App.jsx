@@ -30,6 +30,7 @@ import AddVehicle from "./Components/Driver/AddVehicle";
 import AddRide from "./Components/Driver/AddRide";
 import AddComplaints from "./Components/Driver/AddComplaints";
 import ViewRequest from "./Components/Driver/ViewRequest";
+import DriverRequests from "./Components/Admin/DriverRequests";
 
 function App() {
   return (
@@ -62,6 +63,7 @@ function App() {
           <Route path="/admin-view-riders" element={<ViewRider />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/admin-driver-complaints" element={<ViewDriverComplaints />} />
+          <Route path="/admin-all-drivers" element={<DriverRequests />} />
 
 
           {/* Driver Route */}

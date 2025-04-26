@@ -49,6 +49,7 @@ router.patch(
 router.use(restrictTo('admin'));
 router.get('/showAllDrivers', driverController.viewDrivers);
 router.patch('/:id/approve', driverController.ApproveDriver);
+router.delete('/:id/reject', driverController.rejectDriver);
 router.patch('/editDriverProfile', driverController.EditProfile);
 
 export default router;

@@ -299,6 +299,14 @@ const approveDriver = async (driverId) => {
     throw error.response?.data || error.message;
   }
 };
+const rejectDriver = async (driverId) => {
+  try {
+    const response = await apiClient.delete(`/drivers/${driverId}/reject`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
 
 /**
  * Ride Services
@@ -552,6 +560,7 @@ export default {
   approveDriver,
   FindDriverPh,
   driverForgotPassword,
+  rejectDriver,
 
   // Ride
   createRide,
