@@ -33,3 +33,9 @@ export const forgotPasswordSchema = Joi.object({
     'any.required': 'Password is required'
   })
 });
+
+export const meUpdateDriverSchema = Joi.object({
+  phoneNumber: Joi.string(),
+  email: Joi.string().email(),
+  fullname: Joi.string()
+});

@@ -211,3 +211,55 @@ export const viewADriver = catchAsync(async (req, res, next) => {
     }
   });
 });
+
+// Get current driver profile
+export const getCurrentDriver = catchAsync(async (req, res, next) => {
+  const driver = await Driver.findById(req.user.id).select('-password -__v');
+  
+  if (!driver) {
+    return next(new AppError('No driver found', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      driver
+    }
+  });
+});
+
+// Update current driver profile 
+export const updateCurrentDriver = catchAsync(async (req, res, next) => {
+  // Filter out unwanted fields (excluding vehicleRegNumber)
+  const filteredBody = {
+    fullname: req.body.fullname,
+    phoneNumber: req.body.phoneNumber,
+    email: req.body.email
+    // vehicleRegNumber is intentionally excluded
+  };
+
+  // Handle file upload if exists
+  if (req.file) {
+    filteredBody.driverPic = req.file.filename;
+  }
+
+  const updatedDriver = await Driver.findByIdAndUpdate(
+    req.user.id,
+    filteredBody,
+    {
+      new: true,
+      runValidators: true
+    }
+  ).select('-password -__v -vehicleRegNumber'); // Also exclude from response
+
+  if (!updatedDriver) {
+    return next(new AppError('No driver found with that ID', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      driver: updatedDriver
+    }
+  });
+});

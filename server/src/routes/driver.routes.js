@@ -251,6 +251,69 @@ router.post(
   validate(driverValidation.forgotPasswordSchema),
   driverController.ForgotPassword
 );
+// Add these routes after the authentication middleware (protect)
+
+/**
+ * @swagger
+ * /drivers/me:
+ *   get:
+ *     summary: Get current driver profile
+ *     tags: [Drivers]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Current driver profile
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Driver'
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Driver not found
+ */
+router.get('/me', driverController.getCurrentDriver);
+
+/**
+ * @swagger
+ * /drivers/me/update:
+ *   patch:
+ *     summary: Update current driver profile (excluding vehicle registration)
+ *     tags: [Drivers]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               fullname:
+ *                 type: string
+ *               phoneNumber:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               driverPic:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully (vehicle registration remains unchanged)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Driver'
+ */
+router.patch(
+  '/me/update',
+  uploadDriverPhoto,
+  validate(driverValidation.meUpdateDriverSchema),
+  driverController.updateCurrentDriver
+);
+
 /**
  * @swagger
  * /driver/{id}/approve:
