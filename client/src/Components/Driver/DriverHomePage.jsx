@@ -18,7 +18,13 @@ import Footer from '../Common/Footer';
 import DriverNav from './DriverNav';
 import DriverViewProfile from './DriverViewProfile'
 import DriverEditProfile from './DriverEditProfile'
+import apiService from '../../Services/apiService'
+import { useEffect } from 'react';
 function DriverHomePage() {
+    const DriverToken = (localStorage.getItem("driverToken"));
+    console.log(DriverToken);
+
+
     const [showProfileCard, setShowProfileCard] = useState(false);
     const onAvatarClick = () => {
         setShowProfileCard(prev => !prev);
@@ -31,6 +37,22 @@ function DriverHomePage() {
             setShowProfileEditCard(true);
             setShowProfileCard(false);
         };
+        const [currentDriver, setCurrentDriver] = useState(null);
+        useEffect(() => {
+            const fetchCurrentUser = async () => {
+                try {
+                    const DriverData = await apiService.getCurrentDriver();
+                    console.log(DriverData);
+                    setCurrentDriver(DriverData.data.user);
+                } catch (err) {
+                    console.log(err);
+                }
+            };
+    
+            fetchCurrentUser();
+        }, []);
+    
+        console.log(currentDriver);
     
     return (
         <div className="landing-container">

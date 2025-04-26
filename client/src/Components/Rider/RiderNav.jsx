@@ -39,6 +39,7 @@ export default function RiderNav({onAvatarClick}) {
       <AppBar position="fixed" style={{ backgroundColor: 'black', zIndex: '10' }}>
         <Toolbar style={{ display: 'flex', justifyContent: 'right' }}>
           <div style={{ display: 'flex', gap: '10px' }}>
+            <Link to='/User-home-page'>
             <Button
               sx={{
                 color: 'white',
@@ -50,6 +51,9 @@ export default function RiderNav({onAvatarClick}) {
             >
               HOME
             </Button>
+
+            </Link>
+            <Link to="/User-View-Ride">
             <Button
               sx={{
                 color: 'white',
@@ -61,6 +65,10 @@ export default function RiderNav({onAvatarClick}) {
             >
               RIDE
             </Button>
+
+            </Link>
+            <Link>
+            </Link>
             <Button
               sx={{
                 color: 'white',
@@ -72,6 +80,7 @@ export default function RiderNav({onAvatarClick}) {
             >
               COMPLAINTS
             </Button>
+            <Link to="/User-payment">
             <Button
               sx={{
                 color: 'white',
@@ -83,6 +92,8 @@ export default function RiderNav({onAvatarClick}) {
             >
               PAYMENT
             </Button>
+
+            </Link>
             <Button
               sx={{
                 color: 'white',
