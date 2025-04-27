@@ -20,10 +20,6 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 
-  const UserProfile = da.driverPic 
-    ? `${imageBaseUrl}${drivers.driverPic}`
-    : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"; 
-
 function ViewRider() {
     const navigate = useNavigate()
     const [riders, setRiders] = useState([]);
