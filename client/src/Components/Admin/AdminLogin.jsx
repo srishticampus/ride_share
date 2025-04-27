@@ -40,7 +40,7 @@ function AdminLogin() {
 
     try {
       const response = await apiService.adminLogin(credentials);
-      localStorage.setItem("adminToken", response.token);
+      // localStorage.setItem("adminToken", response.token);
 
       toast.success("Login successful! Redirecting...");
 

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import AdminSidemenu from './AdminSidemenu';
 import AdminNav from './AdminNav';
@@ -10,23 +9,22 @@ import {
   Select, 
   MenuItem, 
   FormControl, 
-  InputLabel, 
   Box,
-  Typography
+  Typography,
+  IconButton
 } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 import '../Style/Table.css';
 import Service from '../../Services/apiService';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 
-  const UserProfile = da.driverPic 
-    ? `${imageBaseUrl}${drivers.driverPic}`
-    : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"; 
-
-function ViewRider() {
-    const navigate = useNavigate()
-    const [riders, setRiders] = useState([]);
+function DriverRequests() {
+    const navigate = useNavigate();
+    const [allDrivers, setAllDrivers] = useState([]);
+    const [drivers, setDrivers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
@@ -34,48 +32,77 @@ function ViewRider() {
     const [itemsPerPage, setItemsPerPage] = useState(5);
 
     useEffect(() => {
-        const fetchRiders = async () => {
+        const fetchDrivers = async () => {
             try {
-                const response = await Service.getAllUsers();
+                const response = await Service.getAllDrivers();
                 console.log('API Response:', response);
                 
-                if (response.data && response.data.users) {
-                    setRiders(response.data.users);
+                if (response.data && response.data.drivers) {
+                    setAllDrivers(response.data.drivers);
+                    // Filter only drivers with backgroundCheck: false
+                    const pendingDrivers = response.data.drivers.filter(
+                        driver => driver.backgroundCheck === false
+                    );
+                    setDrivers(pendingDrivers);
                 } else {
                     throw new Error('Invalid data format received from API');
                 }
                 setLoading(false);
             } catch (err) {
-                console.error('Error fetching riders:', err);
+                console.error('Error fetching drivers:', err);
                 const errorMessage = err.response?.data?.message || err.message;
                 setError(errorMessage);
                 setLoading(false);
 
-                if (err.status === "fail") {
+                if (err.response?.data?.status === "fail") {
                     toast.error('Session expired. Please login again.');
                     setTimeout(() => {
-                        navigate("/admin-login")
+                        navigate("/admin-login");
                     }, 2000);
                 }
             }
         };
 
-        fetchRiders();
+        fetchDrivers();
     }, []);
-    const UserProfile = riders.data.users 
-    ? `${imageBaseUrl}${riders.data.users}`
-    : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"; 
 
-    const filteredRiders = riders.filter(rider =>
-        rider.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        rider.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        rider.phoneNumber?.toString().includes(searchQuery)
+    const handleAccept = async (driverId) => {
+        try {
+            const response = await Service.approveDriver(driverId, true); 
+            console.log('Accept Response:', response);
+            toast.success('Driver accepted successfully');
+            
+            setDrivers(prevDrivers => prevDrivers.filter(driver => driver._id !== driverId));
+        } catch (error) {
+            console.error('Error accepting driver:', error);
+            const errorMessage = error.response?.data?.message || error.message;
+            toast.error(`Error accepting driver: ${errorMessage}`);
+        }
+    };
+    
+    const handleReject = async (driverId) => {
+        try {
+            const response = await Service.rejectDriver(driverId); 
+            console.log('Reject Response:', response);
+            toast.success('Driver rejected successfully');
+    
+            setDrivers(prevDrivers => prevDrivers.filter(driver => driver._id !== driverId));
+        } catch (error) {
+            console.error('Error rejecting driver:', error);
+            const errorMessage = error.response?.data?.message || error.message;
+            toast.error(`Error rejecting driver: ${errorMessage}`);
+        }
+    };
+        const filteredDrivers = drivers.filter(driver =>
+        driver.fullname?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        driver.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        driver.phoneNumber?.toString().includes(searchQuery)
     );
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentRiders = filteredRiders.slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(filteredRiders.length / itemsPerPage);
+    const currentItems = filteredDrivers.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredDrivers.length / itemsPerPage);
 
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
@@ -86,19 +113,23 @@ function ViewRider() {
         setCurrentPage(1); 
     };
 
-console.log(import.meta.env.VITE_API_URL);
+    const getProfileImageUrl = (driverPic) => {
+        if (!driverPic) return null;
+        return `${import.meta.env.VITE_API_URL}${driverPic}`;
+    };
 
     if (loading) {
         return (
             <div className="admin-dashboard-container">
+                <ToastContainer/>
                 <AdminNav />
                 <AdminSidemenu />
                 <div className="dashboard-main-content">
-                    <h1 className='drivers-title'>RIDERS</h1>
+                    <h1 className='drivers-title'>DRIVER REQUESTS</h1>
                     <div className='container-search'>
                         <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                     </div>
-                    <div className="loading-message">Loading riders...</div>
+                    <div className="loading-message">Loading drivers...</div>
                 </div>
             </div>
         );
@@ -110,7 +141,7 @@ console.log(import.meta.env.VITE_API_URL);
                 <AdminNav />
                 <AdminSidemenu />
                 <div className="dashboard-main-content">
-                    <h1 className='drivers-title'>RIDERS</h1>
+                    <h1 className='drivers-title'>P</h1>
                     <div className='container-search'>
                         <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                     </div>
@@ -126,11 +157,11 @@ console.log(import.meta.env.VITE_API_URL);
             <AdminSidemenu />
 
             <div className="dashboard-main-content">
-                <h1 className='drivers-title'>RIDERS</h1>
+                <h1 className='drivers-title'>DRIVER REQUESTS</h1>
                 <div className='container-search'>
                     <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                 </div>
-                <h3>View All RIDERS</h3>
+                <h3>View All Drivers Requests</h3>
 
                 <div className="riders-table-container">
                     <table className="riders-table">
@@ -141,33 +172,49 @@ console.log(import.meta.env.VITE_API_URL);
                                 <th>Profile Pic</th>
                                 <th>Email ID</th>
                                 <th>Phone No</th>
-                                <th>Address</th>
-                                <th>Emergency Contact</th>
+                                <th>License Number</th>
+                                <th>Vehicle Reg No</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {currentRiders.map((rider, index) => (
-                                <tr key={rider._id || index}>
+                            {currentItems.map((driver, index) => (
+                                <tr key={driver._id || index}>
                                     <td>{indexOfFirstItem + index + 1}</td>
-                                    <td>{rider.fullName}</td>
+                                    <td>{driver.fullname}</td>
                                     <td>
                                         <Avatar
-                                            src={UserProfile}
-                                            alt={rider.fullName}
+                                            src={getProfileImageUrl(driver.driverPic)}
+                                            alt={driver.fullname}
                                             sx={{ width: 40, height: 40 }}
-                                        >
-                                        </Avatar>
+                                        />
                                     </td>
-                                    <td>{rider.email}</td>
-                                    <td>{rider.phoneNumber}</td>
-                                    <td>{rider.address}</td>
-                                    <td>{rider.emergencyNo}</td>
+                                    <td>{driver.email}</td>
+                                    <td>{driver.phoneNumber}</td>
+                                    <td>{driver.licenseNumber}</td>
+                                    <td>{driver.vehicleRegNumber}</td>
+                                    <td>
+                                        <IconButton 
+                                            color="success" 
+                                            onClick={() => handleAccept(driver._id)}
+                                            aria-label="accept"
+                                        >
+                                            <CheckCircleIcon />
+                                        </IconButton>
+                                        <IconButton 
+                                            color="error" 
+                                            onClick={() => handleReject(driver._id)}
+                                            aria-label="reject"
+                                        >
+                                            <CancelIcon />
+                                        </IconButton>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
-                    {filteredRiders.length === 0 && (
-                        <div className="no-results">No riders found matching your search criteria</div>
+                    {filteredDrivers.length === 0 && (
+                        <div className="no-results">No pending driver verifications found</div>
                     )}
                 </div>
 
@@ -178,11 +225,11 @@ console.log(import.meta.env.VITE_API_URL);
                     mt: 3,
                     p: 2,
                     borderRadius: 1,
-                    gap:6
+                    gap: 6
                 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <Typography variant="body2" sx={{ mr: 2 }}>
-                            Riders per page:
+                            Items per page:
                         </Typography>
                         <FormControl size="small" sx={{ minWidth: 80 }}>
                             <Select
@@ -199,9 +246,8 @@ console.log(import.meta.env.VITE_API_URL);
                         </FormControl>
                     </Box>
 
-
                     <Typography variant="body2">
-                        Per Page {indexOfFirstItem + 1} - {Math.min(indexOfLastItem, filteredRiders.length)} of {filteredRiders.length}
+                        Page {indexOfFirstItem + 1} - {Math.min(indexOfLastItem, filteredDrivers.length)} of {filteredDrivers.length}
                     </Typography>
                     <Pagination 
                         count={totalPages} 
@@ -217,11 +263,10 @@ console.log(import.meta.env.VITE_API_URL);
                             }
                         }}
                     />
-
                 </Box>
             </div>
         </div>
     );
 }
 
-export default ViewRider;
+export default DriverRequests;

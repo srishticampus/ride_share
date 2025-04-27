@@ -13,10 +13,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import service from '../../Services/apiService';
+import apiService from '../../Services/apiService';
 import { useNavigate } from 'react-router-dom';
 
-const DriverEditProfile = () => {
+const DriverEditProfile = ({ setShowProfileEditCard }) => {
   const navigate = useNavigate();
   const Driverdata = JSON.parse(localStorage.getItem("driverData"));
   console.log(Driverdata);
@@ -24,16 +24,16 @@ const DriverEditProfile = () => {
   const fileInputRef = useRef(null);
   
   const [formData, setFormData] = useState({
-    fullname: Driverdata.fullname,
-    email: Driverdata.email,
-    phoneNumber: Driverdata.phoneNumber,
-    licenseNumber: Driverdata.licenseNumber,
-    vehicleRegNumber: Driverdata.vehicleRegNumber,
+    fullname: Driverdata?.fullname || '',
+    email: Driverdata?.email || '',
+    phoneNumber: Driverdata?.phoneNumber || '',
+    licenseNumber: Driverdata?.licenseNumber || '',
+    // vehicleRegNumber is intentionally excluded as per backend
     profilePicture: null
   });
   
   const [avatarSrc, setAvatarSrc] = useState(
-    Driverdata.driverPic 
+    Driverdata?.driverPic 
       ? `http://localhost:4040/uploads/${Driverdata.driverPic}`
       : 'https://passport-photo.online/images/cms/prepare_light_b364e3ec37.webp?quality=80&format=webp&width=1920'
   );
@@ -60,20 +60,33 @@ const DriverEditProfile = () => {
     e.preventDefault();
     
     try {
-      const data = new FormData();
-      data.append('fullname', formData.fullname);
-      data.append('email', formData.email);
-      data.append('phoneNumber', formData.phoneNumber);
-      data.append('licenseNumber', formData.licenseNumber);
-      data.append('vehicleRegNumber', formData.vehicleRegNumber);
+      const formDataToSend = new FormData();
+      formDataToSend.append('fullname', formData.fullname);
+      formDataToSend.append('email', formData.email);
+      formDataToSend.append('phoneNumber', formData.phoneNumber);
+      
+      // Only append licenseNumber if it's being updated
+      if (formData.licenseNumber) {
+        formDataToSend.append('licenseNumber', formData.licenseNumber);
+      }
+      
+      // Append profile picture if selected
       if (formData.profilePicture) {
-        data.append('driverPic', formData.profilePicture);
+        formDataToSend.append('driverPic', formData.profilePicture);
       }
 
-      const response = await service.u(data);
+      // Call the API service
+      const response = await apiService.updateDriverProfile(formDataToSend);
             
+      // Update local storage with new data if needed
+      const updatedDriverData = {
+        ...Driverdata,
+        ...response.data.driver
+      };
+      localStorage.setItem("driverData", JSON.stringify(updatedDriverData));
+      
       toast.success('Profile updated successfully!');
-      setTimeout(() => navigate(-1), 1500); 
+      setTimeout(() => setShowProfileEditCard(false), 1500);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to update profile');
       console.error('Update error:', error);
@@ -82,10 +95,10 @@ const DriverEditProfile = () => {
 
   return (
     <Box className="styled-container">
-      <ToastContainer />
+      <ToastContainer position="top-right" autoClose={3000} />
       <Box className="styled-header">
         <Typography className="header-title" variant="h6">EDIT PROFILE</Typography>
-        <IconButton className="close-button" onClick={() => navigate(-1)}>
+        <IconButton className="close-button" onClick={() => setShowProfileEditCard(false)}>
           <CloseIcon />
         </IconButton>
       </Box>
@@ -93,7 +106,7 @@ const DriverEditProfile = () => {
       <Box className="styled-main-content">
         <Box className="profile-section">
           <Box className="avatar-container">
-            <Avatar className="styled-avatar" src={avatarSrc} />
+            <Avatar className="styled-avatar" src={avatarSrc} sx={{ width: 100, height: 100 }} />
             <EditOutlinedIcon
               className="styled-edit-icon"
               onClick={handleEditClick}
@@ -112,8 +125,8 @@ const DriverEditProfile = () => {
 
         <Box sx={{ width: '100%' }} className="form-container">
           <Grid container spacing={3}>
-            <Grid item xs={6}>
-              <Typography className="left-label" variant="body1">Name</Typography>
+            <Grid item xs={12} md={6}>
+              <Typography className="left-label" variant="body1">Full Name</Typography>
               <TextField
                 name="fullname"
                 value={formData.fullname}
@@ -122,21 +135,24 @@ const DriverEditProfile = () => {
                 variant="outlined"
                 placeholder="Enter Your Name"
                 className="styled-textfield"
+                required
               />
 
-              <Typography className="left-label" variant="body1">E-Mail</Typography>
+              <Typography className="left-label" variant="body1">Email</Typography>
               <TextField
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
                 fullWidth
                 variant="outlined"
-                placeholder="Enter Mail ID"
+                placeholder="Enter Email"
                 className="styled-textfield"
+                type="email"
+                required
               />
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6}>
               <Typography className="right-label" variant="body1">Phone Number</Typography>
               <TextField
                 name="phoneNumber"
@@ -144,8 +160,9 @@ const DriverEditProfile = () => {
                 onChange={handleInputChange}
                 fullWidth
                 variant="outlined"
-                placeholder="Enter Your Number"
+                placeholder="Enter Phone Number"
                 className="styled-textfield"
+                required
               />
 
               <Typography className="right-label" variant="body1">License Number</Typography>
@@ -159,27 +176,21 @@ const DriverEditProfile = () => {
                 className="styled-textfield"
               />
             </Grid>
-
           </Grid>
-          <Grid item xs={12}>
-              <Typography className="left-label" variant="body1">Vehicle Registration Number</Typography>
-              <TextField
-                name="vehicleRegNumber"
-                value={formData.vehicleRegNumber}
-                onChange={handleInputChange}
-                fullWidth
-                variant="outlined"
-                placeholder="Enter Vehicle Registration Number"
-              />
-            </Grid>
 
           <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
             <Button 
               variant="contained" 
               className="gradient-button"
               onClick={handleSubmit}
+              size="large"
+              sx={{
+                padding: '12px 36px',
+                fontSize: '1rem',
+                fontWeight: 'bold'
+              }}
             >
-              UPDATE
+              UPDATE PROFILE
             </Button>
           </Box>
         </Box>

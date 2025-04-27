@@ -7,6 +7,7 @@ import { uploadDriverPhoto } from '../middlewares/upload.middleware.js';
 import { protect, restrictTo } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
+router.post('/me', driverController.getCurrentDriver);
 
 /**
  * @swagger
@@ -273,7 +274,8 @@ router.post(
  *       404:
  *         description: Driver not found
  */
-router.get('/me', driverController.getCurrentDriver);
+router.use(protect);
+
 
 /**
  * @swagger
@@ -310,7 +312,7 @@ router.get('/me', driverController.getCurrentDriver);
 router.patch(
   '/me/update',
   uploadDriverPhoto,
-  validate(driverValidation.meUpdateDriverSchema),
+  validate(driverValidation.updateDriverSchema),
   driverController.updateCurrentDriver
 );
 
@@ -341,7 +343,6 @@ router.patch(
  *         type: string
 */
 router.use(restrictTo('admin'));
-router.use(protect);
 
 router.patch('/:id/approve', driverController.ApproveDriver);
 /**
@@ -386,5 +387,5 @@ router.get('/showAllDrivers', driverController.viewDrivers);
  *         description: No driver found with that ID
  */
 router.patch('/editDriverProfile',driverController.EditProfile);
-
+router.delete('/:id/reject', driverController.rejectDriver);
 export default router;

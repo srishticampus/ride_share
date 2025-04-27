@@ -263,3 +263,22 @@ export const updateCurrentDriver = catchAsync(async (req, res, next) => {
     }
   });
 });
+
+export const rejectDriver = catchAsync(async (req, res, next) => {
+  const driver = await Driver.findByIdAndDelete(
+    req.params.id,
+    { backgroundCheck: true },
+    { new: true }
+  );
+
+  if (!driver) {
+    return next(new AppError('No driver found with that ID', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      driver
+    }
+  });
+});
