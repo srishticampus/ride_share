@@ -156,14 +156,14 @@ export default function DriverNav({ onAvatarClick }) {
                             <MenuItem
                                 onClick={handleHistoryClose}
                                 component={Link}
-                            // to="/Ride-history"
+                             to="/driver-View-history"
                             >
                                 Ride History
                             </MenuItem>
                             <MenuItem
                                 onClick={handleHistoryClose}
                                 component={Link}
-                            // to="/Payment-history"
+                             to="/driver-View-PaymentHistory"
                             >
                                 Payment History
                             </MenuItem>

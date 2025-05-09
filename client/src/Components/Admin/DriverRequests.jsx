@@ -39,7 +39,6 @@ function DriverRequests() {
                 
                 if (response.data && response.data.drivers) {
                     setAllDrivers(response.data.drivers);
-                    // Filter only drivers with backgroundCheck: false
                     const pendingDrivers = response.data.drivers.filter(
                         driver => driver.backgroundCheck === false
                     );

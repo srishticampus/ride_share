@@ -13,7 +13,6 @@ const AddRiderComplaints = () => {
           <h1 className="payment-title">ADD COMPLAINT</h1>
           <form className="payment-form">
             <div className="complaint-form-grid">
-              {/* LEFT COLUMN */}
               <div className="complaint-left-column">
                 <div className="form-group">
                   <label className="form-label" htmlFor="complaintSubject">Subject / Title</label>
@@ -50,7 +49,6 @@ const AddRiderComplaints = () => {
                 </div>
               </div>
 
-              {/* RIGHT COLUMN */}
               <div className="complaint-right-column">
                 <div className="form-group">
                   <label className="form-label" htmlFor="complaintAttachment">Attachment</label>

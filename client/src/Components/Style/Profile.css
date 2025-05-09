@@ -19,12 +19,12 @@
 .profile-details {
   display: flex;
   flex-direction: column;
-  text-align: left; /* Aligns all text to left */
+  text-align: left; 
 }
 
 .profile-card h2 {
   color: #F1B92E;
-  text-align: center; /* Centers only the name */
+  text-align: center; 
   margin-bottom: 15px;
 }
 
@@ -32,7 +32,7 @@
 .profile-card p {
   margin: 8px 0;
   color: #555;
-  text-align: left; /* Explicit left alignment for other content */
+  text-align: left; 
 }
 
 .profile-card button {

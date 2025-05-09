@@ -28,7 +28,6 @@ const DriverEditProfile = ({ setShowProfileEditCard }) => {
     email: Driverdata?.email || '',
     phoneNumber: Driverdata?.phoneNumber || '',
     licenseNumber: Driverdata?.licenseNumber || '',
-    // vehicleRegNumber is intentionally excluded as per backend
     profilePicture: null
   });
   
@@ -65,20 +64,16 @@ const DriverEditProfile = ({ setShowProfileEditCard }) => {
       formDataToSend.append('email', formData.email);
       formDataToSend.append('phoneNumber', formData.phoneNumber);
       
-      // Only append licenseNumber if it's being updated
       if (formData.licenseNumber) {
         formDataToSend.append('licenseNumber', formData.licenseNumber);
       }
       
-      // Append profile picture if selected
       if (formData.profilePicture) {
         formDataToSend.append('driverPic', formData.profilePicture);
       }
 
-      // Call the API service
       const response = await apiService.updateDriverProfile(formDataToSend);
             
-      // Update local storage with new data if needed
       const updatedDriverData = {
         ...Driverdata,
         ...response.data.driver

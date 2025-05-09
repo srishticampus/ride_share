@@ -54,7 +54,7 @@
     cursor: pointer;
     transition: all 0.3s ease;
   }.Login-button:hover {
-    background: linear-gradient(45deg, #e5d300, #5a5a00); /* lighter gradient on hover */
+    background: linear-gradient(45deg, #e5d300, #5a5a00); 
     color: white !important;
   }
 .login-input ::placeholder {

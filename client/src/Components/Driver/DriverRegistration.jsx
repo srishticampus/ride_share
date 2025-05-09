@@ -215,7 +215,7 @@ function DriverRegistration() {
               <FormLabel className="reg-form-label">Confirm Password *</FormLabel>
               <TextField
                 name="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}  // Changed from showPassword to showConfirmPassword
+                type={showConfirmPassword ? "text" : "password"} 
                 value={driver.confirmPassword}
                 onChange={handleInputChange}
                 className="form-input"

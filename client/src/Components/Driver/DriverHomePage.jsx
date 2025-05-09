@@ -51,7 +51,6 @@ function DriverHomePage() {
   useEffect(() => {
     fetchDriverData();
   }, []);
-// In your main App component or driver route component
 useEffect(() => {
     const verifyToken = async () => {
       const token = localStorage.getItem('driverToken');

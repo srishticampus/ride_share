@@ -23,7 +23,7 @@ import RiderResetPass from "./Components/Rider/RiderResetPass";
 import DriverResetPass from "./Components/Driver/DriverResetPass";
 import DriverForgotPass from "./Components/Driver/DriverForgotPass";
 import RiderPayment from "./Components/Rider/RiderPayment";
-import ViewDriverComplaints from "./Components/Admin/ViewDriverComplaints";
+import ViewDriverComplaints from "./Components/Admin/ViewComplaints";
 import DriverHomePage from "./Components/Driver/DriverHomePage";
 import DriverEditProfile from "./Components/Driver/DriverEditProfile";
 import AddVehicle from "./Components/Driver/AddVehicle";
@@ -31,6 +31,14 @@ import AddRide from "./Components/Driver/AddRide";
 import AddComplaints from "./Components/Driver/AddComplaints";
 import ViewRequest from "./Components/Driver/ViewRequest";
 import DriverRequests from "./Components/Admin/DriverRequests";
+import RiderComplaints from "./Components/Rider/RiderComplaints";
+import ViewComplaints from "./Components/Admin/ViewComplaints";
+import RideHistory from "./Components/Admin/RideHistory";
+import FeedBacks from "./Components/Admin/FeedBacks";
+import RiderRideHistory from "./Components/Rider/RiderRideHistory";
+import RiderReview from "./Components/Rider/RiderReview";
+import DriverRideHistory from "./Components/Driver/DriverRideHistory";
+import DriverPaymentHistory from "./Components/Driver/DriverPaymentHistory";
 
 function App() {
   return (
@@ -59,11 +67,14 @@ function App() {
 
           {/* Admin Route */}
           <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/admin-all-drivers" element={< DriverRequests/>} />
           <Route path="/admin-view-driver" element={<ViewDriver />} />
           <Route path="/admin-view-riders" element={<ViewRider />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/admin-driver-complaints" element={<ViewDriverComplaints />} />
-          <Route path="/admin-all-drivers" element={<DriverRequests />} />
+          <Route path="/admin-complaints" element={<ViewComplaints />} />
+          <Route path="/admin-ride-history" element={<RideHistory />} />
+          <Route path="/admin-feedback" element={<FeedBacks />} />
 
 
           {/* Driver Route */}
@@ -78,6 +89,8 @@ function App() {
           <Route path="/driver-Add-Ride" element={<AddRide />} />
           <Route path="/driver-Add-complaints" element={<AddComplaints />} />
           <Route path="/driver-View-Requets" element={<ViewRequest />} />
+          <Route path="/driver-View-history" element={<DriverRideHistory />} />
+          <Route path="/driver-View-PaymentHistory" element={<DriverPaymentHistory />} />
 
 
 
@@ -91,6 +104,9 @@ function App() {
           <Route path="/User-profile" element={<RiderViewProfile/>} />
           <Route path="/User-Edit-profile" element={<RiderEditProfile />} />
           <Route path="/User-View-Ride" element={<ViewRide />} />
+          <Route path="/User-Complaints" element={<RiderComplaints />} />
+          <Route path="/User-ride-History" element={<RiderRideHistory />} />
+          <Route path="/User-review-ride" element={<RiderReview />} />
 
 
 

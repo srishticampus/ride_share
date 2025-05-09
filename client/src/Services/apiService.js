@@ -45,7 +45,7 @@ const login = async (credentials) => {
   try {
     const response = await apiClient.post("/users/login", credentials);
     console.log(response);
-    
+    localStorage.setItem("riderId", response.data.data.user._id)
     if (response.data.token) {
       localStorage.setItem("riderToken", response.data.token);
       apiClient.defaults.headers.common["Authorization"] =
@@ -84,7 +84,7 @@ const userForgotPassword = async (phoneNumber, newPassword) => {
     const response = await apiClient.post(
       `/users/forgotPass/${phoneNumber}`,
       { password: newPassword },
-      { 
+      {
         skipAuth: true,
         headers: {
           'Content-Type': 'application/json'
@@ -98,7 +98,7 @@ const userForgotPassword = async (phoneNumber, newPassword) => {
       'Failed to reset password';
     throw new Error(errorMessage);
   }
-};const FindUserPh = async (phoneNumber) => {
+}; const FindUserPh = async (phoneNumber) => {
   try {
     const response = await apiClient.post('/users/findByUserPh', { phoneNumber }, {
       skipAuth: true
@@ -126,7 +126,7 @@ const driverForgotPassword = async (phoneNumber, newPassword) => {
     const response = await apiClient.post(
       `/drivers/forgotPass/${phoneNumber}`,
       { password: newPassword },
-      { 
+      {
         skipAuth: true,
         headers: {
           'Content-Type': 'application/json'
@@ -146,11 +146,11 @@ const driverForgotPassword = async (phoneNumber, newPassword) => {
  */
 const getCurrentUser = async () => {
   try {
-    const token = localStorage.getItem("riderToken"); 
+    const token = localStorage.getItem("riderToken");
     const response = await apiClient.get("/users/me", {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}` 
+        'Authorization': `Bearer ${token}`
       }
     });
     return response.data;
@@ -162,7 +162,7 @@ const getCurrentUser = async () => {
 const updateProfile = async (userData) => {
   try {
     const formData = new FormData();
-    
+
     // Append all fields to formData
     Object.keys(userData).forEach(key => {
       if (userData[key] !== null && userData[key] !== undefined) {
@@ -257,9 +257,9 @@ const driverLogin = async (credentials) => {
     const response = await apiClient.post("/drivers/login", credentials);
     console.log(response);
 
-      localStorage.setItem("driverToken", response.data.token);
-      apiClient.defaults.headers.common["Authorization"] =
-        `Bearer ${response.data.token}`;
+    localStorage.setItem("driverToken", response.data.token);
+    apiClient.defaults.headers.common["Authorization"] =
+      `Bearer ${response.data.token}`;
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -284,13 +284,13 @@ const rejectDriver = async (driverId) => {
 
 const getCurrentDriver = async () => {
   try {
-    const token = localStorage.getItem("driverToken"); 
+    const token = localStorage.getItem("driverToken");
     console.log(token);
-    
+
     const response = await apiClient.post("/drivers/me", {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}` 
+        'Authorization': `Bearer ${token}`
       }
     });
     return response.data;
@@ -394,7 +394,13 @@ const getCompletedPayments = async () => {
  */
 const createDispute = async (disputeData) => {
   try {
-    const response = await apiClient.post("/disputes", disputeData);
+    const token = localStorage.getItem("riderToken");
+    const response = await apiClient.post("/disputes", disputeData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`,
+      }
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;

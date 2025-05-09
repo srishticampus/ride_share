@@ -31,7 +31,6 @@ const AddRide = () => {
     e.preventDefault();
 
     try {
-      // Prepare the data for API submission
       const rideData = {
         origin: formData.origin.trim(),
         destination: formData.destination.trim(),

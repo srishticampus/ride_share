@@ -1,4 +1,4 @@
-//server/src/models/DisputesModel.js
+// server/src/models/DisputesModel.js
 import { Schema, model } from "mongoose";
 
 /**
@@ -9,21 +9,32 @@ import { Schema, model } from "mongoose";
  *       type: object
  *       required:
  *         - reportedBy
- *         - rideId
- *         - disputeType
+ *         - driverId
+ *         - subject
+ *         - incidentDate
  *       properties:
  *         reportedBy:
  *           type: string
  *           description: ID of the user who reported the dispute
- *         rideId:
+ *         driverId:
  *           type: string
- *           description: ID of the ride associated with the dispute
- *         disputeType:
+ *           description: ID of the driver associated with the dispute
+ *         subject:
  *           type: string
- *           description: Type/category of the dispute
+ *           description: Subject or title of the dispute
  *         description:
  *           type: string
  *           description: Detailed description of the dispute
+ *         priorityLevel:
+ *           type: string
+ *           description: Priority level of the dispute (High, Medium, Low)
+ *         incidentDate:
+ *           type: string
+ *           format: date
+ *           description: Date when the incident happened
+ *         attachment:
+ *           type: string
+ *           description: Optional file attachment
  *         resolutionStatus:
  *           type: string
  *           enum: [Pending, Resolved, Rejected]
@@ -43,20 +54,44 @@ const DisputeSchema = new Schema({
     ref: 'User',
     required: [true, 'Reporter ID is required']
   },
-  rideId: {
-    type: Schema.Types.ObjectId,
-    ref: 'Ride',
-    required: [true, 'Ride ID is required']
-  },
-  disputeType: {
+  driverName: {
     type: String,
-    required: [true, 'Dispute type is required'],
-    trim: true
+    required: [true, 'Subject is required'],
+  },
+
+  driverId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Driver',
+    required: [true, 'Driver ID is required']
+  },
+  subject: {
+    type: String,
+    required: [true, 'Subject is required'],
+    trim: true,
+    maxlength: [100, 'Subject cannot exceed 100 characters']
   },
   description: {
     type: String,
     trim: true,
     maxlength: [500, 'Description cannot exceed 500 characters']
+  },
+  priorityLevel: {
+    type: String,
+    required: [true, 'Priority level is required']
+  },
+  incidentDate: {
+    type: Date,
+    required: [true, 'Incident date is required'],
+    validate: {
+      validator: function(date) {
+        return date <= new Date();
+      },
+      message: 'Incident date cannot be in the future'
+    }
+  },
+  attachment: {
+    type: String, 
+    required: false
   },
   resolutionStatus: {
     type: String,
