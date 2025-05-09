@@ -26,6 +26,11 @@ import RiderPayment from "./Components/Rider/RiderPayment";
 import ViewDriverComplaints from "./Components/Admin/ViewDriverComplaints";
 import DriverHomePage from "./Components/Driver/DriverHomePage";
 import DriverEditProfile from "./Components/Driver/DriverEditProfile";
+import AddVehicle from "./Components/Driver/AddVehicle";
+import AddRide from "./Components/Driver/AddRide";
+import AddComplaints from "./Components/Driver/AddComplaints";
+import ViewRequest from "./Components/Driver/ViewRequest";
+import DriverRequests from "./Components/Admin/DriverRequests";
 
 function App() {
   return (
@@ -58,6 +63,7 @@ function App() {
           <Route path="/admin-view-riders" element={<ViewRider />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/admin-driver-complaints" element={<ViewDriverComplaints />} />
+          <Route path="/admin-all-drivers" element={<DriverRequests />} />
 
 
           {/* Driver Route */}
@@ -68,6 +74,10 @@ function App() {
           <Route path="/driver-edit-profile" element={<DriverEditProfile />} />
           <Route path="/driver-forgot-pass" element={<DriverForgotPass/>}/>
           <Route path="/driver-Reset-Pass/:phoneNumber" element={<DriverResetPass />} />
+          <Route path="/driver-Add-Vehicle" element={<AddVehicle />} />
+          <Route path="/driver-Add-Ride" element={<AddRide />} />
+          <Route path="/driver-Add-complaints" element={<AddComplaints />} />
+          <Route path="/driver-View-Requets" element={<ViewRequest />} />
 
 
 

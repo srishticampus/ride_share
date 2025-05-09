@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Rating from '@mui/material/Rating';
 import navImage from '../../Assets/LandingTOP.png';
@@ -13,29 +13,70 @@ import car2 from '../../Assets/car2.png';
 import car3 from '../../Assets/car3.png';
 import { ClickAwayListener } from '@mui/material';
 import '../Style/LandingPage.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../Common/Footer';
 import DriverNav from './DriverNav';
-import DriverViewProfile from './DriverViewProfile'
-import DriverEditProfile from './DriverEditProfile'
+import DriverViewProfile from './DriverViewProfile';
+import DriverEditProfile from './DriverEditProfile';
+import apiService from '../../Services/apiService';
+
 function DriverHomePage() {
-    const [showProfileCard, setShowProfileCard] = useState(false);
-    const onAvatarClick = () => {
-        setShowProfileCard(prev => !prev);
-        if (!showProfileCard) {
-            setShowProfileEditCard(false);
+  const navigate = useNavigate();
+  const [showProfileCard, setShowProfileCard] = useState(false);
+  const [showProfileEditCard, setShowProfileEditCard] = useState(false);
+  const [currentDriver, setCurrentDriver] = useState(null);
+
+  const onAvatarClick = () => {
+    setShowProfileCard(prev => !prev);
+    if (!showProfileCard) {
+      setShowProfileEditCard(false);
+    }
+  };
+
+  const onEditClick = () => {
+    setShowProfileEditCard(true);
+    setShowProfileCard(false);
+  };
+
+  const fetchDriverData = async () => {
+    try {
+      const driverData = await apiService.getCurrentDriver();
+      setCurrentDriver(driverData.data.driver);
+    } catch (error) {
+      console.error("Failed to load driver data:", error);
+      
+    }
+  };
+
+  useEffect(() => {
+    fetchDriverData();
+  }, []);
+// In your main App component or driver route component
+useEffect(() => {
+    const verifyToken = async () => {
+      const token = localStorage.getItem('driverToken');
+      console.log(token);
+      
+      if (token) {
+        try {
+          const driverData = await apiService.getCurrentDriver();
+          console.log(driverData);
+          
+        } catch (error) {
+          console.log(error);
+          
+          // localStorage.removeItem('driverToken');
+        //   navigate('/driver-login');
         }
+      }
     };
-        const [showProfileEditCard, setShowProfileEditCard] = useState(false);
-        const onEditClick = () => {
-            setShowProfileEditCard(true);
-            setShowProfileCard(false);
-        };
-    
-    return (
-        <div className="landing-container">
-            <DriverNav onAvatarClick={onAvatarClick}/>
-            <div className='landing-bg'>
+    verifyToken();
+  }, []);
+  return (
+    <div className="landing-container">
+      <DriverNav onAvatarClick={onAvatarClick} />
+
+ <div className='landing-bg'>
                 <div className="bg-image-container">
                     <img src={backgroundImage} alt="Background" className='bg-image' />
                     <h1 className="bg-text">YOUR RIDE ON TIME EVERY TIME</h1>
@@ -182,25 +223,30 @@ function DriverHomePage() {
                     <p>"Great city tour experience with knowledgeable drivers. Highly recommend!"</p>
                 </div>
             </div>
-            {showProfileCard && (
-                <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
-                    <div style={{ position: "absolute", top: "40px", right: "20px" }}>
-                        <DriverViewProfile onEditClick={onEditClick}/>
-                    </div>
-                </ClickAwayListener>
-            )}
- {showProfileEditCard && (
-                <ClickAwayListener onClickAway={() => setShowProfileEditCard(false)}>
-                    <div style={{ position: "absolute", top: "10vh", left: "250px", backgroundColor: "white", zIndex: "5",borderRadius:"25px"}}>
-                        <DriverEditProfile setShowProfileEditCard={setShowProfileEditCard}/>
+      
+      {showProfileCard && currentDriver && (
+        <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
+          <div style={{ position: "absolute", top: "40px", right: "20px" }}>
+            <DriverViewProfile onEditClick={onEditClick} driver={currentDriver} />
+          </div>
+        </ClickAwayListener>
+      )}
+      
+      {showProfileEditCard && currentDriver && (
+        <ClickAwayListener onClickAway={() => setShowProfileEditCard(false)}>
+          <div style={{ position: "absolute", top: "10vh", left: "250px", backgroundColor: "white", zIndex: "5", borderRadius: "25px" }}>
+            <DriverEditProfile 
+              setShowProfileEditCard={setShowProfileEditCard} 
+              driver={currentDriver} 
+              onUpdateSuccess={fetchDriverData} 
+            />
+          </div>
+        </ClickAwayListener>
+      )}
 
-                    </div>
-                </ClickAwayListener>
-            )}
-
-            <Footer />
-        </div>
-    );
+      <Footer />
+    </div>
+  );
 }
 
 export default DriverHomePage;

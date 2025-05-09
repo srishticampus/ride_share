@@ -36,6 +36,8 @@ export default function DriverNav({ onAvatarClick }) {
 
     const handleConfirmLogout = () => {
         localStorage.removeItem("driverData");
+        localStorage.removeItem("driverToken");
+
         toast.success('Driver logged out');
 
         setOpenLogoutDialog(false);
@@ -76,20 +78,52 @@ export default function DriverNav({ onAvatarClick }) {
                         >
                             HOME
                         </Button>
-                        <Button
-                            sx={{
-                                color: 'white',
-                                '&:hover': {
-                                    backgroundColor: '#333',
-                                    color: '#FFD05A'
-                                }
-                            }}
-                        >
-                            RIDE REQUESTS
-                        </Button>
+                        <Link to="/driver-Add-Vehicle">
+                            <Button
+                                sx={{
+                                    color: 'white',
+                                    '&:hover': {
+                                        backgroundColor: '#333',
+                                        color: '#FFD05A'
+                                    }
+                                }}
+
+                            >
+                                VEHICLE
+                            </Button>
+                        </Link>
+                        <Link to="/driver-Add-Ride">
+                            <Button
+                                sx={{
+                                    color: 'white',
+                                    '&:hover': {
+                                        backgroundColor: '#333',
+                                        color: '#FFD05A'
+                                    }
+                                }}
+
+                            >
+                                ADD Ride
+                            </Button>
+                        </Link>
+
+                        <Link to="/driver-View-Requets">
+                            <Button
+                                sx={{
+                                    color: 'white',
+                                    '&:hover': {
+                                        backgroundColor: '#333',
+                                        color: '#FFD05A'
+                                    }
+                                }}
+                            >
+                                RIDE REQUESTS
+                            </Button>
+                        </Link>
+
                         <Button
                             component={Link}
-                            to="/Complaints"
+                            to="/driver-Add-complaints"
                             sx={{
                                 color: 'white',
                                 '&:hover': {

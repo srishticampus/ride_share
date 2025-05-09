@@ -29,6 +29,7 @@ function AdminSidemenu() {
             name: 'Manage Users',
             icon: <PersonIcon />,
             subItems: [
+                { name: 'Drivers Request', path: '/admin-all-drivers' },
                 { name: 'View All Drivers', path: '/admin-view-driver' },
                 { name: 'View All Riders', path: '/admin-view-riders' }
             ]

@@ -255,15 +255,44 @@ const registerDriver = async (driverData) => {
 const driverLogin = async (credentials) => {
   try {
     const response = await apiClient.post("/drivers/login", credentials);
+    console.log(response);
+
+      localStorage.setItem("driverToken", response.data.token);
+      apiClient.defaults.headers.common["Authorization"] =
+        `Bearer ${response.data.token}`;
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+const approveDriver = async (driverId) => {
+  try {
+    const response = await apiClient.patch(`/drivers/${driverId}/approve`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+const rejectDriver = async (driverId) => {
+  try {
+    const response = await apiClient.delete(`/drivers/${driverId}/reject`);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
   }
 };
 
-const approveDriver = async (driverId) => {
+const getCurrentDriver = async () => {
   try {
-    const response = await apiClient.patch(`/drivers/${driverId}/approve`);
+    const token = localStorage.getItem("driverToken"); 
+    console.log(token);
+    
+    const response = await apiClient.post("/drivers/me", {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      }
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -521,6 +550,8 @@ export default {
   approveDriver,
   FindDriverPh,
   driverForgotPassword,
+  rejectDriver,
+  getCurrentDriver,
 
   // Ride
   createRide,

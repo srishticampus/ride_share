@@ -1,138 +1,239 @@
-/* ViewDriver.css or your existing CSS file */
+/* ViewDriver.css - Complete Styles */
+
+/* Main Layout Styles */
+.admin-dashboard-container {
+  position: relative;
+  min-height: 100vh;
+}
+
+.dashboard-main-content {
+  margin-left: 280px;
+  width: calc(100% - 280px);
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 80px 20px 20px;
+  display: flex;
+  flex-direction: column;
+}
 
 .content-wrapper {
-    flex-grow: 1;
+  flex-grow: 1;
+  width: 100%;
+  padding: 0 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* Header Styles */
+.drivers-title {
+  background: black;
+  text-align: center;
+  color: yellow;
+  padding: 15px 20px;
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  left: 0;
+  right: 0;
+}
+
+.container-search {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Driver Card Styles */
+.driver-card {
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  padding: 20px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  width: calc(33.33% - 13.33px);
+  box-sizing: border-box;
+  flex-shrink: 0;
+  transition: height 0.3s ease;
+  overflow: hidden;
+}
+
+.driver-main-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  height: 140px; /* Adjusted to accommodate view details link */
+}
+
+.avatar-container {
+  flex-shrink: 0;
+}
+
+.text-container {
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.contact-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+}
+
+.contact-info span {
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Expand/Collapse Styles */
+.view-details-link {
+  display: flex;
+  align-items: center;
+  color: #1976d2;
+  margin-top: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  width: fit-content;
+}
+
+.view-details-link:hover {
+  text-decoration: underline;
+}
+
+.view-details-link svg {
+  margin-left: 5px;
+  font-size: 18px;
+}
+
+.driver-details-expanded {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 10px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.detail-row {
+  display: flex;
+  margin-bottom: 8px;
+}
+
+.detail-label {
+  font-weight: 600;
+  min-width: 150px;
+  color: #555;
+}
+
+.detail-value {
+  flex: 1;
+  color: #333;
+  word-break: break-word;
+}
+
+/* Empty State */
+.no-drivers {
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+  width: 100%;
+  margin-top: 20px;
+  box-sizing: border-box;
+}
+
+/* Responsive Styles */
+@media (max-width: 1200px) {
+  .driver-card {
+    width: calc(50% - 10px); /* 2 columns */
+  }
+}
+
+@media (max-width: 992px) {
+  .dashboard-main-content {
+    margin-left: 0;
     width: 100%;
-    padding: 0 20px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+    padding-top: 70px;
   }
   
   .driver-card {
-    height: 180px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    background-color: white;
-    padding: 20px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    width: calc(33.33% - 13.33px);
-    box-sizing: border-box;
-    flex-shrink: 0;
+    width: 100%; 
   }
   
   .container-search {
-    margin-top: 20px;
-    display: flex;
-    justify-content: end;
+    justify-content: center;
   }
-  
-  .drivers-title {
-    background: black;
+}
+
+@media (max-width: 768px) {
+  .driver-card {
+    flex-direction: column;
+    height: auto;
+    min-height: 180px;
     text-align: center;
-    color: yellow;
-    padding: 15px 20px;
-    width: 100%;
-    margin: 0;
-    box-sizing: border-box;
-    position: relative;
-    z-index: 1;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    left: 0;
-    right: 0;
+    padding: 15px;
   }
   
-  .text-container {
-    flex-grow: 1;
+  .driver-main-content {
+    flex-direction: column;
+    height: auto;
+    gap: 10px;
+  }
+  
+  .avatar-container {
+    margin-bottom: 10px;
   }
   
   .contact-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 6px 0;
+    justify-content: center;
+  }
+  
+  .view-details-link {
+    margin: 10px auto 0;
+  }
+  
+  .driver-details-expanded {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .drivers-title {
+    font-size: 1.5rem;
+    padding: 10px 15px;
+  }
+  
+  .dashboard-main-content h3 {
+    font-size: 1.2rem;
+  }
+  
+  .driver-card {
+    padding: 10px;
   }
   
   .contact-info span {
-    font-size: 14px;
+    font-size: 12px;
   }
   
-  .no-drivers {
-    text-align: center;
-    font-size: 18px;
-    color: #666;
-    width: 100%;
-    margin-top: 20px;
-    box-sizing: border-box;
-  }
-  
-  .dashboard-main-content {
-    margin-left: 280px;
-    width: calc(100% - 280px);
-    min-height: 100vh;
-    box-sizing: border-box;
-    padding: 80px 20px 20px;
-    display: flex;
+  .detail-row {
     flex-direction: column;
+    gap: 4px;
   }
   
-  /* Responsive Breakpoints */
-  @media (max-width: 1200px) {
-    .driver-card {
-      width: calc(50% - 10px); /* 2 columns */
-    }
+  .detail-label {
+    min-width: auto;
   }
-  
-  @media (max-width: 992px) {
-    .dashboard-main-content {
-      margin-left: 0;
-      width: 100%;
-      padding-top: 70px;
-    }
-    
-    .driver-card {
-      width: 100%; /* 1 column */
-    }
-    
-    .container-search {
-      justify-content: center;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .driver-card {
-      flex-direction: column;
-      height: auto;
-      text-align: center;
-      padding: 15px;
-    }
-    
-    .avatar-container {
-      margin-bottom: 10px;
-    }
-    
-    .contact-info {
-      justify-content: center;
-    }
-  }
-  
-  @media (max-width: 576px) {
-    .drivers-title {
-      font-size: 1.5rem;
-      padding: 10px 15px;
-    }
-    
-    .dashboard-main-content h3 {
-      font-size: 1.2rem;
-    }
-    
-    .driver-card {
-      padding: 10px;
-    }
-    
-    .contact-info span {
-      font-size: 12px;
-    }
-  }
+}

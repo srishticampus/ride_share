@@ -215,3 +215,41 @@
     margin-top: auto;
   }
   
+/* ===== Add these styles at the end ===== */
+/* New layout for complaint form */
+.complaint-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .complaint-form-grid {
+    grid-template-columns: 1fr 1fr; /* Two equal columns */
+    gap: 2rem;
+  }
+}
+
+/* Left column (Subject, Date, Priority) */
+.complaint-left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Right column (Attachment, Description) */
+.complaint-right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Ensure description textarea takes full height */
+.complaint-description-group {
+  flex-grow: 1;
+}
+
+.complaint-description-group textarea {
+  height: 100%;
+  min-height: 200px;
+}

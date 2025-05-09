@@ -1,3 +1,4 @@
+// server/src/middlewares/auth.middleware.js
 import jwt from 'jsonwebtoken';
 const { verify } = jwt;
 import { JWT_SECRET } from '../config/env.config.js';
@@ -16,6 +17,7 @@ const ROLES = {
  * @description Authentication middleware to protect routes
  * @returns {Function} Middleware function
  */
+// In auth.middleware.js
 export const protect = catchAsync(async (req, res, next) => {
   // 1) Get token from header or cookie
   let token;
@@ -146,9 +148,11 @@ const handleUserAuth = async (decoded, req, next) => {
     role: ROLES.USER,
     isAdmin: false,
     isDriver: false,
+    isDriver: false,
     ...currentUser.toObject()
   };
   next();
+};
 };
 
 /**

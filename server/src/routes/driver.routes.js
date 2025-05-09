@@ -1,3 +1,4 @@
+//server/src/routes/driver.routes.js
 import express from 'express';
 import * as driverController from '../controllers/driver.controller.js';
 import * as driverValidation from '../validations/driver.validation.js';
@@ -43,6 +44,7 @@ router.patch(
   '/me/update',
   restrictTo('driver'),
   uploadDriverPhoto,
+  validate(driverValidation.updateDriverSchema),
   validate(driverValidation.updateDriverSchema),
   driverController.updateCurrentDriver
 );
