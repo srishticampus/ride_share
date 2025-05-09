@@ -20,7 +20,6 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 
-
 function ViewRider() {
     const navigate = useNavigate()
     const [riders, setRiders] = useState([]);
