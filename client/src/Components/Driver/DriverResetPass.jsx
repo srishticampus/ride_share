@@ -3,7 +3,7 @@ import '../Style/ForgotPass.css';
 import LoginNav from '../Common/LoginNav';
 import Service from '../../Services/apiService';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { TextField, IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
@@ -71,7 +71,6 @@ const DriverResetPass = () => {
       };    return (
         <div className="reset-password-container">
             <LoginNav />
-            <ToastContainer />
             <main className="reset-password-main">
                 <h1 className="reset-password-title">RESET PASSWORD</h1>
                 <form className="reset-password-form" autoComplete="off" noValidate onSubmit={handleSubmit}>

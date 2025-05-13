@@ -4,6 +4,9 @@ import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 
 export const newDispute = catchAsync(async (req, res, next) => {
+   if (req.file) {
+    req.body.attachment = req.file.filename; // or req.file.path for full path
+  }
   const dispute = await Dispute.create(req.body);
 
   res.status(201).json({

@@ -1,0 +1,129 @@
+.rideHistory-container {
+    font-family: 'Arial, sans-serif';
+    padding: 20px;
+    margin-left: 250px;
+    margin-top: 60px;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+}
+
+.rideHistory-title {
+    color: #F1B92E;
+    margin-bottom: 30px;
+    text-align: center;
+    background-color: black;
+    padding: 10px;
+}
+
+.rideHistory-cardsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.rideHistory-card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.rideHistory-cardTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.rideHistory-iconCircle {
+    background-color: #F1B92E;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+}
+
+.rideHistory-iconCircle-sm {
+    width: 30px;
+    height: 30px;
+}
+
+.rideHistory-iconCircle-sm .MuiSvgIcon-root {
+    font-size: 18px;
+    color: black;
+}
+
+.rideHistory-id {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+
+.rideHistory-transactionInfo {
+    text-align: right;
+}
+
+.rideHistory-transactionLabel {
+    color: #777;
+    margin: 0;
+}
+
+.rideHistory-transactionValue {
+    font-weight: bold;
+    margin: 0;
+}
+
+.rideHistory-detailsRow {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.rideHistory-detailItem {
+    display: flex;
+    align-items: center;
+}
+
+.rideHistory-locationInfo {
+    margin: 0;
+}
+
+.rideHistory-locationValue {
+    font-weight: bold;
+    margin: 0;
+}
+
+.rideHistory-paymentSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rideHistory-paymentAmount {
+    margin: 0;
+}
+
+.rideHistory-paidStatus {
+    background-color: #e6f7e6;
+    color: #2e7d32;
+    padding: 5px 10px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.rideHistory-paidIcon {
+    color: #2e7d32;
+    font-size: 18px;
+    margin-right: 5px;
+}
+
+@media (max-width: 1200px) {
+    .rideHistory-cardsGrid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -255,7 +255,7 @@ router.use(protect);
  *             schema:
  *               $ref: '#/components/schemas/User'
  */
-router.get('/me', UserController.getMe);
+router.get('/userme', UserController.getMe);
 
 /**
  * @swagger

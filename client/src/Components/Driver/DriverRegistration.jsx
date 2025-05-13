@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TextField, Button, FormLabel, CircularProgress, InputAdornment, IconButton } from '@mui/material';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Link, useNavigate } from 'react-router-dom';
 import Service from '../../Services/apiService';
@@ -8,6 +8,7 @@ import Logo from '../../Assets/RideShare.png';
 import '../Style/DriverRegistration.css';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LandingNav from '../Common/LandingNav'
+
 function DriverRegistration() {
   const navigate = useNavigate();
   const [driver, setDriver] = useState({
@@ -24,7 +25,6 @@ function DriverRegistration() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleClickShowConfirmPassword = () => setShowConfirmPassword((show) => !show);
 
@@ -34,7 +34,40 @@ function DriverRegistration() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setDriver(prev => ({ ...prev, [name]: value }));
+    
+    // Apply different validation based on field name
+    let filteredValue = value;
+    
+    switch(name) {
+      case 'fullname':
+        // Only allow alphabets and spaces
+        filteredValue = value.replace(/[^a-zA-Z\s]/g, '');
+        break;
+      case 'phoneNumber':
+        // Only allow numbers and limit to 10 digits
+        filteredValue = value.replace(/\D/g, '').slice(0, 10);
+        break;
+      case 'licenseNumber':
+        // Only allow numbers and limit to 16 digits
+        filteredValue = value.replace(/\D/g, '').slice(0, 16);
+        break;
+      case 'vehicleRegNumber':
+      case 'email':
+      case 'password':
+      case 'confirmPassword':
+      default:
+        // No special filtering for other fields
+        break;
+    }
+    
+    setDriver(prev => ({ ...prev, [name]: filteredValue }));
+  };
+
+  const handleVehicleRegChange = (e) => {
+    const { value } = e.target;
+    // Only allow alphanumeric characters and convert to uppercase
+    const filteredValue = value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    setDriver(prev => ({ ...prev, vehicleRegNumber: filteredValue }));
   };
 
   const handleFileChange = (e) => {
@@ -44,6 +77,7 @@ function DriverRegistration() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Field presence validation
     if (!driver.email || !driver.password || !driver.fullname ||
       !driver.phoneNumber || !driver.licenseNumber ||
       !driver.vehicleRegNumber || !driver.driverPic) {
@@ -51,8 +85,39 @@ function DriverRegistration() {
       return;
     }
 
+    // Email validation
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(driver.email)) {
       toast.error('Please enter a valid email address');
+      return;
+    }
+
+    // Full name validation (only alphabets)
+    if (!/^[a-zA-Z\s]+$/.test(driver.fullname)) {
+      toast.error('Full name should only contain alphabets');
+      return;
+    }
+
+    // Phone number validation (exactly 10 digits)
+    if (!/^\d{10}$/.test(driver.phoneNumber)) {
+      toast.error('Phone number must be 10 digits');
+      return;
+    }
+
+    // License number validation (exactly 16 digits)
+    if (!/^\d{16}$/.test(driver.licenseNumber)) {
+      toast.error('License number must be 16 digits');
+      return;
+    }
+
+    // Vehicle registration validation (alphanumeric, no spaces/special chars)
+    if (!/^[A-Z0-9]+$/.test(driver.vehicleRegNumber)) {
+      toast.error('Vehicle registration should be uppercase alphanumeric with no spaces or special characters');
+      return;
+    }
+
+    // Password validation
+    if (driver.password.length < 8) {
+      toast.error('Password must be at least 8 characters long');
       return;
     }
 
@@ -82,21 +147,21 @@ function DriverRegistration() {
         setTimeout(() => {
           navigate('/driver-login');
         }, 2000);
-
       } else {
         toast.error(response.message);
       }
     } catch (error) {
       console.error('Registration error:', error);
 
-      if (error.message.includes('Cast to Number failed')) {
-        toast.error('Server error: Invalid email format. Please try again or contact support.');
-      } else
-        if (error.message) {
-          toast.error(error.message);
-        } else {
-          toast.error(error.message || 'An error occurred during registration');
-        }
+      if (error.message && error.message.includes('E11000 duplicate key error') && 
+          error.message.includes('licenseNumber')) {
+        toast.error('This license number is already registered');
+      } 
+      else if (error.message) {
+        toast.error(error.message);
+      } else {
+        toast.error('An error occurred during registration');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -105,7 +170,6 @@ function DriverRegistration() {
   return (
     <div className="registration-container">
       <LandingNav />
-      <ToastContainer />
       <div className="registration-logo">
         <img src={Logo} alt="Company Logo" className="logo-image" />
       </div>
@@ -126,6 +190,10 @@ function DriverRegistration() {
                 fullWidth
                 margin="normal"
                 required
+                inputProps={{ 
+                  pattern: "[a-zA-Z\\s]*",
+                  title: "Only alphabets and spaces are allowed"
+                }}
               />
 
               <FormLabel className="reg-form-label">Email *</FormLabel>
@@ -139,11 +207,16 @@ function DriverRegistration() {
                 margin="normal"
                 placeholder="Enter your email"
                 required
+                inputProps={{
+                  pattern: "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$",
+                  title: "Please enter a valid email address"
+                }}
               />
 
               <FormLabel className="reg-form-label">Phone Number *</FormLabel>
               <TextField
                 name="phoneNumber"
+                type="tel"
                 value={driver.phoneNumber}
                 autoComplete="off"
                 onChange={handleInputChange}
@@ -152,20 +225,27 @@ function DriverRegistration() {
                 margin="normal"
                 required
                 placeholder="Enter 10-digit phone number"
-                inputProps={{ maxLength: 10 }}
+                inputProps={{ 
+                  maxLength: 10,
+                  pattern: "\\d{10}",
+                  title: "Please enter exactly 10 digits"
+                }}
               />
 
               <FormLabel className="reg-form-label">Vehicle Registration *</FormLabel>
               <TextField
                 name="vehicleRegNumber"
                 value={driver.vehicleRegNumber}
-                onChange={handleInputChange}
+                onChange={handleVehicleRegChange}
                 className="form-input"
                 fullWidth
-                placeholder="Enter Vehicle Registration number"
-
+                placeholder="Enter Vehicle Registration"
                 margin="normal"
                 required
+                inputProps={{
+                  pattern: "[A-Z0-9]+",
+                  title: "Only uppercase alphanumeric characters are allowed"
+                }}
               />
             </div>
 
@@ -177,9 +257,14 @@ function DriverRegistration() {
                 onChange={handleInputChange}
                 className="form-input"
                 fullWidth
-                placeholder="Enter License Number"
+                placeholder="Enter 16-digit License Number"
                 margin="normal"
                 required
+                inputProps={{
+                  maxLength: 16,
+                  pattern: "\\d{16}",
+                  title: "Please enter exactly 16 digits"
+                }}
               />
 
               <FormLabel className="reg-form-label">Password *</FormLabel>
@@ -192,7 +277,7 @@ function DriverRegistration() {
                 fullWidth
                 margin="normal"
                 autoComplete="new-password"
-                placeholder="Enter password (min 8 characters)"
+                placeholder="Enter password"
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -202,7 +287,6 @@ function DriverRegistration() {
                         onMouseDown={handleMouseDownPassword}
                         edge="end"
                         style={{ color: '#f1b92e' }}
-
                       >
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
@@ -215,13 +299,13 @@ function DriverRegistration() {
               <FormLabel className="reg-form-label">Confirm Password *</FormLabel>
               <TextField
                 name="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}  // Changed from showPassword to showConfirmPassword
+                type={showConfirmPassword ? "text" : "password"} 
                 value={driver.confirmPassword}
                 onChange={handleInputChange}
                 className="form-input"
                 fullWidth
                 autoComplete="new-password"
-                placeholder="Enter password (min 8 characters)"
+                placeholder="Confirm your password"
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">

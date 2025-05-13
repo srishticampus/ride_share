@@ -67,8 +67,7 @@ export default function RiderNav({onAvatarClick}) {
             </Button>
 
             </Link>
-            <Link>
-            </Link>
+            <Link to="/User-Complaints">
             <Button
               sx={{
                 color: 'white',
@@ -80,6 +79,9 @@ export default function RiderNav({onAvatarClick}) {
             >
               COMPLAINTS
             </Button>
+
+
+            </Link>
             <Link to="/User-payment">
             <Button
               sx={{
@@ -94,6 +96,7 @@ export default function RiderNav({onAvatarClick}) {
             </Button>
 
             </Link>
+            <Link to='/User-ride-History'>
             <Button
               sx={{
                 color: 'white',
@@ -105,6 +108,8 @@ export default function RiderNav({onAvatarClick}) {
             >
               RIDE HISTORY
             </Button>
+            </Link>
+           
           </div>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             <Button

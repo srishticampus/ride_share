@@ -52,9 +52,9 @@ import { Schema, model } from "mongoose";
  *           description: Date when ride was last updated
  */
 const RideSchema = new Schema({
-  driverId: {
+  VehicleId: {
     type: Schema.Types.ObjectId,
-    ref: 'Driver'
+    ref: 'Vehicle'
   },
   riderId: {
     type: Schema.Types.ObjectId,

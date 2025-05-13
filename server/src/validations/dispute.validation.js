@@ -1,18 +1,17 @@
-//server/src/validations/dispute.validation.js
+// server/src/validations/dispute.validation.js
 import Joi from 'joi';
 
 export const disputeSchema = Joi.object({
-  reportedBy: Joi.string().hex().length(24).required(),
-  rideId: Joi.string().hex().length(24).required(),
-  disputeType: Joi.string().valid('Payment', 'Behavior', 'Service', 'Other').required(),
-  description: Joi.string().required(),
-  resolutionStatus: Joi.string().valid('Pending', 'Resolved', 'Rejected')
+  reportedBy: Joi.string().hex().length(24),
+  driverId: Joi.string().hex().length(24),
+  subject: Joi.string().max(100).required(),
+  description: Joi.string().max(500).required(),
+  priorityLevel: Joi.string().valid('High', 'Medium', 'Low').required(),
+  incidentDate: Joi.date().less('now').required(),
+  resolutionStatus: Joi.string().valid('Pending', 'Resolved', 'Rejected').optional()
 });
 
-export const updateDisputeSchema = disputeSchema.keys({
-  reportedBy: Joi.string().hex().length(24),
-  rideId: Joi.string().hex().length(24),
-  disputeType: Joi.string().valid('Payment', 'Behavior', 'Service', 'Other'),
-  description: Joi.string(),
-  resolutionStatus: Joi.string().valid('Pending', 'Resolved', 'Rejected')
-}).min(1);
+export const updateDisputeSchema = disputeSchema.fork(
+  ['reportedBy', 'driverId', 'subject', 'priorityLevel', 'incidentDate'],
+  (schema) => schema.optional()
+).min(1);

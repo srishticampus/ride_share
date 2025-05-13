@@ -47,7 +47,7 @@ const router = express.Router();
  *   description: Ride management endpoints
  */
 
-router.use(protect);
+// router.use(protect);
 
 /**
  * @swagger

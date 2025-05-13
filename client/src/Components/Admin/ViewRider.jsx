@@ -20,10 +20,6 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 
-  const UserProfile = da.driverPic 
-    ? `${imageBaseUrl}${drivers.driverPic}`
-    : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"; 
-
 function ViewRider() {
     const navigate = useNavigate()
     const [riders, setRiders] = useState([]);
@@ -32,6 +28,7 @@ function ViewRider() {
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
+
 
     useEffect(() => {
         const fetchRiders = async () => {
@@ -53,17 +50,17 @@ function ViewRider() {
 
                 if (err.status === "fail") {
                     toast.error('Session expired. Please login again.');
-                    setTimeout(() => {
-                        navigate("/admin-login")
-                    }, 2000);
+                    // setTimeout(() => {
+                    //     navigate("/admin-login")
+                    // }, 2000);
                 }
             }
         };
 
         fetchRiders();
     }, []);
-    const UserProfile = riders.data.users 
-    ? `${imageBaseUrl}${riders.data.users}`
+    const UserProfile = riders.data?.users 
+    ? `${imageBaseUrl}${riders.data?.users}`
     : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"; 
 
     const filteredRiders = riders.filter(rider =>

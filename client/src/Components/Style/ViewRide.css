@@ -58,7 +58,6 @@
   color: #f59e0b;
 }
 
-/* Ride cards grid */
 .view-ride-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -207,13 +206,13 @@
 }
 .view-Req-details {
   display: flex;
-  align-items: center; /* Vertically center icon and text */
-  margin-bottom: 4px; /* Reduced spacing between lines */
-  font-size: 14px; /* Adjust font size as needed */
-  color: #6b7280; /* Match your color scheme */
+  align-items: center;
+  margin-bottom: 4px; 
+  font-size: 14px; 
+  color: #6b7280; 
 }
 
 .view-ride-marker {
-  margin-right: 8px; /* Space between icon and text */
-  font-size: 16px; /* Match icon size to text */
+  margin-right: 8px; 
+  font-size: 16px; 
 }

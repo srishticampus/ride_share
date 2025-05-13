@@ -10,7 +10,6 @@ import rideRequestRoutes from "./rideReq.routes.js";
 import paymentRoutes from "./payment.routes.js";
 import ratingRoutes from "./rating.routes.js";
 import disputeRoutes from "./disputes.routes.js";
-import DriverComplantsRoute from './DriverComplaints.route.js'
 const router = express.Router();
 // router.use("/", (req, res) => {
 //   res.status(200).json({
@@ -20,7 +19,6 @@ const router = express.Router();
 // });
 router.use("/admin", adminRoutes);
 router.use("/drivers", driverRoutes);
-router.use("/driver-complaints", DriverComplantsRoute);
 router.use("/users", userRoutes);
 router.use("/vehicles", vehicleRoutes);
 router.use("/profiles", profileRoutes);

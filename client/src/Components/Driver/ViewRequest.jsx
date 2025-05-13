@@ -16,7 +16,7 @@ const ViewRequest = () => {
             <DriverNav />
 
             <main className="view-ride-main">
-                <h1 className="view-ride-title">VIEW REQUESTS</h1>
+                <h1 className="payment-title" style={{marginTop:"50px"}}>VIEW REQUESTS</h1>
 
                 <section className="view-ride-grid">
                     {[...Array(100)].map((_, index) => (

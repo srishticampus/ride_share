@@ -18,10 +18,11 @@ export const driverLoginSchema = Joi.object({
 export const updateDriverSchema = Joi.object({
   phoneNumber: Joi.string(),
   licenseNumber: Joi.string(),
-  fullname: Joi.string()
+  fullname: Joi.string(),
+  vehicleRegNumber:Joi.string()
 });
 export const findByPhoneSchema = Joi.object({
-  phoneNumber: Joi.string().required().messages({
+  phoneNumber: Joi.number().required().messages({
     'string.empty': 'Phone number is required',
     'any.required': 'Phone number is required'
   })
@@ -37,5 +38,7 @@ export const forgotPasswordSchema = Joi.object({
 export const meUpdateDriverSchema = Joi.object({
   phoneNumber: Joi.string(),
   email: Joi.string().email(),
-  fullname: Joi.string()
+  fullname: Joi.string(),
+  vehicleRegNumber:Joi.string()
+
 });

@@ -4,7 +4,7 @@ import DisputeController from '../controllers/disputes.controller.js';
 import { disputeSchema } from '../validations/dispute.validation.js';
 import { validate } from '../middlewares/validation.middleware.js';
 import { protect, restrictTo } from '../middlewares/auth.middleware.js';
-
+import { uploadDisputeAttachment } from '../middlewares/upload.middleware.js';
 const router = express.Router();
 
 /**
@@ -66,7 +66,7 @@ router.use(protect);
  *       400:
  *         description: Validation error
  */
-router.post('/', validate(disputeSchema), DisputeController.newDispute);
+router.post('/',uploadDisputeAttachment, validate(disputeSchema), DisputeController.newDispute);
 
 /**
  * @swagger

@@ -16,11 +16,12 @@ import {
     MenuItem
 } from '@mui/material';
 import Logo from '../../Assets/Logo1.png';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 export default function DriverNav({ onAvatarClick }) {
+
     const navigate = useNavigate();
     const [openLogoutDialog, setOpenLogoutDialog] = React.useState(false);
     const [historyAnchorEl, setHistoryAnchorEl] = React.useState(null);
@@ -37,6 +38,7 @@ export default function DriverNav({ onAvatarClick }) {
     const handleConfirmLogout = () => {
         localStorage.removeItem("driverData");
         localStorage.removeItem("driverToken");
+        localStorage.removeItem("driverId");
 
         toast.success('Driver logged out');
 
@@ -56,7 +58,6 @@ export default function DriverNav({ onAvatarClick }) {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <ToastContainer />
             <AppBar position="fixed" style={{ backgroundColor: 'black', zIndex: '2' }}>
 
                 <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -78,7 +79,9 @@ export default function DriverNav({ onAvatarClick }) {
                         >
                             HOME
                         </Button>
-                        <Link to="/driver-Add-Vehicle">
+                        <Link
+                            to="/driver-Add-Vehicle"
+                        >
                             <Button
                                 sx={{
                                     color: 'white',
@@ -87,7 +90,6 @@ export default function DriverNav({ onAvatarClick }) {
                                         color: '#FFD05A'
                                     }
                                 }}
-
                             >
                                 VEHICLE
                             </Button>
@@ -156,14 +158,14 @@ export default function DriverNav({ onAvatarClick }) {
                             <MenuItem
                                 onClick={handleHistoryClose}
                                 component={Link}
-                            // to="/Ride-history"
+                                to="/driver-View-history"
                             >
                                 Ride History
                             </MenuItem>
                             <MenuItem
                                 onClick={handleHistoryClose}
                                 component={Link}
-                            // to="/Payment-history"
+                                to="/driver-View-PaymentHistory"
                             >
                                 Payment History
                             </MenuItem>

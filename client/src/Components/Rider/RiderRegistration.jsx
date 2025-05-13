@@ -37,10 +37,8 @@ function RiderRegistration() {
     setRider(prev => ({ ...prev, [name]: value }));
   };
 
-  // Only allow numeric input for phone numbers
   const handlePhoneNumberChange = (e) => {
     const { name, value } = e.target;
-    // Remove all non-digit characters
     const numericValue = value.replace(/\D/g, '');
     setRider(prev => ({ ...prev, [name]: numericValue }));
   };

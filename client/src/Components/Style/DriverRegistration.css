@@ -70,9 +70,9 @@
   color: black;
   font-size: 16px;
 }
-.form-input .MuiOutlinedInput-root {
+/* .form-input .MuiOutlinedInput-root {
   color: white;
-}
+} */
 
 .form-input .MuiOutlinedInput-notchedOutline {
   border-color: white;

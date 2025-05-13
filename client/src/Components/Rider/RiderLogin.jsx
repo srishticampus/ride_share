@@ -43,7 +43,8 @@ function RiderLogin() {
       const response = await apiService.login(credentials);
       console.log(response);
 
-      localStorage.setItem("riderToken", JSON.stringify(response.token) || "")
+      localStorage.setItem("riderId", response.data.user._id)
+
       toast.success("Login successful! Redirecting...");
       setTimeout(() => {
         navigate("/User-home-page");

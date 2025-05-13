@@ -21,8 +21,6 @@ import RiderEditProfile from './RiderEditProfile'
 import apiService from '../../Services/apiService'
 
 function RiderHomePage() {
-    const riderData = (localStorage.getItem("riderToken"));
-    console.log(riderData);
 
     const [showProfileCard, setShowProfileCard] = useState(false);
     const onAvatarClick = () => {
@@ -52,7 +50,6 @@ function RiderHomePage() {
         fetchCurrentUser();
     }, []);
 
-    console.log(currentUser);
 
     return (
         <div className="landing-container">

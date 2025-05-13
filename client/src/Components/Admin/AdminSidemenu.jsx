@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
     Avatar, Dialog, DialogTitle, DialogContent,
     DialogActions, Button, List, ListItem,
-    ListItemIcon, ListItemText, Collapse, Typography
+    ListItemIcon, ListItemText, Collapse, Typography,DialogContentText
 } from '@mui/material';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -16,7 +16,7 @@ import {
 } from '@mui/icons-material';
 import Logo from '../../Assets/RideShare.png';
 import '../Style/AdminSidemenu.css';
-
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 function AdminSidemenu() {
     const location = useLocation();
     const navigate = useNavigate();
@@ -34,8 +34,9 @@ function AdminSidemenu() {
                 { name: 'View All Riders', path: '/admin-view-riders' }
             ]
         },
-        { name: 'Complaints', icon: <ErrorOutlineIcon />, path: '#' },
-        { name: 'Ride History', icon: <HistoryIcon />, path: '#' },
+        { name: 'Complaints', icon: <ErrorOutlineIcon />, path: '/admin-complaints' },
+        { name: 'Ride History', icon: <HistoryIcon />, path: '/admin-ride-history' },
+        { name: 'Feedbacks', icon: <ChatBubbleOutlineIcon />, path: '/admin-feedback' },
         { name: 'Logout', icon: <LogoutIcon />, action: () => setOpenLogoutDialog(true) }
     ];
 
@@ -133,48 +134,80 @@ function AdminSidemenu() {
                 open={openLogoutDialog}
                 onClose={() => setOpenLogoutDialog(false)}
                 PaperProps={{
-                    sx: {
-                        width: '350px',
-                        borderRadius: '16px',
-                        padding: '20px'
+                    style: {
+                        minWidth: '400px',
+                        borderRadius: '12px',
+                        overflow: 'hidden'
                     }
                 }}
             >
                 <DialogTitle
-                    sx={{
-                        textAlign: "center",
-                        fontWeight: "bold",
-                        fontSize: "24px",
-                        paddingBottom: '10px',
-                        color: 'black'
+                    style={{
+                        backgroundColor: '#F1B92E',
+                        color: 'black',
+                        fontWeight: 'bold',
+                        padding: '16px 24px',
+                        textAlign:"center"
                     }}
                 >
                     Confirm Logout
                 </DialogTitle>
-                <DialogContent sx={{ textAlign: 'center' }}>
-                    <Typography variant="body1" sx={{ fontSize: '18px' }}>
+                <DialogContent style={{ backgroundColor: 'white', padding: '20px 24px' }}>
+                    <DialogContentText
+                        style={{
+                            color: 'black',
+                            fontSize: '16px',
+                            textAlign:"center"
+                        }}
+                    >
                         Are you sure you want to logout?
-                    </Typography>
+                    </DialogContentText>
                 </DialogContent>
-                <DialogActions sx={{ justifyContent: "center", gap: '20px', padding: '20px' }}>
+                <DialogActions style={{
+                    backgroundColor: 'white',
+                    padding: '16px 24px',
+                    justifyContent: 'center',
+                    gap: '20px'
+                }}>
                     <Button
                         onClick={() => setOpenLogoutDialog(false)}
                         variant="outlined"
-                        sx={{ minWidth: '100px' }}
+                        style={{
+                            color: '#F1B92E',
+                            border: '2px solid #F1B92E',
+                            backgroundColor: 'white',
+                            borderRadius: '8px',
+                            padding: '8px 24px',
+                            fontSize: '14px',
+                            fontWeight: 'bold',
+                            textTransform: 'none',
+                            minWidth: '100px'
+                        }}
                     >
-                        Cancel
+                        No
                     </Button>
                     <Button
                         onClick={handleLogout}
-                        color="error"
+                        autoFocus
                         variant="contained"
-                        sx={{ minWidth: '100px' }}
+                        style={{
+                            backgroundColor: '#F1B92E',
+                            color: 'black',
+                            borderRadius: '8px',
+                            padding: '8px 24px',
+                            fontSize: '14px',
+                            fontWeight: 'bold',
+                            textTransform: 'none',
+                            minWidth: '100px',
+                            '&:hover': {
+                                backgroundColor: '#FFD700'
+                            }
+                        }}
                     >
-                        Logout
+                        Yes
                     </Button>
                 </DialogActions>
-            </Dialog>
-        </div>
+            </Dialog>        </div>
     );
 }
 

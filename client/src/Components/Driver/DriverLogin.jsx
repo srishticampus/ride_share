@@ -4,7 +4,7 @@ import { TextField, FormLabel, Button, InputAdornment, IconButton } from "@mui/m
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import apiService from "../../Services/apiService";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../Style/Login.css";
 import { Link } from "react-router-dom";
@@ -43,7 +43,6 @@ function DriverLogin() {
             const response = await apiService.driverLogin(credentials);
             console.log(response);
 
-            localStorage.setItem("driverData", JSON.stringify(response.data.driver))
 
             toast.success("Login successful! Redirecting...");
 
@@ -64,7 +63,6 @@ function DriverLogin() {
     return (
         <div className="admin-login-main-container">
             <LandingNav />
-            <ToastContainer />
             <img src={Logo} alt="Company Logo" />
             <div className="admin-login-form">
                 <h2>DRIVER LOG IN</h2>
