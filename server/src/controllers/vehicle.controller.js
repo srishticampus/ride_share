@@ -1,5 +1,6 @@
 //server/src/controllers/vehicle.controller.js
 import {Vehicle} from '../models/index.js';
+import {Driver} from '../models/index.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 
@@ -17,12 +18,13 @@ export const AddVehicleDtl = catchAsync(async (req, res, next) => {
     insuranceStatus
   } = req.body;
 
-  // Check if vehicle with same registration exists
+  // Check if vehicle with same registration number already exists
   const existingVehicle = await Vehicle.findOne({ vehicleRegistrationNo });
   if (existingVehicle) {
     return next(new AppError('Vehicle with this registration number already exists', 400));
   }
 
+  // Create new vehicle
   const vehicle = await Vehicle.create({
     vehicleRegistrationNo,
     vehicleMake,
@@ -36,6 +38,15 @@ export const AddVehicleDtl = catchAsync(async (req, res, next) => {
     insuranceStatus
   });
 
+  // Update driver's vehicleId field
+  const driver = await Driver.findById(driverId);
+  if (!driver) {
+    return next(new AppError('Driver not found', 404));
+  }
+
+  driver.vehicleId = vehicle._id;
+  await driver.save();
+
   res.status(201).json({
     status: 'success',
     data: {
@@ -43,6 +54,7 @@ export const AddVehicleDtl = catchAsync(async (req, res, next) => {
     }
   });
 });
+
 
 export const updateDetails = catchAsync(async (req, res, next) => {
   const vehicle = await Vehicle.findByIdAndUpdate(req.params.id, req.body, {

@@ -7,6 +7,17 @@ import { uploadDriverPhoto } from '../middlewares/upload.middleware.js';
 import { protect, restrictTo, verifyDriver } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
+router.post(
+  '/findByDriverPh',
+  validate(driverValidation.findByPhoneSchema),
+  driverController.FindByPhonenumber
+);
+
+router.post(
+  '/forgotPass/:phoneNumber',
+  validate(driverValidation.forgotPasswordSchema),
+  driverController.ForgotPassword
+);
 
 // Public routes
 router.post(
@@ -22,17 +33,23 @@ router.post(
   driverController.login
 );
 
-router.post(
-  '/forgot-password',
-  validate(driverValidation.forgotPasswordSchema),
-  driverController.ForgotPassword
-);
+// router.post(
+//   '/forgot-password',
+//   validate(driverValidation.forgotPasswordSchema),
+//   driverController.ForgotPassword
+// );
+// router.patch(
+//   '/me/update-password',
+//   restrictTo('driver'),
+//   validate(driverValidation.updatePasswordSchema),
+//   driverController.updatePassword
+// );
 
-router.patch(
-  '/reset-password/:token',
-  validate(driverValidation.resetPasswordSchema),
-  driverController.resetPassword
-);
+// router.patch(
+//   '/reset-password/:token',
+//   validate(driverValidation.resetPasswordSchema),
+//   driverController.resetPassword
+// );
 
 // Protected routes (require authentication)
 router.use(protect);
@@ -45,16 +62,9 @@ router.patch(
   restrictTo('driver'),
   uploadDriverPhoto,
   validate(driverValidation.updateDriverSchema),
-  validate(driverValidation.updateDriverSchema),
   driverController.updateCurrentDriver
 );
 
-router.patch(
-  '/me/update-password',
-  restrictTo('driver'),
-  validate(driverValidation.updatePasswordSchema),
-  driverController.updatePassword
-);
 
 router.get(
   '/me/vehicle',

@@ -2,13 +2,12 @@
 import Joi from 'joi';
 
 export const disputeSchema = Joi.object({
-  reportedBy: Joi.string().hex().length(24).required(),
-  driverId: Joi.string().hex().length(24).required(),
+  reportedBy: Joi.string().hex().length(24),
+  driverId: Joi.string().hex().length(24),
   subject: Joi.string().max(100).required(),
   description: Joi.string().max(500).required(),
   priorityLevel: Joi.string().valid('High', 'Medium', 'Low').required(),
   incidentDate: Joi.date().less('now').required(),
-  attachment: Joi.string().optional(),
   resolutionStatus: Joi.string().valid('Pending', 'Resolved', 'Rejected').optional()
 });
 

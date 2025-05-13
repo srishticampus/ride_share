@@ -24,7 +24,7 @@ import { useNavigate } from 'react-router-dom';
 function DriverRequests() {
     const navigate = useNavigate();
     const [allDrivers, setAllDrivers] = useState([]);
-    const [drivers, setDrivers] = useState([]);
+    const [pendingDrivers, setPendingDrivers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
@@ -37,67 +37,72 @@ function DriverRequests() {
                 const response = await Service.getAllDrivers();
                 console.log('API Response:', response);
                 
-                if (response.data && response.data.drivers) {
-                    setAllDrivers(response.data.drivers);
-                    const pendingDrivers = response.data.drivers.filter(
-                        driver => driver.backgroundCheck === false
-                    );
-                    setDrivers(pendingDrivers);
-                } else {
-                    throw new Error('Invalid data format received from API');
+                // Handle both possible response structures
+                const driversData = response.data?.drivers || response.drivers || [];
+                
+                if (!driversData.length) {
+                    throw new Error('No drivers data available');
                 }
+
+                setAllDrivers(driversData);
+                
+                // Filter for pending drivers (backgroundCheck: false)
+                const pending = driversData.filter(driver => 
+                    driver.backgroundCheck === false || 
+                    driver.backgroundCheck === undefined
+                );
+                
+                setPendingDrivers(pending);
                 setLoading(false);
+
             } catch (err) {
                 console.error('Error fetching drivers:', err);
-                const errorMessage = err.response?.data?.message || err.message;
-                setError(errorMessage);
+                setError(err.response?.data?.message || err.message || 'Failed to load drivers');
                 setLoading(false);
 
                 if (err.response?.data?.status === "fail") {
                     toast.error('Session expired. Please login again.');
-                    setTimeout(() => {
-                        navigate("/admin-login");
-                    }, 2000);
+                    setTimeout(() => navigate("/admin-login"), 2000);
                 }
             }
         };
 
         fetchDrivers();
-    }, []);
+    }, [navigate]);
 
     const handleAccept = async (driverId) => {
         try {
-            const response = await Service.approveDriver(driverId, true); 
-            console.log('Accept Response:', response);
+            await Service.approveDriver(driverId, true);
             toast.success('Driver accepted successfully');
-            
-            setDrivers(prevDrivers => prevDrivers.filter(driver => driver._id !== driverId));
+            setPendingDrivers(prev => prev.filter(driver => driver._id !== driverId));
         } catch (error) {
             console.error('Error accepting driver:', error);
-            const errorMessage = error.response?.data?.message || error.message;
-            toast.error(`Error accepting driver: ${errorMessage}`);
+            toast.error(error.response?.data?.message || 'Failed to accept driver');
         }
     };
     
     const handleReject = async (driverId) => {
         try {
-            const response = await Service.rejectDriver(driverId); 
-            console.log('Reject Response:', response);
+            await Service.rejectDriver(driverId);
             toast.success('Driver rejected successfully');
-    
-            setDrivers(prevDrivers => prevDrivers.filter(driver => driver._id !== driverId));
+            setPendingDrivers(prev => prev.filter(driver => driver._id !== driverId));
         } catch (error) {
             console.error('Error rejecting driver:', error);
-            const errorMessage = error.response?.data?.message || error.message;
-            toast.error(`Error rejecting driver: ${errorMessage}`);
+            toast.error(error.response?.data?.message || 'Failed to reject driver');
         }
     };
-        const filteredDrivers = drivers.filter(driver =>
-        driver.fullname?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        driver.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        driver.phoneNumber?.toString().includes(searchQuery)
-    );
 
+    const filteredDrivers = pendingDrivers.filter(driver => {
+        if (!driver) return false;
+        const searchLower = searchQuery.toLowerCase();
+        return (
+            (driver.fullname?.toLowerCase().includes(searchLower)) ||
+            (driver.email?.toLowerCase().includes(searchLower)) ||
+            (driver.phoneNumber?.toString().includes(searchQuery))
+        );
+    });
+
+    // Pagination calculations
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredDrivers.slice(indexOfFirstItem, indexOfLastItem);
@@ -108,13 +113,13 @@ function DriverRequests() {
     };
 
     const handleItemsPerPageChange = (event) => {
-        setItemsPerPage(event.target.value);
-        setCurrentPage(1); 
+        setItemsPerPage(Number(event.target.value));
+        setCurrentPage(1);
     };
 
     const getProfileImageUrl = (driverPic) => {
-        if (!driverPic) return null;
-        return `${import.meta.env.VITE_API_URL}${driverPic}`;
+        if (!driverPic) return '';
+        return `${import.meta.env.VITE_API_URL || ''}${driverPic}`;
     };
 
     if (loading) {
@@ -137,10 +142,11 @@ function DriverRequests() {
     if (error) {
         return (
             <div className="admin-dashboard-container">
+                <ToastContainer/>
                 <AdminNav />
                 <AdminSidemenu />
                 <div className="dashboard-main-content">
-                    <h1 className='drivers-title'>P</h1>
+                    <h1 className='drivers-title'>DRIVER REQUESTS</h1>
                     <div className='container-search'>
                         <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                     </div>
@@ -152,6 +158,7 @@ function DriverRequests() {
 
     return (
         <div className="admin-dashboard-container">
+            <ToastContainer/>
             <AdminNav />
             <AdminSidemenu />
 
@@ -160,7 +167,7 @@ function DriverRequests() {
                 <div className='container-search'>
                     <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                 </div>
-                <h3>View All Drivers Requests</h3>
+                <h3>Pending Driver Verifications</h3>
 
                 <div className="riders-table-container">
                     <table className="riders-table">
@@ -177,92 +184,94 @@ function DriverRequests() {
                             </tr>
                         </thead>
                         <tbody>
-                            {currentItems.map((driver, index) => (
-                                <tr key={driver._id || index}>
-                                    <td>{indexOfFirstItem + index + 1}</td>
-                                    <td>{driver.fullname}</td>
-                                    <td>
-                                        <Avatar
-                                            src={getProfileImageUrl(driver.driverPic)}
-                                            alt={driver.fullname}
-                                            sx={{ width: 40, height: 40 }}
-                                        />
-                                    </td>
-                                    <td>{driver.email}</td>
-                                    <td>{driver.phoneNumber}</td>
-                                    <td>{driver.licenseNumber}</td>
-                                    <td>{driver.vehicleRegNumber}</td>
-                                    <td>
-                                        <IconButton 
-                                            color="success" 
-                                            onClick={() => handleAccept(driver._id)}
-                                            aria-label="accept"
-                                        >
-                                            <CheckCircleIcon />
-                                        </IconButton>
-                                        <IconButton 
-                                            color="error" 
-                                            onClick={() => handleReject(driver._id)}
-                                            aria-label="reject"
-                                        >
-                                            <CancelIcon />
-                                        </IconButton>
+                            {currentItems.length > 0 ? (
+                                currentItems.map((driver, index) => (
+                                    <tr key={driver._id || index}>
+                                        <td>{indexOfFirstItem + index + 1}</td>
+                                        <td>{driver.fullname || 'N/A'}</td>
+                                        <td>
+                                            <Avatar
+                                                src={getProfileImageUrl(driver.driverPic)}
+                                                alt={driver.fullname}
+                                                sx={{ width: 40, height: 40 }}
+                                            />
+                                        </td>
+                                        <td>{driver.email || 'N/A'}</td>
+                                        <td>{driver.phoneNumber || 'N/A'}</td>
+                                        <td>{driver.licenseNumber || 'N/A'}</td>
+                                        <td>{driver.vehicleRegNumber || 'N/A'}</td>
+                                        <td>
+                                            <IconButton 
+                                                color="success" 
+                                                onClick={() => handleAccept(driver._id)}
+                                                aria-label="accept"
+                                            >
+                                                <CheckCircleIcon />
+                                            </IconButton>
+                                            <IconButton 
+                                                color="error" 
+                                                onClick={() => handleReject(driver._id)}
+                                                aria-label="reject"
+                                            >
+                                                <CancelIcon />
+                                            </IconButton>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="8" className="no-results">
+                                        No pending driver verifications found
                                     </td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
                     </table>
-                    {filteredDrivers.length === 0 && (
-                        <div className="no-results">No pending driver verifications found</div>
-                    )}
                 </div>
 
-                <Box sx={{ 
-                    display: 'flex', 
-                    justifyContent: 'right', 
-                    alignItems: 'center', 
-                    mt: 3,
-                    p: 2,
-                    borderRadius: 1,
-                    gap: 6
-                }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Typography variant="body2" sx={{ mr: 2 }}>
-                            Items per page:
-                        </Typography>
-                        <FormControl size="small" sx={{ minWidth: 80 }}>
-                            <Select
-                                value={itemsPerPage}
-                                onChange={handleItemsPerPageChange}
-                                displayEmpty
-                                inputProps={{ 'aria-label': 'Items per page' }}
-                            >
-                                <MenuItem value={5}>5</MenuItem>
-                                <MenuItem value={10}>10</MenuItem>
-                                <MenuItem value={20}>20</MenuItem>
-                                <MenuItem value={50}>50</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Box>
+                {filteredDrivers.length > 0 && (
+                    <Box sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'right', 
+                        alignItems: 'center', 
+                        mt: 3,
+                        p: 2,
+                        borderRadius: 1,
+                        gap: 6
+                    }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Typography variant="body2" sx={{ mr: 2 }}>
+                                Items per page:
+                            </Typography>
+                            <FormControl size="small" sx={{ minWidth: 80 }}>
+                                <Select
+                                    value={itemsPerPage}
+                                    onChange={handleItemsPerPageChange}
+                                    displayEmpty
+                                    inputProps={{ 'aria-label': 'Items per page' }}
+                                >
+                                    <MenuItem value={5}>5</MenuItem>
+                                    <MenuItem value={10}>10</MenuItem>
+                                    <MenuItem value={20}>20</MenuItem>
+                                    <MenuItem value={50}>50</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Box>
 
-                    <Typography variant="body2">
-                        Page {indexOfFirstItem + 1} - {Math.min(indexOfLastItem, filteredDrivers.length)} of {filteredDrivers.length}
-                    </Typography>
-                    <Pagination 
-                        count={totalPages} 
-                        page={currentPage} 
-                        onChange={handlePageChange} 
-                        shape="rounded" 
-                        color="primary"
-                        showFirstButton
-                        showLastButton
-                        sx={{ 
-                            '& .MuiPaginationItem-root': {
-                                fontSize: '0.875rem'
-                            }
-                        }}
-                    />
-                </Box>
+                        <Typography variant="body2">
+                            Page {currentPage} of {totalPages} ({filteredDrivers.length} items)
+                        </Typography>
+                        <Pagination 
+                            count={totalPages} 
+                            page={currentPage} 
+                            onChange={handlePageChange} 
+                            shape="rounded" 
+                            color="primary"
+                            showFirstButton
+                            showLastButton
+                        />
+                    </Box>
+                )}
             </div>
         </div>
     );

@@ -4,21 +4,10 @@ import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 
 export const newDispute = catchAsync(async (req, res, next) => {
-  // Add reportedBy from authenticated user
-  req.body.reportedBy = req.user.id;
-  
-  // Convert status to proper case if needed
-  if (req.body.resolutionStatus) {
-    req.body.resolutionStatus = req.body.resolutionStatus.charAt(0).toUpperCase() + 
-                               req.body.resolutionStatus.slice(1).toLowerCase();
+   if (req.file) {
+    req.body.attachment = req.file.filename; // or req.file.path for full path
   }
-
-  if (req.file) {
-    req.body.attachment = `/uploads/disputes/${req.file.filename}`;
-  }
-
   const dispute = await Dispute.create(req.body);
-console.log(req.body);
 
   res.status(201).json({
     status: 'success',
@@ -27,6 +16,7 @@ console.log(req.body);
     }
   });
 });
+
 export const disputeSolve = catchAsync(async (req, res, next) => {
   const dispute = await Dispute.findByIdAndUpdate(
     req.params.id,

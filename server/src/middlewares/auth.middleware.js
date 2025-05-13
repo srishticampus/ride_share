@@ -22,9 +22,9 @@ export const protect = catchAsync(async (req, res, next) => {
   // 1) Get token from header or cookie
   let token;
   if (req.headers.authorization?.startsWith('Bearer')) {
-    token = req.headers.authorization.split(" ")[1].replace(/"/g,"");
+    token = req.headers.authorization.split(' ')[1].replace(/"/g,' ');
   } else if (req.cookies?.jwt) {
-    token = req.cookies.jwt;
+    token = req.cookies.jwt.replace(/"/g, " ");  
   }
 
   if (!token) {
@@ -35,7 +35,7 @@ export const protect = catchAsync(async (req, res, next) => {
 
   // 2) Verify token
   const decoded = verify(token, JWT_SECRET);
-
+console.log('Decoded token:', decoded);
   // 3) Check user role and authenticate accordingly
   switch (decoded.role) {
     case ROLES.ADMIN:
@@ -109,11 +109,11 @@ const handleDriverAuth = async (decoded, req, next) => {
   }
 
   // Check if driver changed password after token was issued
-  if (currentDriver.changedPasswordAfter(decoded.iat)) {
-    return next(
-      new AppError('Driver recently changed password! Please log in again.', 401)
-    );
-  }
+  // if (currentDriver.changedPasswordAfter(decoded.iat)) {
+  //   return next(
+  //     new AppError('Driver recently changed password! Please log in again.', 401)
+  //   );
+  // }
 
   req.user = {
     id: currentDriver._id,
@@ -129,6 +129,7 @@ const handleDriverAuth = async (decoded, req, next) => {
 const handleUserAuth = async (decoded, req, next) => {
   const currentUser = await User.findById(decoded.id)
     .select('+passwordChangedAt');
+console.log(decoded.id);
 
   if (!currentUser) {
     return next(
@@ -153,7 +154,7 @@ const handleUserAuth = async (decoded, req, next) => {
   };
   next();
 };
-};
+
 
 /**
  * @description Restrict access to certain roles

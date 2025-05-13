@@ -52,17 +52,13 @@ const DisputeSchema = new Schema({
   reportedBy: {
     type: Schema.Types.ObjectId,
     ref: 'User',
-    required: [true, 'Reporter ID is required']
-  },
-  driverName: {
-    type: String,
-    required: [true, 'Subject is required'],
+    // required: [true, 'Reporter ID is required']
   },
 
   driverId: {
     type: Schema.Types.ObjectId,
     ref: 'Driver',
-    required: [true, 'Driver ID is required']
+    // required: [true, 'Driver ID is required']
   },
   subject: {
     type: String,
@@ -90,7 +86,7 @@ const DisputeSchema = new Schema({
     }
   },
   attachment: {
-    type: String, 
+    type: Object, 
     required: false
   },
   resolutionStatus: {

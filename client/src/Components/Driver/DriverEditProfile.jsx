@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import '../Style/RiderEditProfile.css';
 import {
   Box,
@@ -11,29 +11,32 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import apiService from '../../Services/apiService';
 import { useNavigate } from 'react-router-dom';
 
-const DriverEditProfile = ({ setShowProfileEditCard }) => {
+const DriverEditProfile = ({ setShowProfileEditCard, currentDriver, setCurrentDriver }) => {
   const navigate = useNavigate();
-  const Driverdata = JSON.parse(localStorage.getItem("driverData"));
-  console.log(Driverdata);
-  
   const fileInputRef = useRef(null);
-  
   const [formData, setFormData] = useState({
-    fullname: Driverdata?.fullname || '',
-    email: Driverdata?.email || '',
-    phoneNumber: Driverdata?.phoneNumber || '',
-    licenseNumber: Driverdata?.licenseNumber || '',
-    profilePicture: null
+    fullname: currentDriver.fullname || "",
+    email: currentDriver.email || "",
+    phoneNumber: currentDriver.phoneNumber || "",
+    vehicleRegNumber: currentDriver.vehicleRegNumber || "",
+    driverPic: null
   });
-  
+
+  const [errors, setErrors] = useState({
+    fullname: "",
+    email: "",
+    phoneNumber: "",
+    vehicleRegNumber: ""
+  });
+
   const [avatarSrc, setAvatarSrc] = useState(
-    Driverdata?.driverPic 
-      ? `http://localhost:4040/uploads/${Driverdata.driverPic}`
+    currentDriver.driverPic
+      ? `http://localhost:4052/ride_share_api/${currentDriver.driverPic}`
       : 'https://passport-photo.online/images/cms/prepare_light_b364e3ec37.webp?quality=80&format=webp&width=1920'
   );
 
@@ -46,55 +49,141 @@ const DriverEditProfile = ({ setShowProfileEditCard }) => {
     if (file) {
       const imageUrl = URL.createObjectURL(file);
       setAvatarSrc(imageUrl);
-      setFormData(prev => ({ ...prev, profilePicture: file }));
+      setFormData(prev => ({ ...prev, driverPic: file }));
     }
+  };
+
+  const validateName = (name) => {
+    const regex = /^[A-Za-z\s]+$/;
+    return regex.test(name);
+  };
+
+  const validatePhone = (phone) => {
+    const regex = /^\d{10}$/;
+    return regex.test(phone);
+  };
+
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+  const validateVehicleReg = (reg) => {
+    // Basic validation - can be enhanced based on your country's vehicle registration format
+    return reg.length >= 6 && reg.length <= 15;
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
+    // Validation
+    let error = "";
+    if (name === "fullname") {
+      if (!validateName(value)) {
+        error = "Name should contain only alphabets";
+      }
+    } else if (name === "phoneNumber") {
+      if (!validatePhone(value)) {
+        error = "Phone number must be 10 digits";
+      }
+    } else if (name === "email") {
+      if (!validateEmail(value)) {
+        error = "Please enter a valid email";
+      }
+    } else if (name === "vehicleRegNumber") {
+      if (!validateVehicleReg(value)) {
+        error = "Please enter a valid registration number";
+      }
+    }
+
+    setErrors(prev => ({ ...prev, [name]: error }));
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
+    // Final validation before submit
+    let isValid = true;
+    const newErrors = { ...errors };
+
+    if (!validateName(formData.fullname)) {
+      newErrors.fullname = "Name should contain only alphabets";
+      isValid = false;
+    }
+
+    if (!validatePhone(formData.phoneNumber)) {
+      newErrors.phoneNumber = "Phone number must be 10 digits";
+      isValid = false;
+    }
+
+    if (!validateEmail(formData.email)) {
+      newErrors.email = "Please enter a valid email";
+      isValid = false;
+    }
+
+    if (!validateVehicleReg(formData.vehicleRegNumber)) {
+      newErrors.vehicleRegNumber = "Please enter a valid registration number";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+
+    if (!isValid) {
+      toast.error("Please fix the errors in the form");
+      return;
+    }
+
     try {
       const formDataToSend = new FormData();
+
       formDataToSend.append('fullname', formData.fullname);
       formDataToSend.append('email', formData.email);
       formDataToSend.append('phoneNumber', formData.phoneNumber);
-      
-      if (formData.licenseNumber) {
-        formDataToSend.append('licenseNumber', formData.licenseNumber);
-      }
-      
-      if (formData.profilePicture) {
-        formDataToSend.append('driverPic', formData.profilePicture);
+      formDataToSend.append('vehicleRegNumber', formData.vehicleRegNumber);
+
+      if (formData.driverPic) {
+        formDataToSend.append('driverPic', formData.driverPic);
       }
 
-      const response = await apiService.updateDriverProfile(formDataToSend);
-            
-      const updatedDriverData = {
-        ...Driverdata,
-        ...response.data.driver
-      };
-      localStorage.setItem("driverData", JSON.stringify(updatedDriverData));
-      
-      toast.success('Profile updated successfully!');
-      setTimeout(() => setShowProfileEditCard(false), 1500);
+      const response = await apiService.updateCurrentDriver(formData);
+
+      if (response.status === 'success') {
+        setCurrentDriver(prev => ({
+          ...prev,
+          ...response.data.driver,
+          driverPic: formData.driverPic
+            ? URL.createObjectURL(formData.driverPic)
+            : response.data.driver.driverPic
+        }));
+
+        toast.success('Profile updated successfully!');
+        setTimeout(() => setShowProfileEditCard(false), 1500);
+      } else {
+        throw new Error(response.message || 'Failed to update profile');
+      }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to update profile');
       console.error('Update error:', error);
+
+      if (error.response?.data?.message?.includes('E11000 duplicate key error') &&
+        error.response?.data?.message?.includes('phoneNumber')) {
+        toast.error('This phone number is already registered', {
+          autoClose: 3000
+        });
+      } else {
+        toast.error(error.response?.data?.message || error.message || 'Failed to update profile', {
+          autoClose: 3000
+        });
+      }
     }
   };
 
   return (
     <Box className="styled-container">
-      <ToastContainer position="top-right" autoClose={3000} />
       <Box className="styled-header">
-        <Typography className="header-title" variant="h6">EDIT PROFILE</Typography>
+        <Typography className="header-title-edit" variant="h6">EDIT PROFILE</Typography>
         <IconButton className="close-button" onClick={() => setShowProfileEditCard(false)}>
-          <CloseIcon />
+          <CloseIcon className="close-button"/>
         </IconButton>
       </Box>
 
@@ -115,7 +204,7 @@ const DriverEditProfile = ({ setShowProfileEditCard }) => {
               style={{ display: 'none' }}
             />
           </Box>
-          <Typography className="name-text" variant="h6">{formData.fullname}</Typography>
+          {/* <Typography className="name-text" variant="h6">{formData.fullname}</Typography> */}
         </Box>
 
         <Box sx={{ width: '100%' }} className="form-container">
@@ -130,7 +219,13 @@ const DriverEditProfile = ({ setShowProfileEditCard }) => {
                 variant="outlined"
                 placeholder="Enter Your Name"
                 className="styled-textfield"
+                error={!!errors.fullname}
+                helperText={errors.fullname}
                 required
+                inputProps={{
+                  pattern: "[A-Za-z\\s]+",
+                  title: "Name should contain only alphabets"
+                }}
               />
 
               <Typography className="left-label" variant="body1">Email</Typography>
@@ -143,6 +238,8 @@ const DriverEditProfile = ({ setShowProfileEditCard }) => {
                 placeholder="Enter Email"
                 className="styled-textfield"
                 type="email"
+                error={!!errors.email}
+                helperText={errors.email}
                 required
               />
             </Grid>
@@ -157,25 +254,36 @@ const DriverEditProfile = ({ setShowProfileEditCard }) => {
                 variant="outlined"
                 placeholder="Enter Phone Number"
                 className="styled-textfield"
+                error={!!errors.phoneNumber}
+                helperText={errors.phoneNumber}
                 required
+                inputProps={{
+                  inputMode: "numeric",
+                  pattern: "[0-9]{10}",
+                  maxLength: 10,
+                  title: "Phone number must be 10 digits"
+                }}
               />
 
-              <Typography className="right-label" variant="body1">License Number</Typography>
+              <Typography className="right-label" variant="body1">Vehicle Registration Number</Typography>
               <TextField
-                name="licenseNumber"
-                value={formData.licenseNumber}
+                name="vehicleRegNumber"
+                value={formData.vehicleRegNumber}
                 onChange={handleInputChange}
                 fullWidth
                 variant="outlined"
-                placeholder="Enter License Number"
+                placeholder="Enter Vehicle Registration Number"
                 className="styled-textfield"
+                error={!!errors.vehicleRegNumber}
+                helperText={errors.vehicleRegNumber}
+                required
               />
             </Grid>
           </Grid>
 
           <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-            <Button 
-              variant="contained" 
+            <Button
+              variant="contained"
               className="gradient-button"
               onClick={handleSubmit}
               size="large"

@@ -44,19 +44,20 @@ apiClient.interceptors.response.use(
 const login = async (credentials) => {
   try {
     const response = await apiClient.post("/users/login", credentials);
-    console.log(response);
-    localStorage.setItem("riderId", response.data.data.user._id)
-    if (response.data.token) {
-      localStorage.setItem("riderToken", response.data.token);
-      apiClient.defaults.headers.common["Authorization"] =
-        `Bearer ${response.data.token}`;
+    
+    let token = response.data.token;
+    
+    if (typeof token === 'string') {
+      token = token.trim().replace(/^"+|"+$/g, '');
     }
+      localStorage.setItem("authToken", token);
+    apiClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
   }
 };
-
 const register = async (userData) => {
   try {
     const formData = new FormData();
@@ -140,25 +141,28 @@ const driverForgotPassword = async (phoneNumber, newPassword) => {
       'Failed to reset password';
     throw new Error(errorMessage);
   }
-};
-/**
+};/**
  * User Services
  */
 const getCurrentUser = async () => {
   try {
-    const token = localStorage.getItem("riderToken");
-    const response = await apiClient.get("/users/me", {
+   
+        const token = localStorage.getItem("authToken");
+    if (!token) throw new Error('No driver token found');
+
+
+    const response = await apiClient.get("/users/userme", {
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`, 
       }
     });
+    
     return response.data;
   } catch (error) {
+    console.error("Error fetching current user:", error);
     throw error.response?.data || error.message;
   }
 };
-
 const updateProfile = async (userData) => {
   try {
     const formData = new FormData();
@@ -173,7 +177,7 @@ const updateProfile = async (userData) => {
     const response = await apiClient.patch("/users/me/update", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
-        'Authorization': `Bearer ${localStorage.getItem('riderToken')}`
+        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
       },
     });
     return response.data;
@@ -219,13 +223,18 @@ const getAllUsers = async (page = 1, limit = 10) => {
 
 const getAllDrivers = async () => {
   try {
-    const response = await apiClient.get("/drivers/showAllDrivers");
+    const token = localStorage.getItem('adminToken');
+    
+    const response = await apiClient.get("/drivers", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
   }
 };
-
 
 /**
  * Driver Services
@@ -258,11 +267,40 @@ const driverLogin = async (credentials) => {
     console.log(response);
 
     localStorage.setItem("driverToken", response.data.token);
+    localStorage.setItem("driverId", response.data.data.driver._id);
+
     apiClient.defaults.headers.common["Authorization"] =
       `Bearer ${response.data.token}`;
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
+  }
+};
+const updateCurrentDriver = async (driverData) => {
+  try {
+
+    const formData = new FormData();
+    
+    Object.keys(driverData).forEach(key => {
+      if (driverData[key] !== null && driverData[key] !== undefined) {
+        formData.append(key, driverData[key]);
+      }
+    });
+
+    const response = await apiClient.patch("/drivers/me/update", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        'Authorization': `Bearer ${localStorage.getItem('driverToken')}`
+      }
+    });
+    
+    return response.data;
+  } catch (error) {
+    console.error('Failed to update driver:', error);
+    throw error.response?.data || { 
+      status: 'error', 
+      message: error.message || 'Failed to update driver data'
+    };
   }
 };
 const approveDriver = async (driverId) => {
@@ -285,26 +323,35 @@ const rejectDriver = async (driverId) => {
 const getCurrentDriver = async () => {
   try {
     const token = localStorage.getItem("driverToken");
-    console.log(token);
+    if (!token) throw new Error('No driver token found');
 
-    const response = await apiClient.post("/drivers/me", {
+    const response = await apiClient.get("/drivers/me", {
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       }
     });
     return response.data;
   } catch (error) {
-    throw error.response?.data || error.message;
+    console.error('Failed to fetch driver:', error);
+    throw error.response?.data || { 
+      status: 'error', 
+      message: error.message || 'Failed to fetch driver data'
+    };
   }
 };
-
 /**
  * Ride Services
  */
 const createRide = async (rideData) => {
   try {
-    const response = await apiClient.post("/rides", rideData);
+    const token = localStorage.getItem("driverToken");
+    if (!token) throw new Error('No driver token found');
+
+    const response = await apiClient.post("/rides", rideData , {
+      "Content-Type": "multipart/form-data",
+      'Authorization': `Bearer ${token}`
+
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -394,7 +441,7 @@ const getCompletedPayments = async () => {
  */
 const createDispute = async (disputeData) => {
   try {
-    const token = localStorage.getItem("riderToken");
+    const token = localStorage.getItem("riderToken") || localStorage.getItem("driverToken");
     const response = await apiClient.post("/disputes", disputeData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -406,7 +453,6 @@ const createDispute = async (disputeData) => {
     throw error.response?.data || error.message;
   }
 };
-
 const getAllDisputes = async () => {
   try {
     const response = await apiClient.get("/disputes");
@@ -439,13 +485,17 @@ const dismissDispute = async (disputeId) => {
  */
 const registerVehicle = async (vehicleData) => {
   try {
-    const response = await apiClient.post("/vehicles", vehicleData);
+    const response = await apiClient.post("/vehicles", vehicleData, {
+      headers: {
+        "Content-Type": "application/json", 
+        'Authorization': `Bearer ${localStorage.getItem('driverToken')}`
+      }
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
   }
 };
-
 const updateVehicle = async (vehicleId, vehicleData) => {
   try {
     const response = await apiClient.patch(`/vehicles/${vehicleId}`, vehicleData);
@@ -553,6 +603,7 @@ export default {
   // Driver
   registerDriver,
   driverLogin,
+  updateCurrentDriver,
   approveDriver,
   FindDriverPh,
   driverForgotPassword,

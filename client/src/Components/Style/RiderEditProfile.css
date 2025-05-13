@@ -19,9 +19,10 @@
 
 .close-button {
   color: white;
+  z-index: 2;
 }
 
-.header-title {
+.header-title-edit {
   color: white;
   font-weight: 700;
 }

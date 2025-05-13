@@ -4,7 +4,7 @@ import Logo from "../../Assets/Logo.png";
 import LoginNav from '../Common/LoginNav';
 import service from '../../Services/apiService';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 const DriverForgotPass = () => {
     const navigate = useNavigate()
@@ -40,7 +40,6 @@ const DriverForgotPass = () => {
 
     return (
         <div className="forgot-password-container">
-            <ToastContainer/>
             <LoginNav />
             <main className="forgot-password-main">
                 <h1 className="forgot-password-title">FORGOT PASSWORD?</h1>

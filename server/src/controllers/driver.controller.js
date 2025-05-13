@@ -3,7 +3,7 @@ import { Driver, Vehicle } from '../models/index.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 import { signToken } from '../utils/jwt.js';
-import { sendEmail } from '../utils/email.js';
+// import { sendEmail } from '../utils/email.js';
 
 // Helper function to filter object fields
 const filterObj = (obj, ...allowedFields) => {
@@ -90,41 +90,99 @@ export const getCurrentDriver = catchAsync(async (req, res, next) => {
 });
 
 export const updateCurrentDriver = catchAsync(async (req, res, next) => {
-  // 1) Filter out unwanted fields that shouldn't be updated
-  const filteredBody = filterObj(
-    req.body,
-    'fullname',
-    'phoneNumber',
-    'email'
-  );
+  const filteredBody = {
+    fullname: req.body.fullname,
+    phoneNumber: req.body.phoneNumber,
+    email: req.body.email,
+    vehicleRegNumber: req.body.vehicleRegNumber
+  };
 
-  // 2) Handle file upload if exists
+  // Validate email format
+  if (req.body.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(req.body.email)) {
+    return next(new AppError('Please provide a valid email address', 400));
+  }
+
+  // Validate vehicle registration number format (basic example - adjust for your requirements)
+  if (req.body.vehicleRegNumber && !/^[A-Za-z0-9]{6,12}$/.test(req.body.vehicleRegNumber)) {
+    return next(new AppError('Please provide a valid vehicle registration number', 400));
+  }
+
+  // Check if email is being changed
+  if (req.body.email) {
+    const existingDriverWithEmail = await Driver.findOne({ 
+      email: req.body.email,
+      _id: { $ne: req.user.id }
+    });
+    
+    if (existingDriverWithEmail) {
+      return next(new AppError('This email is already registered', 400));
+    }
+  }
+
+  // Check if phone number is being changed
+  if (req.body.phoneNumber) {
+    const existingDriverWithPhone = await Driver.findOne({ 
+      phoneNumber: req.body.phoneNumber,
+      _id: { $ne: req.user.id }
+    });
+    
+    if (existingDriverWithPhone) {
+      return next(new AppError('This phone number is already registered', 400));
+    }
+  }
+
+  // Check if vehicle registration number is being changed
+  if (req.body.vehicleRegNumber) {
+    const existingDriverWithVehicle = await Driver.findOne({ 
+      vehicleRegNumber: req.body.vehicleRegNumber,
+      _id: { $ne: req.user.id }
+    });
+    
+    if (existingDriverWithVehicle) {
+      return next(new AppError('This vehicle registration number is already registered', 400));
+    }
+  }
+
+  // Handle file upload
   if (req.file) {
     filteredBody.driverPic = req.file.filename;
   }
 
-  // 3) Update driver document
-  const updatedDriver = await Driver.findByIdAndUpdate(
-    req.user.id,
-    filteredBody,
-    {
-      new: true,
-      runValidators: true
-    }
-  ).select('-password -__v');
+  try {
+    const updatedDriver = await Driver.findByIdAndUpdate(
+      req.user.id,
+      filteredBody,
+      {
+        new: true,
+        runValidators: true
+      }
+    ).select('-password -__v');
 
-  if (!updatedDriver) {
-    return next(new AppError('No driver found with that ID', 404));
+    if (!updatedDriver) {
+      return next(new AppError('No driver found with that ID', 404));
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        driver: updatedDriver
+      }
+    });
+  } catch (err) {
+    // Handle MongoDB duplicate key errors
+    if (err.code === 11000) {
+      const field = Object.keys(err.keyPattern)[0];
+      let errorMessage = 'This value is already registered';
+      
+      if (field === 'email') errorMessage = 'This email is already registered';
+      if (field === 'phoneNumber') errorMessage = 'This phone number is already registered';
+      if (field === 'vehicleRegNumber') errorMessage = 'This vehicle registration number is already registered';
+      
+      return next(new AppError(errorMessage, 400));
+    }
+    return next(err);
   }
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      driver: updatedDriver
-    }
-  });
 });
-
 export const updatePassword = catchAsync(async (req, res, next) => {
   // 1) Get driver from collection
   const driver = await Driver.findById(req.user.id).select('+password');
@@ -145,6 +203,25 @@ export const updatePassword = catchAsync(async (req, res, next) => {
     status: 'success',
     token,
     message: 'Password updated successfully!'
+  });
+});
+
+export const FindByPhonenumber = catchAsync(async (req, res, next) => {
+  const { phoneNumber } = req.body;
+
+  if (!phoneNumber) {
+    return next(new AppError('Phone number is required!', 400));
+  }
+
+  const driver = await Driver.findOne({ phoneNumber }).select('-password -__v');
+
+  if (!driver) {
+    return next(new AppError('No driver found with this phone number.', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: driver, 
   });
 });
 
@@ -171,7 +248,6 @@ export const ForgotPassword = catchAsync(async (req, res, next) => {
     }
   });
 });
-
 export const resetPassword = catchAsync(async (req, res, next) => {
   // 1) Get driver based on the token
   const hashedToken = crypto

@@ -1,4 +1,4 @@
-.ride-history-container {
+.rideHistory-container {
     font-family: 'Arial, sans-serif';
     padding: 20px;
     margin-left: 250px;
@@ -7,7 +7,7 @@
     min-height: 100vh;
 }
 
-.ride-history-title {
+.rideHistory-title {
     color: #F1B92E;
     margin-bottom: 30px;
     text-align: center;
@@ -15,20 +15,20 @@
     padding: 10px;
 }
 
-.ride-cards-grid {
+.rideHistory-cardsGrid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
 }
 
-.ride-card {
+.rideHistory-card {
     background-color: white;
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-.ride-card-top {
+.rideHistory-cardTop {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -36,7 +36,7 @@
     border-bottom: 1px solid #eee;
 }
 
-.icon-circle {
+.rideHistory-iconCircle {
     background-color: #F1B92E;
     border-radius: 50%;
     width: 40px;
@@ -47,67 +47,67 @@
     margin-right: 10px;
 }
 
-.icon-circle-sm {
+.rideHistory-iconCircle-sm {
     width: 30px;
     height: 30px;
 }
 
-.icon-circle-sm .MuiSvgIcon-root {
+.rideHistory-iconCircle-sm .MuiSvgIcon-root {
     font-size: 18px;
     color: black;
 }
 
-.ride-id {
+.rideHistory-id {
     font-weight: bold;
     display: flex;
     align-items: center;
 }
 
-.transaction-info {
+.rideHistory-transactionInfo {
     text-align: right;
 }
 
-.transaction-label {
+.rideHistory-transactionLabel {
     color: #777;
     margin: 0;
 }
 
-.transaction-value {
+.rideHistory-transactionValue {
     font-weight: bold;
     margin: 0;
 }
 
-.ride-details-row {
+.rideHistory-detailsRow {
     display: flex;
     justify-content: space-between;
     margin-bottom: 15px;
 }
 
-.detail-item {
+.rideHistory-detailItem {
     display: flex;
     align-items: center;
 }
 
-.location-info {
+.rideHistory-locationInfo {
     margin: 0;
 }
 
-.location-value {
+.rideHistory-locationValue {
     font-weight: bold;
     margin: 0;
 }
 
-.payment-section-admin {
+.rideHistory-paymentSection {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.payment-amount {
+.rideHistory-paymentAmount {
     margin: 0;
 }
 
-.paid-status {
+.rideHistory-paidStatus {
     background-color: #e6f7e6;
     color: #2e7d32;
     padding: 5px 10px;
@@ -116,15 +116,14 @@
     align-items: center;
 }
 
-.paid-icon {
+.rideHistory-paidIcon {
     color: #2e7d32;
     font-size: 18px;
     margin-right: 5px;
 }
 
-/* Responsive adjustments */
 @media (max-width: 1200px) {
-    .ride-cards-grid {
+    .rideHistory-cardsGrid {
         grid-template-columns: 1fr;
     }
 }
