@@ -1,12 +1,9 @@
-//server/src/config/dbConnection.js
 import mongoose from 'mongoose';
 import { MONGO_URI } from './env.config.js';
 
 export const connectDB = async () => {
   try {
     await mongoose.connect(MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000,
       maxPoolSize: 10,
       socketTimeoutMS: 45000
