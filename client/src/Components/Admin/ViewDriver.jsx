@@ -149,7 +149,7 @@ function ViewDriver() {
                                                 {driver.status ? 'Active' : 'Inactive'}
                                             </span>
                                         </div>
-                                        <div className="detail-row">
+                                        {/* <div className="detail-row">
                                             <span className="detail-label">Created At:</span>
                                             <span className="detail-value">
                                                 {new Date(driver.createdAt).toLocaleString()}
@@ -160,7 +160,7 @@ function ViewDriver() {
                                             <span className="detail-value">
                                                 {new Date(driver.updatedAt).toLocaleString()}
                                             </span>
-                                        </div>
+                                        </div> */}
                                     </div>
                                 )}
                             </div>

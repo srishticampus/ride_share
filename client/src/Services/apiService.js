@@ -455,7 +455,12 @@ const createDispute = async (disputeData) => {
 };
 const getAllDisputes = async () => {
   try {
-    const response = await apiClient.get("/disputes");
+        const token = localStorage.getItem('adminToken');
+    const response = await apiClient.get("/disputes",{
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -470,7 +475,23 @@ const solveDispute = async (disputeId) => {
     throw error.response?.data || error.message;
   }
 };
-
+const responseDispute = async (disputeId, responseData) => {
+  try {
+    const response = await apiClient.patch(
+      `/disputes/${disputeId}/response`,
+      responseData,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
 const dismissDispute = async (disputeId) => {
   try {
     const response = await apiClient.patch(`/disputes/${disputeId}/dismiss`);
@@ -630,6 +651,7 @@ export default {
   getAllDisputes,
   solveDispute,
   dismissDispute,
+  responseDispute,
 
   // Vehicle
   registerVehicle,

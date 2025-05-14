@@ -79,14 +79,17 @@ const DisputeSchema = new Schema({
     type: Date,
     required: [true, 'Incident date is required'],
     validate: {
-      validator: function(date) {
+      validator: function (date) {
         return date <= new Date();
       },
       message: 'Incident date cannot be in the future'
     }
   },
+  responseText: {
+    type: String,
+  },
   attachment: {
-    type: Object, 
+    type: Object,
     required: false
   },
   resolutionStatus: {

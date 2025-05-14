@@ -8,7 +8,8 @@ export const disputeSchema = Joi.object({
   description: Joi.string().max(500).required(),
   priorityLevel: Joi.string().valid('High', 'Medium', 'Low').required(),
   incidentDate: Joi.date().less('now').required(),
-  resolutionStatus: Joi.string().valid('Pending', 'Resolved', 'Rejected').optional()
+  resolutionStatus: Joi.string().valid('Pending', 'Resolved', 'Rejected').optional(),
+  responseText: Joi.string().max(500).optional(),
 });
 
 export const updateDisputeSchema = disputeSchema.fork(
