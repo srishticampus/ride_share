@@ -4,14 +4,16 @@ import config from '../config/env.config.js';
 
 const { sign } = jwt;
 
-export function signToken(id, role) {
-  return sign({ id, role }, config.jwt.secret, {
+// Only include user ID in token
+export function signToken(id) {
+  return sign({ id }, config.jwt.secret, {
     expiresIn: config.jwt.expiresIn
   });
 }
 
 export function createSendToken(user, statusCode, res) {
-  const token = signToken(user._id);
+  const token = signToken(user._id); // No role in token
+  
   const cookieOptions = {
     expires: new Date(
       Date.now() + config.jwt.cookieExpiresIn * 24 * 60 * 60 * 1000
@@ -23,6 +25,7 @@ export function createSendToken(user, statusCode, res) {
 
   res.cookie('jwt', token, cookieOptions);
 
+  // Remove password from output
   user.password = undefined;
 
   res.status(statusCode).json({
