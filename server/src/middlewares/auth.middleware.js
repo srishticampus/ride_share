@@ -17,14 +17,13 @@ const ROLES = {
  * @description Authentication middleware to protect routes
  * @returns {Function} Middleware function
  */
-// In auth.middleware.js
 export const protect = catchAsync(async (req, res, next) => {
   // 1) Get token from header or cookie
   let token;
   if (req.headers.authorization?.startsWith('Bearer')) {
-    token = req.headers.authorization.split(' ')[1].replace(/"/g,' ');
+    token = req.headers.authorization.split(' ')[1].replace(/"/g,'');
   } else if (req.cookies?.jwt) {
-    token = req.cookies.jwt.replace(/"/g, " ");  
+    token = req.cookies.jwt.replace(/"/g, '');  
   }
 
   if (!token) {
@@ -35,101 +34,33 @@ export const protect = catchAsync(async (req, res, next) => {
 
   // 2) Verify token
   const decoded = verify(token, JWT_SECRET);
-console.log('Decoded token:', decoded);
-  // 3) Check user role and authenticate accordingly
-  switch (decoded.role) {
-    case ROLES.ADMIN:
-      await handleAdminAuth(decoded, req, next);
-      break;
-    case ROLES.DRIVER:
-      await handleDriverAuth(decoded, req, next);
-      break;
-    case ROLES.USER:
-      await handleUserAuth(decoded, req, next);
-      break;
-    default:
-      return next(
-        new AppError('Invalid user role specified in token.', 401)
-      );
-  }
-});
+  console.log('Decoded token:', decoded);
 
-// Helper function for admin authentication
-const handleAdminAuth = async (decoded, req, next) => {
-  // Handle special admin case
+  // 3) Determine user type by checking all models
+  let currentUser = null;
+  let userRole = null;
+
+  // First check for admin
   if (decoded.id === 'admin') {
-    req.user = { 
-      id: 'admin', 
-      role: ROLES.ADMIN,
-      isAdmin: true
-    };
-    return next();
+    currentUser = { id: 'admin' };
+    userRole = ROLES.ADMIN;
+  } else {
+    // Check regular admin accounts
+    currentUser = await Admin.findById(decoded.id);
+    if (currentUser) userRole = ROLES.ADMIN;
   }
 
-  // For database-stored admins
-  const currentAdmin = await Admin.findById(decoded.id);
-  if (!currentAdmin) {
-    return next(
-      new AppError('The admin belonging to this token no longer exists.', 401)
-    );
+  // If not admin, check driver
+  if (!currentUser) {
+    currentUser = await Driver.findById(decoded.id);
+    if (currentUser) userRole = ROLES.DRIVER;
   }
 
-  req.user = {
-    id: currentAdmin._id,
-    role: ROLES.ADMIN,
-    isAdmin: true,
-    ...currentAdmin.toObject()
-  };
-  next();
-};
-
-// Helper function for driver authentication
-const handleDriverAuth = async (decoded, req, next) => {
-  const currentDriver = await Driver.findById(decoded.id)
-    .select('+passwordChangedAt');
-    
-  if (!currentDriver) {
-    return next(
-      new AppError('The driver belonging to this token no longer exists.', 401)
-    );
+  // If not driver, check regular user
+  if (!currentUser) {
+    currentUser = await User.findById(decoded.id);
+    if (currentUser) userRole = ROLES.USER;
   }
-
-  // Check if driver account is active
-  if (!currentDriver.status) {
-    return next(
-      new AppError('Your driver account has been deactivated. Please contact support.', 403)
-    );
-  }
-
-  // Check if background check is completed
-  if (!currentDriver.backgroundCheck) {
-    return next(
-      new AppError('Background check not completed. Please complete verification.', 403)
-    );
-  }
-
-  // Check if driver changed password after token was issued
-  // if (currentDriver.changedPasswordAfter(decoded.iat)) {
-  //   return next(
-  //     new AppError('Driver recently changed password! Please log in again.', 401)
-  //   );
-  // }
-
-  req.user = {
-    id: currentDriver._id,
-    role: ROLES.DRIVER,
-    isDriver: true,
-    isAdmin: false,
-    ...currentDriver.toObject()
-  };
-  next();
-};
-
-// Helper function for regular user authentication
-const handleUserAuth = async (decoded, req, next) => {
-  const currentUser = await User.findById(decoded.id)
-    .select('+passwordChangedAt');
-console.log(decoded.id);
 
   if (!currentUser) {
     return next(
@@ -137,24 +68,37 @@ console.log(decoded.id);
     );
   }
 
-  // Check if user is verified
-  if (!currentUser.isVerified) {
+  // 4) Set user data based on type
+  req.user = {
+    id: currentUser._id || currentUser.id,
+    role: userRole,
+    isAdmin: userRole === ROLES.ADMIN,
+    isDriver: userRole === ROLES.DRIVER,
+    ...(currentUser.toObject ? currentUser.toObject() : {})
+  };
+
+  // 5) Additional role-specific checks
+  if (userRole === ROLES.DRIVER) {
+    if (!currentUser.status) {
+      return next(
+        new AppError('Your driver account has been deactivated. Please contact support.', 403)
+      );
+    }
+    if (!currentUser.backgroundCheck) {
+      return next(
+        new AppError('Background check not completed. Please complete verification.', 403)
+      );
+    }
+  }
+
+  if (userRole === ROLES.USER && !currentUser.isVerified) {
     return next(
       new AppError('Your account is not verified. Please verify your email.', 403)
     );
   }
 
-  req.user = {
-    id: currentUser._id,
-    role: ROLES.USER,
-    isAdmin: false,
-    isDriver: false,
-    isDriver: false,
-    ...currentUser.toObject()
-  };
   next();
-};
-
+});
 
 /**
  * @description Restrict access to certain roles
@@ -196,30 +140,20 @@ export const optionalAuth = catchAsync(async (req, res, next) => {
     try {
       const decoded = verify(token, JWT_SECRET);
       
-      switch (decoded.role) {
-        case ROLES.ADMIN:
-          if (decoded.id === 'admin') {
-            req.user = { id: 'admin', role: ROLES.ADMIN, isAdmin: true };
-          } else {
-            const admin = await Admin.findById(decoded.id);
-            if (admin) req.user = { ...admin.toObject(), isAdmin: true };
+      // Determine user type by checking all models
+      let currentUser = await Admin.findById(decoded.id);
+      if (currentUser) {
+        req.user = { ...currentUser.toObject(), isAdmin: true, role: ROLES.ADMIN };
+      } else {
+        currentUser = await Driver.findById(decoded.id);
+        if (currentUser) {
+          req.user = { ...currentUser.toObject(), isDriver: true, role: ROLES.DRIVER };
+        } else {
+          currentUser = await User.findById(decoded.id);
+          if (currentUser) {
+            req.user = { ...currentUser.toObject(), role: ROLES.USER };
           }
-          break;
-        case ROLES.DRIVER:
-          const driver = await Driver.findById(decoded.id);
-          if (driver) req.user = { 
-            ...driver.toObject(), 
-            isDriver: true,
-            role: ROLES.DRIVER
-          };
-          break;
-        case ROLES.USER:
-          const user = await User.findById(decoded.id);
-          if (user) req.user = { 
-            ...user.toObject(),
-            role: ROLES.USER
-          };
-          break;
+        }
       }
     } catch (err) {
       // Token is invalid but we don't throw error for optional auth
