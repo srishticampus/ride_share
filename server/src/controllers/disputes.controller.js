@@ -17,15 +17,27 @@ export const newDispute = catchAsync(async (req, res, next) => {
   });
 });
 
-export const updateDispute = catchAsync(async (req, res, next) => {
-  const dispute = await Dispute.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true
-  });
+export const responseDispute = catchAsync(async (req, res, next) => {
+  const { responseText, resolutionStatus } = req.body;
+  
+  const dispute = await Dispute.findByIdAndUpdate(
+    req.params.id,
+    { 
+      responseText,
+      resolutionStatus,
+      resolutionAt: Date.now()
+    },
+    {
+      new: true,
+      runValidators: true
+    }
+  );
 
   if (!dispute) {
     return next(new AppError('Dispute not found', 404));
   }
+
+  // Here you could add notification logic to notify the user/driver
 
   res.status(200).json({
     status: 'success',
@@ -33,7 +45,8 @@ export const updateDispute = catchAsync(async (req, res, next) => {
       dispute
     }
   });
-});export const disputeSolve = catchAsync(async (req, res, next) => {
+});
+export const disputeSolve = catchAsync(async (req, res, next) => {
   const dispute = await Dispute.findByIdAndUpdate(
     req.params.id,
     { resolutionStatus: 'solved' },
@@ -108,5 +121,5 @@ export default {
   disputeDismissed,
   showAllDisputes,
   showADisputes,
-  updateDispute
+  responseDispute
 };

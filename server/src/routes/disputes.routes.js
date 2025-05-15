@@ -6,7 +6,7 @@ import { validate } from '../middlewares/validation.middleware.js';
 import { protect, restrictTo } from '../middlewares/auth.middleware.js';
 import { uploadDisputeAttachment } from '../middlewares/upload.middleware.js';
 const router = express.Router();
-router.patch('/:id/response', DisputeController.updateDispute);
+router.patch('/:id/response', DisputeController.responseDispute);
 
 /**
  * @swagger

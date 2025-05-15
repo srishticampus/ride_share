@@ -58,7 +58,7 @@ const RideSchema = new Schema({
   },
   riderId: {
     type: Schema.Types.ObjectId,
-    ref: 'Profile',
+    ref: 'User',
   },
   origin: {
     type: String,
@@ -105,7 +105,19 @@ const RideSchema = new Schema({
   route: {
     type: String,
     trim: true
-  }
-}, { timestamps: true });
+  },
+messages: [{
+    text: {
+      type: String,
+    },
+    sender: {
+      type: Schema.Types.ObjectId,
+      ref: 'Profile',
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }
+  }]}, { timestamps: true });
 
 export default model('Ride', RideSchema);

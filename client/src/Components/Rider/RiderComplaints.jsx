@@ -17,7 +17,7 @@ console.log(riderId);
   const [formData, setFormData] = useState({
     reportedBy:riderId,
     driverName: '',
-    driverId: '',
+    driverData: '',
     subject: '',
     incidentDate: '',
     priorityLevel: '',
@@ -28,7 +28,7 @@ console.log(riderId);
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.driverId) newErrors.driverId = 'Driver ID is required';
+    if (!formData.driverData) newErrors.driverData = 'Driver ID is required';
     if (!formData.subject) newErrors.subject = 'Subject is required';
     if (!formData.incidentDate) newErrors.incidentDate = 'Incident date is required';
     if (!formData.priorityLevel) newErrors.priorityLevel = 'Priority level is required';
@@ -49,21 +49,21 @@ console.log(riderId);
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
   
-    if (!validateForm()) {
-      toast.error('Please fill all required fields');
-      return;
-    }
+  if (!validateForm()) {
+    toast.error('Please fill all required fields');
+    return;
+  }
+
+  setIsSubmitting(true);
   
-    setIsSubmitting(true);
-  
-    try {
-      const payload = new FormData();
+  try {
+    const payload = new FormData();
       payload.append('reportedBy', formData.reportedBy); 
       payload.append('driverName', formData.driverName);
-      payload.append('driverId', formData.driverId);
+      payload.append('driverData', formData.driverData);
       payload.append('subject', formData.subject);
       payload.append('incidentDate', formData.incidentDate);
       payload.append('priorityLevel', formData.priorityLevel);
@@ -71,19 +71,23 @@ console.log(riderId);
       if (formData.attachment) {
         payload.append('attachment', formData.attachment);
       }
-  
-      await service.createDispute(payload, token);
-  
-      toast.success('Complaint submitted successfully!');
-      navigate('/rider-dashboard');
-    } catch (error) {
-      console.error('Submission error:', error);
-      toast.error(error.response?.data?.message || 'Submission failed');
-    } finally {
-      setIsSubmitting(false);
+    const token = localStorage.getItem("authToken");
+    console.log(token);
+    
+    if (!token) {
+      throw new Error("No authentication token found");
     }
-  };
-  return (
+    
+    await service.createDispute(payload, token);
+      toast.success('Complaint submitted successfully!');
+      // navigate('/rider-dashboard');
+  } catch (error) {
+    console.error('Submission error:', error);
+    toast.error(error.response?.data?.message || error.message || 'Submission failed');
+  } finally {
+    setIsSubmitting(false);
+  }
+};  return (
     <div className="payment-container">
       <RiderNav />
       <main className="payment-main">
@@ -133,7 +137,7 @@ console.log(riderId);
                   </select>
                   {errors.priorityLevel && <span className="error-message">{errors.priorityLevel}</span>}
                 </div>
-                <div className="form-group">
+                {/* <div className="form-group">
                   <label htmlFor="driverName">Driver Name (Optional)</label>
                   <input
                     id="driverName"
@@ -142,15 +146,15 @@ console.log(riderId);
                     placeholder="Enter driver name"
                     className="form-input"
                   />
-                </div>
+                </div> */}
               </div>
 
               <div className="complaint-right-column">
                 <div className="form-group">
                   <label htmlFor="driverId">Driver ID *</label>
                   <input
-                    id="driverId"
-                    value={formData.driverId}
+                    id="driverData"
+                    value={formData.driverData}
                     onChange={handleChange}
                     placeholder="Enter driver ID"
                     className={`form-input ${errors.driverId ? 'error' : ''}`}

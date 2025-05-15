@@ -93,7 +93,7 @@ router.post('/', validate(rideSchema), RideController.newRide);
  *               items:
  *                 $ref: '#/components/schemas/Ride'
  */
-router.get('/', RideController.showAllRides);
+router.get('/showAllRide', RideController.showAllRides);
 
 /**
  * @swagger
@@ -143,9 +143,12 @@ router.get('/:id', RideController.viewAride);
  *       404:
  *         description: Ride not found
  */
-router.patch('/:id', validate(updateRideSchema), RideController.updateRide);
-
-/**
+// router.patch('/:id', validate(updateRideSchema), RideController.updateRide);
+router.patch(
+  '/:id/message',
+  protect, // Add this authentication middleware
+  RideController.addRideMessage
+);/**
  * @swagger
  * /rides/{id}:
  *   delete:

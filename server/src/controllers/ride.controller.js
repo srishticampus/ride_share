@@ -1,5 +1,5 @@
 //server/src/controllers/ride.controller.js
-import {Ride} from '../models/index.js';
+import { Ride } from '../models/index.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 
@@ -16,8 +16,12 @@ export const newRide = catchAsync(async (req, res, next) => {
 
 export const showAllRides = catchAsync(async (req, res, next) => {
   const rides = await Ride.find()
-    .populate('driverId')
-    .populate('riderId');
+    .populate({
+      path: 'VehicleId',
+      populate: {
+        path: 'driverId'
+      }
+    });
 
   res.status(200).json({
     status: 'success',
@@ -27,7 +31,6 @@ export const showAllRides = catchAsync(async (req, res, next) => {
     }
   });
 });
-
 export const viewAride = catchAsync(async (req, res, next) => {
   const ride = await Ride.findById(req.params.id)
     .populate('driverId')
@@ -45,11 +48,24 @@ export const viewAride = catchAsync(async (req, res, next) => {
   });
 });
 
-export const updateRide = catchAsync(async (req, res, next) => {
-  const ride = await Ride.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true
-  });
+export const addRideMessage = catchAsync(async (req, res, next) => {
+  if (!req.body?.message) {
+    return next(new AppError('Please provide a valid message', 400));
+  }
+
+  const ride = await Ride.findByIdAndUpdate(
+    req.params.id,
+    { 
+      $push: { 
+        messages: {
+          text: req.body.message,
+          sender: req.user.id,
+          createdAt: new Date()
+        }
+      } 
+    },
+    { new: true, runValidators: true }
+  );
 
   if (!ride) {
     return next(new AppError('No ride found with that ID', 404));
@@ -80,6 +96,6 @@ export default {
   newRide,
   showAllRides,
   viewAride,
-  updateRide,
+  addRideMessage,
   deleteRide
 };
