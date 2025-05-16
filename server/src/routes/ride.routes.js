@@ -146,7 +146,6 @@ router.get('/:id', RideController.viewAride);
 // router.patch('/:id', validate(updateRideSchema), RideController.updateRide);
 router.patch(
   '/:id/message',
-  protect, // Add this authentication middleware
   RideController.addRideMessage
 );/**
  * @swagger
@@ -167,5 +166,11 @@ router.patch(
  *         description: Ride not found
  */
 router.delete('/:id', RideController.deleteRide);
-
+router.post(
+  '/:id/accept',
+  protect,
+  RideController.acceptReq
+);
+router.patch('/:id/join', RideController.joinRide);
+router.patch('/:id/reject', RideController.rejectReq);
 export default router;

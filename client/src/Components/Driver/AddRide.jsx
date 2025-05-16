@@ -109,58 +109,63 @@ const AddRide = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  if (!hasVehicle) {
+    toast.error('You must add vehicle details before creating a ride');
+    navigate('/driver-Add-Vehicle'); 
+    return;
+  }
+
+  if (!validateForm()) {
+    toast.error('Please fix the form errors');
+    return;
+  }
+
+  try {
+    const rideDateTime = new Date(formData.rideDateTime);
+    const rideDate = rideDateTime.toISOString().split('T')[0];
     
-    if (!hasVehicle) {
-      toast.error('You must add vehicle details before creating a ride');
-      navigate('/driver-Add-Vehicle'); 
-      return;
-    }
+    // Format time as HH:MM (24-hour format)
+    const hours = rideDateTime.getHours().toString().padStart(2, '0');
+    const minutes = rideDateTime.getMinutes().toString().padStart(2, '0');
+    const rideTime = `${hours}:${minutes}`;
 
-    if (!validateForm()) {
-      toast.error('Please fix the form errors');
-      return;
-    }
+    const rideData = {
+      VehicleId: currentDriver.vehicleId,
+      origin: formData.origin.trim(),
+      destination: formData.destination.trim(),
+      rideDate: rideDate,
+      rideTime: rideTime, // Now properly formatted as HH:MM
+      availableSeats: parseInt(formData.availableSeats),
+      price: parseFloat(formData.price), // Ensure this is a number
+      rideDescription: formData.rideDescription.trim(),
+      specialNote: formData.specialNote.trim(),
+      route: formData.route.trim()
+    };
 
-    try {
-      const rideDateTime = new Date(formData.rideDateTime);
-      const rideDate = rideDateTime.toISOString().split('T')[0];
-      const rideTime = rideDateTime.toTimeString().slice(0, 5);
+    console.log('Submitting ride data:', rideData); // Debug log
 
-      const rideData = {
-        VehicleId: currentDriver.vehicleId,
-        origin: formData.origin.trim(),
-        destination: formData.destination.trim(),
-        rideDate: rideDate,
-        rideTime: rideTime,
-        availableSeats: parseInt(formData.availableSeats),
-        price: parseFloat(formData.price),
-        rideDescription: formData.rideDescription.trim(),
-        specialNote: formData.specialNote.trim(),
-        route: formData.route.trim()
-      };
+    const response = await service.createRide(rideData);
+    toast.success('Ride created successfully!');
+    
+    setFormData({
+      origin: '',
+      destination: '',
+      rideDateTime: '',
+      availableSeats: 1,
+      price: '',
+      rideDescription: '',
+      specialNote: '',
+      route: ''
+    });
 
-      const response = await service.createRide(rideData);
-      toast.success('Ride created successfully!');
-      
-      setFormData({
-        origin: '',
-        destination: '',
-        rideDateTime: '',
-        availableSeats: 1,
-        price: '',
-        rideDescription: '',
-        specialNote: '',
-        route: ''
-      });
-
-    } catch (error) {
-      console.error('Error creating ride:', error);
-      toast.error(error.response?.data?.message || 'Failed to create ride');
-    } 
-  };
-
+  } catch (error) {
+    console.error('Error creating ride:', error);
+    toast.error(error.response?.data?.message || 'Failed to create ride');
+  } 
+};
   return (
     <div className="payment-container">
       <DriverNav onAvatarClick={onAvatarClick} currentDriver={currentDriver} />

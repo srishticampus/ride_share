@@ -56,10 +56,19 @@ const RideSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Vehicle'
   },
-  riderId: {
+riderId: [{
+  type: Schema.Types.ObjectId,
+  ref: 'User',
+  // Validate that riderId array contains unique values
+ 
+}],  driverId: {  // Add this field to directly reference the driver
+    type: Schema.Types.ObjectId,
+    ref: 'Driver'
+  },
+  acceptedRiderId: [{
     type: Schema.Types.ObjectId,
     ref: 'User',
-  },
+  }],
   origin: {
     type: String,
     required: [true, 'Origin is required'],
@@ -107,17 +116,24 @@ const RideSchema = new Schema({
     trim: true
   },
 messages: [{
-    text: {
-      type: String,
-    },
-    sender: {
-      type: Schema.Types.ObjectId,
-      ref: 'Profile',
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now
-    }
-  }]}, { timestamps: true });
+  text: {
+    type: String,
+    required: true
+  },
+  sender: {
+    type: Schema.Types.ObjectId,
+    required: true,
+    refPath: 'messages.senderType'
+  },
+  senderType: {
+    type: String,
+    required: true,
+    enum: ['User', 'Driver']
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+}]}, { timestamps: true });
 
 export default model('Ride', RideSchema);

@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { FaMapMarkerAlt, FaStar, FaTimes } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaTimes } from 'react-icons/fa';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import '../Style/ViewRide.css';
 import image from '../../Assets/car4.png';
@@ -19,76 +18,84 @@ const ViewRide = () => {
   const riderId = localStorage.getItem('riderId');
   const [rides, setRides] = useState([]);
   const [selectedRide, setSelectedRide] = useState(null);
-  const [showChatModal, setShowChatModal] = useState(false);
-  const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchRides = async () => {
-      try {
-        const response = await apiService.getAllRides();
-        if (response.status === 'success') {
-          setRides(response.data.rides);
-        }
-      } catch (err) {
-        console.log(err);
+useEffect(() => {
+  const fetchRides = async () => {
+    try {
+      const response = await apiService.getAllRides();
+      console.log(response);
+      
+      if (response.status === 'success') {
+        const now = new Date();
+        
+        const filteredRides = response.data.rides.filter(ride => {
+          // Check if current rider is already in acceptedRiderId or riderId
+          const isInAcceptedRiders = ride.acceptedRiderId?.some(rider => rider._id === riderId);
+          const isInRiders = ride.riderId?.some(rider => rider._id === riderId);
+          
+          // Combine date and time to create a Date object for the ride
+          const rideDate = new Date(ride.rideDate);
+          const [hours, minutes] = ride.rideTime.split(':').map(Number);
+          rideDate.setHours(hours, minutes, 0, 0);
+          
+          // Only include rides that:
+          // 1. The rider hasn't joined yet
+          // 2. The ride is in the future
+          // 3. The status is "pending"
+          return !isInAcceptedRiders && !isInRiders && 
+                 rideDate > now && 
+                 ride.status === 'pending';
+        });
+        
+        // Sort rides by date/time (soonest first)
+        filteredRides.sort((a, b) => {
+          const dateA = new Date(a.rideDate);
+          const [hoursA, minutesA] = a.rideTime.split(':').map(Number);
+          dateA.setHours(hoursA, minutesA, 0, 0);
+          
+          const dateB = new Date(b.rideDate);
+          const [hoursB, minutesB] = b.rideTime.split(':').map(Number);
+          dateB.setHours(hoursB, minutesB, 0, 0);
+          
+          return dateA - dateB;
+        });
+        
+        setRides(filteredRides);
       }
-    };
-    fetchRides();
-  }, []);
-
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  fetchRides();
+}, [riderId]);
   const handleViewDetails = (ride) => setSelectedRide(ride);
   const handleCloseModal = () => setSelectedRide(null);
-  const handleJoinRide = () => setShowChatModal(true);
-  const handleCloseChat = () => {
-    setShowChatModal(false);
-    setError(null);
-  };
 
-  const handleSendMessage = async () => {
-    setError(null);
+  const handleJoinRide = async () => {
     try {
-      if (!message.trim()) {
-        setError('Message cannot be empty');
-        return;
-      }
-
       if (!selectedRide?._id) {
         setError('No ride selected');
         return;
       }
 
-      const response = await apiService.updateRideMessage(
-        selectedRide._id,
-        message.trim()
-      );
-
+      const response = await apiService.joinRide(selectedRide._id, riderId);
+      
       if (response.status === 'success') {
-        setRides(prevRides =>
-          prevRides.map(ride =>
-            ride._id === selectedRide._id
-              ? {
-                ...ride,
-                messages: [
-                  ...(ride.messages || []),
-                  {
-                    text: message,
-                    sender: riderId,
-                    createdAt: new Date().toISOString()
-                  }
-                ]
-              }
-              : ride
-          )
+        // Update the rides list to remove the joined ride
+        setRides(prevRides => 
+          prevRides.filter(ride => ride._id !== selectedRide._id)
         );
-        setMessage('');
-        setShowChatModal(false);
+        
+        // Close the details modal
+        setSelectedRide(null);
       }
     } catch (err) {
-      console.error('Error sending message:', err);
-      setError(err.message || 'Failed to send message');
+      console.error('Error joining ride:', err);
+      setError(err.message || 'Failed to join ride');
     }
   };
+
   const formatDate = (dateString) => {
     const options = { weekday: 'short', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString('en-US', options);
@@ -106,37 +113,43 @@ const ViewRide = () => {
         </div>
 
         <section className="view-ride-grid">
-          {rides.map((ride) => (
-            <article key={ride._id} className="view-ride-card">
-              <img alt="Taxi car" className="view-ride-image" src={image} />
-              <div className="view-ride-details">
-                <div className="view-ride-time">
-                  <span>{ride.rideTime}</span>
-                  <span>{formatDate(ride.rideDate)}</span>
+          {rides.map((ride) => {
+            const isJoined = ride.acceptedRiderId?.some(rider => rider._id === riderId) || 
+                            ride.riderId?.some(rider => rider._id === riderId);
+            
+            return (
+              <article key={ride._id} className="view-ride-card">
+                <img alt="Taxi car" className="view-ride-image" src={image} />
+                <div className="view-ride-details">
+                  <div className="view-ride-time">
+                    <span>{ride.rideTime}</span>
+                    <span>{formatDate(ride.rideDate)}</span>
+                  </div>
+                  <p className="view-ride-pickup">Pick Up at {ride.origin}</p>
+                  <p className="view-ride-dropoff">
+                    <FaMapMarkerAlt className="view-ride-marker" />
+                    Drop Off: {ride.destination}
+                  </p>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      backgroundColor: isJoined ? '#cccccc' : '#f59e0b',
+                      color: 'black',
+                      fontSize: '10px',
+                      borderRadius: '2px',
+                      padding: '4px 16px',
+                      minWidth: 'auto',
+                      '&:hover': { backgroundColor: isJoined ? '#cccccc' : '#e69100' },
+                    }}
+                    onClick={() => !isJoined && handleViewDetails(ride)}
+                    disabled={isJoined}
+                  >
+                    {isJoined ? 'Already Joined' : 'View Details'}
+                  </Button>
                 </div>
-                <p className="view-ride-pickup">Pick Up at {ride.origin}</p>
-                <p className="view-ride-dropoff">
-                  <FaMapMarkerAlt className="view-ride-marker" />
-                  Drop Off: {ride.destination}
-                </p>
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: '#f59e0b',
-                    color: 'black',
-                    fontSize: '10px',
-                    borderRadius: '2px',
-                    padding: '4px 16px',
-                    minWidth: 'auto',
-                    '&:hover': { backgroundColor: '#e69100' },
-                  }}
-                  onClick={() => handleViewDetails(ride)}
-                >
-                  View Details
-                </Button>
-              </div>
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </section>
       </main>
 
@@ -217,7 +230,8 @@ const ViewRide = () => {
             <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
               NOTE: {selectedRide?.rideDescription || 'Please be at the pickup location 5 minutes before the pickup time.'}
             </Typography>
-          </Box>        </DialogContent>
+          </Box>
+        </DialogContent>
         <DialogActions>
           <Button
             onClick={handleJoinRide}
@@ -230,84 +244,6 @@ const ViewRide = () => {
             }}
           >
             Join
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Chat Dialog */}
-      <Dialog open={showChatModal} onClose={handleCloseChat} fullWidth maxWidth="sm">
-        <DialogTitle style={{ color: "#F1B92E" }}>
-          CHAT WITH DRIVER
-          <IconButton onClick={handleCloseChat} sx={{ position: 'absolute', right: 8, top: 8 }}>
-            <FaTimes />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent dividers>
-          <TextField
-            label="Driver"
-            fullWidth
-            margin="normal"
-            value={selectedRide?.VehicleId?.driverId?.fullname || ''}
-            InputProps={{ readOnly: true }}
-          />
-
-          {/* Message History */}
-          <Box sx={{
-            maxHeight: 200,
-            overflow: 'auto',
-            mb: 2,
-            p: 1,
-            bgcolor: '#f5f5f5',
-            borderRadius: 1
-          }}>
-            {selectedRide?.messages?.map((msg, index) => (
-              <Box key={index} sx={{
-                mb: 1,
-                p: 1,
-                bgcolor: msg.sender === 'currentUser' ? '#e3f2fd' : '#f1f1f1',
-                borderRadius: 1,
-                alignSelf: msg.sender === 'currentUser' ? 'flex-end' : 'flex-start'
-              }}>
-                <Typography variant="body2">
-                  <strong>{msg.sender === 'currentUser' ? 'You' : 'Driver'}:</strong> {msg.text}
-                </Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                  {new Date(msg.createdAt).toLocaleTimeString()}
-                </Typography>
-              </Box>
-            ))}
-          </Box>
-
-          {/* New Message Input */}
-          <TextField
-            label="Your Message"
-            fullWidth
-            multiline
-            rows={3}
-            margin="normal"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type your message here..."
-          />
-
-          {error && (
-            <Typography color="error" variant="body2" sx={{ mt: 1 }}>
-              {error}
-            </Typography>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={handleSendMessage}
-            variant="contained"
-            sx={{
-              backgroundColor: '#f59e0b',
-              color: 'black',
-              '&:hover': { backgroundColor: '#e69100' },
-              width: '100%',
-            }}
-          >
-            Send Message
           </Button>
         </DialogActions>
       </Dialog>

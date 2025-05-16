@@ -349,7 +349,7 @@ const createRide = async (rideData) => {
 
     const response = await apiClient.post("/rides", rideData, {
       headers: {
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json", 
         'Authorization': `Bearer ${token}`
       }
     });
@@ -358,7 +358,6 @@ const createRide = async (rideData) => {
     throw error.response?.data || error.message;
   }
 };
-
 const getAllRides = async () => {
   try {
     const response = await apiClient.get("/rides/ShowAllRide");
@@ -367,7 +366,9 @@ const getAllRides = async () => {
     throw error.response?.data || error.message;
   }
 };
-
+const rejectRideRequest=(rideId, data) => {
+    return apiClient.patch(`/rides/${rideId}/reject`, data);
+}
 const getRideById = async (rideId) => {
   try {
     const response = await apiClient.get(`/rides/${rideId}`);
@@ -376,25 +377,27 @@ const getRideById = async (rideId) => {
     throw error.response?.data || error.message;
   }
 };
-const updateRideMessage = (rideId, message) => {
-  const token = localStorage.getItem("authToken");
-  return apiClient.patch(`/rides/${rideId}/message`,
-    { message },
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-
-
-      }
-    }
-  )
-    .then((response) => response.data)
-    .catch((error) => {
-      throw error.response?.data || error.message;
-    });
+const updateRideMessage = (rideId, message, senderId, isDriver) => {
+  return apiClient.patch(`/rides/${rideId}/message`, {
+    message,
+    senderId,
+    senderType: isDriver ? 'Driver' : 'User'
+  });
 };
 
+const joinRide = async (rideId, riderId) => {
+  const response = await apiClient.patch(`/rides/${rideId}/join`, { riderId });
+  return response.data;
+};
+const acceptRideRequest= async (rideId, data) => {
+      const token = localStorage.getItem("driverToken");
+
+    return await apiClient.post(`/rides/${rideId}/accept`, data, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+}
 /**
  * Ride Request Services
  */
@@ -407,23 +410,15 @@ const createRideRequest = async (requestData) => {
   }
 };
 
-const acceptRideRequest = async (requestId) => {
-  try {
-    const response = await apiClient.patch(`/ride-requests/${requestId}/accept`);
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
-};
 
-const rejectRideRequest = async (requestId) => {
-  try {
-    const response = await apiClient.patch(`/ride-requests/${requestId}/reject`);
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
-};
+// const rejectRideRequest = async (requestId) => {
+//   try {
+//     const response = await apiClient.patch(`/ride-requests/${requestId}/reject`);
+//     return response.data;
+//   } catch (error) {
+//     throw error.response?.data || error.message;
+//   }
+// };
 
 /**
  * Payment Services
@@ -656,11 +651,12 @@ export default {
   getAllRides,
   getRideById,
   updateRideMessage,
+  joinRide,
+  rejectRideRequest,
 
   // Ride Request
   createRideRequest,
   acceptRideRequest,
-  rejectRideRequest,
 
   // Payment
   createPayment,

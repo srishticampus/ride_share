@@ -24,7 +24,10 @@ export default function RiderNav({onAvatarClick}) {
   };
 
   const handleConfirmLogout = () => {
-    localStorage.removeItem("riderData")
+    localStorage.removeItem("UserInfo")
+        localStorage.removeItem("authToken")
+        localStorage.removeItem("riderId")
+
     toast.success('User logged out');
     setOpenLogoutDialog(false);
     setTimeout(() => {

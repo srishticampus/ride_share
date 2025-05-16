@@ -1,6 +1,6 @@
 
 .view-ride-main {
-  max-width: 80rem;
+  max-width: 100rem;
   margin: 0 auto;
   padding: 2rem 1.5rem;
 }
@@ -215,4 +215,12 @@
 .view-ride-marker {
   margin-right: 8px; 
   font-size: 16px; 
+}
+.view-ride-chat{
+  color: aliceblue !important;
+  background-color: #f59e0b !important;
+
+}
+.view-ride-chat:hover{
+  background-color: #ffa200 !important;
 }
