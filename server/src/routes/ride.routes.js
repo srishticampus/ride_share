@@ -173,4 +173,9 @@ router.post(
 );
 router.patch('/:id/join', RideController.joinRide);
 router.patch('/:id/reject', RideController.rejectReq);
+router.post('/:id/payment', RideController.processRidePayment);
+router.put(
+  '/:rideId/accept',
+ RideController.acceptRide
+);
 export default router;

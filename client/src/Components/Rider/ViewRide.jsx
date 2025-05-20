@@ -11,64 +11,75 @@ import '../Style/ViewRide.css';
 import image from '../../Assets/car4.png';
 import RiderNav from './RiderNav';
 import RiderSearch from './RiderSearch';
-import { Box } from '@mui/material';
+import { Box, TextField, InputAdornment } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import apiService from '../../Services/apiService';
-
+import { toast } from 'react-toastify';
 const ViewRide = () => {
   const riderId = localStorage.getItem('riderId');
   const [rides, setRides] = useState([]);
   const [selectedRide, setSelectedRide] = useState(null);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
-useEffect(() => {
-  const fetchRides = async () => {
-    try {
-      const response = await apiService.getAllRides();
-      console.log(response);
-      
-      if (response.status === 'success') {
-        const now = new Date();
-        
-        const filteredRides = response.data.rides.filter(ride => {
-          // Check if current rider is already in acceptedRiderId or riderId
-          const isInAcceptedRiders = ride.acceptedRiderId?.some(rider => rider._id === riderId);
-          const isInRiders = ride.riderId?.some(rider => rider._id === riderId);
-          
-          // Combine date and time to create a Date object for the ride
-          const rideDate = new Date(ride.rideDate);
-          const [hours, minutes] = ride.rideTime.split(':').map(Number);
-          rideDate.setHours(hours, minutes, 0, 0);
-          
-          // Only include rides that:
-          // 1. The rider hasn't joined yet
-          // 2. The ride is in the future
-          // 3. The status is "pending"
-          return !isInAcceptedRiders && !isInRiders && 
-                 rideDate > now && 
-                 ride.status === 'pending';
-        });
-        
-        // Sort rides by date/time (soonest first)
-        filteredRides.sort((a, b) => {
-          const dateA = new Date(a.rideDate);
-          const [hoursA, minutesA] = a.rideTime.split(':').map(Number);
-          dateA.setHours(hoursA, minutesA, 0, 0);
-          
-          const dateB = new Date(b.rideDate);
-          const [hoursB, minutesB] = b.rideTime.split(':').map(Number);
-          dateB.setHours(hoursB, minutesB, 0, 0);
-          
-          return dateA - dateB;
-        });
-        
-        setRides(filteredRides);
+  useEffect(() => {
+    const fetchRides = async () => {
+      try {
+        const response = await apiService.getAllRides();
+
+        if (response.status === 'success') {
+          const now = new Date();
+
+          const filteredRides = response.data.rides.filter(ride => {
+            const isInAcceptedRiders = ride.acceptedRiderId?.some(rider => rider._id === riderId);
+            const isInRiders = ride.riderId?.some(rider => rider._id === riderId);
+
+            const rideDate = new Date(ride.rideDate);
+            const [hours, minutes] = ride.rideTime.split(':').map(Number);
+            rideDate.setHours(hours, minutes, 0, 0);
+
+            return !isInAcceptedRiders && !isInRiders &&
+              rideDate > now &&
+              ride.status === 'pending';
+          });
+
+          filteredRides.sort((a, b) => {
+            const dateA = new Date(a.rideDate);
+            const [hoursA, minutesA] = a.rideTime.split(':').map(Number);
+            dateA.setHours(hoursA, minutesA, 0, 0);
+
+            const dateB = new Date(b.rideDate);
+            const [hoursB, minutesB] = b.rideTime.split(':').map(Number);
+            dateB.setHours(hoursB, minutesB, 0, 0);
+
+            return dateA - dateB;
+          });
+
+          setRides(filteredRides);
+        }
+      } catch (err) {
+        console.log(err);
       }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-  fetchRides();
-}, [riderId]);
+    };
+    fetchRides();
+  }, [riderId]);
+
+  // Search functionality
+  const filteredRides = rides.filter(ride => {
+    const searchLower = searchQuery.toLowerCase();
+    const driverName = ride.VehicleId?.driverId?.fullname?.toLowerCase() || '';
+    const vehicleMake = ride.VehicleId?.vehicleMake?.toLowerCase() || '';
+    const vehicleModel = ride.VehicleId?.vehicleModel?.toLowerCase() || '';
+
+    return (
+      ride.origin.toLowerCase().includes(searchLower) ||
+      ride.destination.toLowerCase().includes(searchLower) ||
+      driverName.includes(searchLower) ||
+      vehicleMake.includes(searchLower) ||
+      vehicleModel.includes(searchLower)
+    );
+  });
+
   const handleViewDetails = (ride) => setSelectedRide(ride);
   const handleCloseModal = () => setSelectedRide(null);
 
@@ -80,19 +91,17 @@ useEffect(() => {
       }
 
       const response = await apiService.joinRide(selectedRide._id, riderId);
-      
+
       if (response.status === 'success') {
-        // Update the rides list to remove the joined ride
-        setRides(prevRides => 
-          prevRides.filter(ride => ride._id !== selectedRide._id)
-        );
-        
-        // Close the details modal
+        setRides(prevRides => prevRides.filter(ride => ride._id !== selectedRide._id));
         setSelectedRide(null);
+        toast.success('Ride joined successfully');
       }
     } catch (err) {
       console.error('Error joining ride:', err);
       setError(err.message || 'Failed to join ride');
+      toast.error('Ride joined Unsuccessfully');
+
     }
   };
 
@@ -109,51 +118,68 @@ useEffect(() => {
         <h1 className="view-ride-title">RIDE</h1>
         <div className="view-ride-header">
           <div className="view-ride-subtitle">VIEW RIDES</div>
-          <RiderSearch />
+          <RiderSearch
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+          />
         </div>
 
         <section className="view-ride-grid">
-          {rides.map((ride) => {
-            const isJoined = ride.acceptedRiderId?.some(rider => rider._id === riderId) || 
-                            ride.riderId?.some(rider => rider._id === riderId);
-            
-            return (
-              <article key={ride._id} className="view-ride-card">
-                <img alt="Taxi car" className="view-ride-image" src={image} />
-                <div className="view-ride-details">
-                  <div className="view-ride-time">
-                    <span>{ride.rideTime}</span>
-                    <span>{formatDate(ride.rideDate)}</span>
+          {filteredRides.length > 0 ? (
+            filteredRides.map((ride) => {
+              const isJoined = ride.acceptedRiderId?.some(rider => rider._id === riderId) ||
+                ride.riderId?.some(rider => rider._id === riderId);
+
+              return (
+                <article key={ride._id} className="view-ride-card">
+                  <img alt="Taxi car" className="view-ride-image" src={image} />
+                  <div className="view-ride-details">
+                    <div className="view-ride-time">
+                      <span>{ride.rideTime}</span>
+                      <span>{formatDate(ride.rideDate)}</span>
+                    </div>
+                    <p className="view-ride-pickup">Pick Up at {ride.origin}</p>
+                    <p className="view-ride-dropoff">
+                      <FaMapMarkerAlt className="view-ride-marker" />
+                      Drop Off: {ride.destination}
+                    </p>
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: isJoined ? '#cccccc' : '#f59e0b',
+                        color: 'black',
+                        fontSize: '10px',
+                        borderRadius: '2px',
+                        padding: '4px 16px',
+                        minWidth: 'auto',
+                        '&:hover': { backgroundColor: isJoined ? '#cccccc' : '#e69100' },
+                      }}
+                      onClick={() => !isJoined && handleViewDetails(ride)}
+                      disabled={isJoined}
+                    >
+                      {isJoined ? 'Already Joined' : 'View Details'}
+                    </Button>
                   </div>
-                  <p className="view-ride-pickup">Pick Up at {ride.origin}</p>
-                  <p className="view-ride-dropoff">
-                    <FaMapMarkerAlt className="view-ride-marker" />
-                    Drop Off: {ride.destination}
-                  </p>
-                  <Button
-                    variant="contained"
-                    sx={{
-                      backgroundColor: isJoined ? '#cccccc' : '#f59e0b',
-                      color: 'black',
-                      fontSize: '10px',
-                      borderRadius: '2px',
-                      padding: '4px 16px',
-                      minWidth: 'auto',
-                      '&:hover': { backgroundColor: isJoined ? '#cccccc' : '#e69100' },
-                    }}
-                    onClick={() => !isJoined && handleViewDetails(ride)}
-                    disabled={isJoined}
-                  >
-                    {isJoined ? 'Already Joined' : 'View Details'}
-                  </Button>
-                </div>
-              </article>
-            );
-          })}
+                </article>
+              );
+            })
+          ) : (
+            <Box sx={{
+              width: '100%',
+              textAlign: 'center',
+              p: 3,
+              mt: 4,
+              backgroundColor: '#fff9e6',
+              borderRadius: 2
+            }}>
+              <Typography variant="h6" sx={{ color: '#666', position: 'relative', left: '500px' }}>
+                {searchQuery ? 'No rides match your search' : 'Rides not available at the moment'}
+              </Typography>
+            </Box>
+          )}
         </section>
       </main>
 
-      {/* Ride Details Dialog */}
       <Dialog open={!!selectedRide} onClose={handleCloseModal} fullWidth maxWidth="sm">
         <DialogTitle style={{ color: "#F1B92E" }}>
           RIDE DETAILS
@@ -219,14 +245,7 @@ useEffect(() => {
               </Box>
             </Box>
           )}
-
-          <Box sx={{
-            mt: 3,
-            p: 2,
-            backgroundColor: '#fff9e6',
-            borderRadius: 1,
-            textAlign: 'center'
-          }}>
+          <Box sx={{ mt: 3, p: 2, backgroundColor: '#fff9e6', borderRadius: 1, textAlign: 'center' }}>
             <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
               NOTE: {selectedRide?.rideDescription || 'Please be at the pickup location 5 minutes before the pickup time.'}
             </Typography>
@@ -252,3 +271,4 @@ useEffect(() => {
 };
 
 export default ViewRide;
+

@@ -15,6 +15,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import apiService from '../../Services/apiService';
 import { useNavigate } from 'react-router-dom';
+export const imageBaseUrl = import.meta.env.VITE_API_URL;
 
 const DriverEditProfile = ({ setShowProfileEditCard, currentDriver, setCurrentDriver }) => {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ const DriverEditProfile = ({ setShowProfileEditCard, currentDriver, setCurrentDr
 
   const [avatarSrc, setAvatarSrc] = useState(
     currentDriver.driverPic
-      ? `http://localhost:4052/ride_share_api/${currentDriver.driverPic}`
+      ? `${imageBaseUrl}/${currentDriver.driverPic}`
       : 'https://passport-photo.online/images/cms/prepare_light_b364e3ec37.webp?quality=80&format=webp&width=1920'
   );
 

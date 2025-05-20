@@ -1,10 +1,14 @@
 import React from 'react';
 import '../Style/Profile.css';
 import { Button } from '@mui/material';
+export const imageBaseUrl = import.meta.env.VITE_API_URL;
+
 
 function DriverViewProfile({ onEditClick, driver }) {
+  console.log(imageBaseUrl);
+  
   const DriverProfile = driver?.driverPic?.filename 
-    ? `http://localhost:4040/api/v1/${driver.driverPic.filename}`
+    ? `${imageBaseUrl}/${driver.driverPic.filename}`
     : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png";
 
   return (

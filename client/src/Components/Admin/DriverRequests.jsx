@@ -37,7 +37,6 @@ function DriverRequests() {
                 const response = await Service.getAllDrivers();
                 console.log('API Response:', response);
                 
-                // Handle both possible response structures
                 const driversData = response.data?.drivers || response.drivers || [];
                 
                 if (!driversData.length) {
@@ -46,7 +45,6 @@ function DriverRequests() {
 
                 setAllDrivers(driversData);
                 
-                // Filter for pending drivers (backgroundCheck: false)
                 const pending = driversData.filter(driver => 
                     driver.backgroundCheck === false || 
                     driver.backgroundCheck === undefined
@@ -191,7 +189,7 @@ function DriverRequests() {
                                         <td>{driver.fullname || 'N/A'}</td>
                                         <td>
                                             <Avatar
-                                                src={getProfileImageUrl(driver.driverPic)}
+                                                src={`http://localhost:4052/ride_share_api/uploads/drivers/${driver.driverPic}`}
                                                 alt={driver.fullname}
                                                 sx={{ width: 40, height: 40 }}
                                             />

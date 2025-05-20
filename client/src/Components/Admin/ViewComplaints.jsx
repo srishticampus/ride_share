@@ -21,12 +21,14 @@ const ViewComplaints = () => {
     try {
       setLoading(true);
       const response = await apiService.getAllDisputes();
-console.log(response);
 
       if (response.status === 'success') {
-        // Filter only pending complaints for drivers
-        const driverComplaintsData = response.data.disputes
-          .filter(complaint => complaint.driverId && complaint.resolutionStatus === 'Pending')
+        const pendingComplaints = response.data.disputes.filter(
+          complaint => complaint.resolutionStatus === 'Pending'
+        );
+
+        const driverComplaintsData = pendingComplaints
+          .filter(complaint => complaint.driverId)
           .map(complaint => ({
             id: complaint._id,
             name: complaint.driverId.fullname || 'Driver',
@@ -38,14 +40,13 @@ console.log(response);
             title: complaint.subject,
             content: complaint.description,
             bgColor: getRandomBgColor(),
-            image: complaint.driverId.driverPic || 'https://storage.googleapis.com/a1aa/image/6a0122db-4089-47a3-3a2d-f5195e5122b9.jpg',
+            image: complaint.driverId.driverPic || 'https://via.placeholder.com/150',
             incidentDate: complaint.incidentDate,
             attachment: complaint.attachment,
           }));
 
-        // Filter only pending complaints for riders
-        const riderComplaintsData = response.data.disputes
-          .filter(complaint => complaint.reportedBy && complaint.resolutionStatus === 'Pending')
+        const riderComplaintsData = pendingComplaints
+          .filter(complaint => complaint.reportedBy)
           .map(complaint => ({
             id: complaint._id,
             name: complaint.reportedBy.fullName || 'Rider',
@@ -57,7 +58,7 @@ console.log(response);
             title: complaint.subject,
             content: complaint.description,
             bgColor: getRandomBgColor(),
-            image: complaint.reportedBy.profilePicture || 'https://storage.googleapis.com/a1aa/image/6a0122db-4089-47a3-3a2d-f5195e5122b9.jpg',
+            image: complaint.reportedBy.profilePicture || 'https://via.placeholder.com/150',
             incidentDate: complaint.incidentDate,
             attachment: complaint.attachment,
           }));
@@ -65,13 +66,12 @@ console.log(response);
         setDriverComplaints(driverComplaintsData);
         setRiderComplaints(riderComplaintsData);
 
-        // Initialize response texts and statuses
         const initialResponses = {};
         const initialStatuses = {};
 
-        response.data.disputes.forEach(complaint => {
-          initialResponses[complaint._id] = '';
-          initialStatuses[complaint._id] = 'Pending';
+        pendingComplaints.forEach(complaint => {
+          initialResponses[complaint._id] = complaint.responseText || '';
+          initialStatuses[complaint._id] = complaint.resolutionStatus;
         });
 
         setResponseTexts(initialResponses);
@@ -79,11 +79,7 @@ console.log(response);
       }
     } catch (err) {
       console.error('Error fetching complaints:', err);
-      if (err.response?.data?.status === "fail") {
-        toast.error('Session expired. Please login again.');
-      } else {
-        toast.error('Failed to fetch complaints');
-      }
+      toast.error(err.response?.data?.message || 'Failed to fetch complaints');
     } finally {
       setLoading(false);
     }
@@ -128,53 +124,42 @@ console.log(response);
 
       if (response.status === 'success') {
         toast.success('Response submitted successfully');
-        fetchComplaints();
-      } else {
-        toast.error(response.message || 'Failed to submit response');
+        fetchComplaints(); 
       }
     } catch (error) {
       console.error('Error submitting response:', error);
-      toast.error(error.message || 'Failed to submit response');
+      toast.error(error.response?.data?.message || 'Failed to submit response');
     }
   };
 
-const renderAttachment = (attachment) => {
-  if (!attachment) return null;
+  const renderAttachment = (attachment) => {
+    if (!attachment) return null;
 
-  // Assuming attachments are stored in a specific bucket with a base URL
-  const attachmentBaseUrl = "http://localhost:4052/ride_share_api/";
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+    const isImage = imageExtensions.some(ext => attachment.toLowerCase().endsWith(ext));
 
-  
-  // Check if it's an image by file extension
-  const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
-  const isImage = imageExtensions.some(ext => attachment.toLowerCase().endsWith(ext));
-
-  if (isImage) {
     return (
       <div className="attachment-container">
-        <img 
-          src={`${attachmentBaseUrl}${attachment}`} 
-          alt="Complaint attachment" 
-          className="complaint-attachment"
-          style={{ maxWidth: '100%', maxHeight: '200px', marginTop: '10px' }}
-        />
+        {isImage ? (
+          <img 
+            src={attachment} 
+            alt="Complaint attachment" 
+            className="complaint-attachment"
+          />
+        ) : (
+          <a 
+            href={attachment} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="attachment-link"
+          >
+            View Attachment
+          </a>
+        )}
       </div>
     );
-  } else {
-    return (
-      <div className="attachment-container" style={{ marginTop: '10px' }}>
-        <a 
-          href={`${attachmentBaseUrl}${attachment}`} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="attachment-link"
-        >
-          Download Attachment
-        </a>
-      </div>
-    );
-  }
-};
+  };
+
   if (loading) {
     return (
       <div className="complaints-container">
@@ -196,132 +181,77 @@ const renderAttachment = (attachment) => {
       <div className="main-content">
         <main className="content-area">
           <div className="header-title">
-            <h2>Complaints</h2>
+            <h2>Pending Complaints</h2>
           </div>
 
           <div className="content-header">
             <div className="header-tabs">
-              <div
-                className={`header-tab ${activeTab === 'rider' ? 'active-tab' : ''}`}
-                onClick={() => setActiveTab('rider')}
-              >
-                Rider
-              </div>
-              <div
+              <button
                 className={`header-tab ${activeTab === 'driver' ? 'active-tab' : ''}`}
                 onClick={() => setActiveTab('driver')}
               >
-                Driver
-              </div>
+                Driver Complaints
+              </button>
+              <button
+                className={`header-tab ${activeTab === 'rider' ? 'active-tab' : ''}`}
+                onClick={() => setActiveTab('rider')}
+              >
+                Rider Complaints
+              </button>
             </div>
           </div>
 
           <section className="complaints-list">
-            {activeTab === 'driver' ? (
-              driverComplaints.length > 0 ? (
-                driverComplaints.map((complaint) => (
-                  <article key={complaint.id} className={`complaint-card ${complaint.bgColor}`}>
-                    <div className="complaint-header">
-                      <img
-                        alt={`Profile of ${complaint.name}`}
-                        className="profile-img"
-                        src={complaint.image}
-                      />
-                      <div className="profile-info">
-                        <p className="profile-name">{complaint.name}</p>
-                        <p className="profile-date">{complaint.date}</p>
-                      </div>
+            {(activeTab === 'driver' ? driverComplaints : riderComplaints).length > 0 ? (
+              (activeTab === 'driver' ? driverComplaints : riderComplaints).map((complaint) => (
+                <article key={complaint.id} className={`complaint-card ${complaint.bgColor}`}>
+                  <div className="complaint-header">
+                    <img
+                      alt={`Profile of ${complaint.name}`}
+                      className="profile-img"
+                      src={complaint.image}
+                    />
+                    <div className="profile-info">
+                      <p className="profile-name">{complaint.name}</p>
+                      <p className="profile-date">{complaint.date}</p>
                     </div>
-                    <p className="complaint-title">{complaint.title}</p>
+                  </div>
+                  <div className="complaint-body">
+                    <h3 className="complaint-title">{complaint.title}</h3>
                     <p className="complaint-content">{complaint.content}</p>
-
                     {renderAttachment(complaint.attachment)}
+                  </div>
 
-                    <form className="response-form" onSubmit={(e) => handleSubmit(e, complaint.id)}>
-                      <div className="response-controls" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        <input
-                          type="text"
-                          className="response-input"
-                          placeholder="Add a response..."
-                          value={responseTexts[complaint.id] || ''}
-                          onChange={(e) => handleResponseChange(complaint.id, e.target.value)}
-                          required
-                          style={{ flex: 1 }}
-                        />
-
-                        <select
-                          className="status-dropdown"
-                          value={resolutionStatuses[complaint.id] || 'Pending'}
-                          onChange={(e) => handleStatusChange(complaint.id, e.target.value)}
-                          style={{ width: '120px' }}
-                        >
-                          {/* <option value="Pending">Pending</option> */}
-                          <option value="Resolved">Resolved</option>
-                          <option value="Rejected">Rejected</option>
-                        </select>
-
-                        <button className="response-btn" type="submit" style={{ padding: '8px 16px' }}>
-                          SUBMIT
-                        </button>
-                      </div>
-                    </form>
-                  </article>
-                ))
-              ) : (
-                <div className="no-complaints">No pending driver complaints found</div>
-              )
+                  <form className="response-form" onSubmit={(e) => handleSubmit(e, complaint.id)}>
+                    <div className="response-controls">
+                      <input
+                        type="text"
+                        className="response-input"
+                        placeholder="Enter your response..."
+                        value={responseTexts[complaint.id] || ''}
+                        onChange={(e) => handleResponseChange(complaint.id, e.target.value)}
+                        required
+                      />
+                      <select
+                        className="status-dropdown"
+                        value={resolutionStatuses[complaint.id] || 'Pending'}
+                        onChange={(e) => handleStatusChange(complaint.id, e.target.value)}
+                      >
+                        <option value="Pending">Pending</option>
+                        <option value="Resolved">Resolved</option>
+                        <option value="Rejected">Rejected</option>
+                      </select>
+                      <button className="response-btn" type="submit">
+                        Submit Response
+                      </button>
+                    </div>
+                  </form>
+                </article>
+              ))
             ) : (
-              riderComplaints.length > 0 ? (
-                riderComplaints.map((complaint) => (
-                  <article key={complaint.id} className={`complaint-card ${complaint.bgColor}`}>
-                    <div className="complaint-header">
-                      <img
-                        alt={`Profile of ${complaint.name}`}
-                        className="profile-img"
-                        src={complaint.image}
-                      />
-                      <div className="profile-info">
-                        <p className="profile-name">{complaint.name}</p>
-                        <p className="profile-date">{complaint.date}</p>
-                      </div>
-                    </div>
-                    <p className="complaint-title">{complaint.title}</p>
-                    <p className="complaint-content">{complaint.content}</p>
-
-                    {renderAttachment(complaint.attachment)}
-
-                    <form className="response-form" onSubmit={(e) => handleSubmit(e, complaint.id)}>
-                      <div className="response-controls" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        <input
-                          type="text"
-                          className="response-input"
-                          placeholder="Add a response..."
-                          value={responseTexts[complaint.id] || ''}
-                          onChange={(e) => handleResponseChange(complaint.id, e.target.value)}
-                          required
-                          style={{ flex: 1 }}
-                        />
-
-                        <select
-                          className="status-dropdown"
-                          value={resolutionStatuses[complaint.id] || 'Pending'}
-                          onChange={(e) => handleStatusChange(complaint.id, e.target.value)}
-                          style={{ width: '120px' }}
-                        >
-                          {/* <option value="Pending">Pending</option> */}
-                          <option value="Resolved">Resolved</option>
-                          <option value="Rejected">Rejected</option>
-                        </select>
-
-                        <button className="response-btn" type="submit" style={{ padding: '8px 16px' }}>
-                          SUBMIT
-                        </button>
-                      </div>
-                    </form>                  </article>
-                ))
-              ) : (
-                <div className="no-complaints">No pending rider complaints found</div>
-              )
+              <div className="no-complaints">
+                No pending {activeTab} complaints found
+              </div>
             )}
           </section>
         </main>

@@ -18,6 +18,7 @@ import { Box } from '@mui/material';
 import { FaTimes } from 'react-icons/fa';
 import '../Style/ViewRide.css';
 import apiService from '../../Services/apiService';
+import { toast } from 'react-toastify';
 
 const ViewRequest = () => {
     const driverId = localStorage.getItem('driverId');
@@ -39,6 +40,7 @@ const ViewRequest = () => {
                     const ridesWithRequests = response.data.rides.filter(ride => {
                         const isDriverRide = ride.VehicleId?.driverId?._id === driverId;
                         const hasPendingRiders = ride.riderId && ride.riderId.length > 0;
+                        // Check if any rider hasn't been accepted yet
                         const hasUnacceptedRiders = ride.riderId.some(rider =>
                             !ride.acceptedRiderId?.includes(rider._id)
                         );
@@ -83,8 +85,6 @@ const ViewRequest = () => {
                 setError('No request selected');
                 return;
             }
-
-            // Temporary message for instant UI update
             const tempMessage = {
                 text: message,
                 sender: {
@@ -102,11 +102,10 @@ const ViewRequest = () => {
                 selectedRequest._id,
                 message.trim(),
                 driverId,
-                true // isDriver = true (since this is driver)
+                true
             );
 
             if (response.status === 'success') {
-                // Update requests state
                 setRequests(prevRequests =>
                     prevRequests.map(req =>
                         req._id === selectedRequest._id
@@ -183,9 +182,12 @@ const ViewRequest = () => {
                         return isDriverRide && hasPendingRiders && hasUnacceptedRiders;
                     }));
                 }
+                toast.success("Approved Successfully")
             } else {
                 setSuccessMessage('Ride request accepted successfully!');
                 setTimeout(() => setSuccessMessage(null), 3000);
+                toast.error("Approved Failed")
+
             }
         } catch (error) {
             console.error('Error approving request:', error);
@@ -218,7 +220,6 @@ const ViewRequest = () => {
                     }
                     return request;
                 }).filter(request =>
-                    // Remove the ride completely if it has no more pending riders
                     request.riderId && request.riderId.length > 0
                 )
             );
@@ -227,11 +228,8 @@ const ViewRequest = () => {
             const response = await apiService.rejectRideRequest(rideId, { riderId });
 
             if (response.status !== 'success') {
-                // If the API call fails, you might want to revert the UI change
-                // You would need to store the previous state or refetch the data
                 setError('Failed to reject ride request');
                 setTimeout(() => setError(null), 3000);
-                // Consider refetching the requests here to sync with the server
                 const fetchResponse = await apiService.getAllRides();
                 if (fetchResponse.status === 'success') {
                     setRequests(fetchResponse.data.rides.filter(ride => {
@@ -243,9 +241,11 @@ const ViewRequest = () => {
                         return isDriverRide && hasPendingRiders && hasUnacceptedRiders;
                     }));
                 }
+                toast.success("Rejected Successfully")
             } else {
                 setSuccessMessage('Ride request rejected successfully!');
                 setTimeout(() => setSuccessMessage(null), 3000);
+                toast.error("Rejected Failed")
             }
         } catch (error) {
             console.error('Error rejecting request:', error);
@@ -280,25 +280,25 @@ const ViewRequest = () => {
 
                 <section className="view-ride-grid">
                     {requests.length > 0 ? (
-                        requests.map((request) => (
-                            request.riderId && request.riderId.length > 0 && (
-                                <article key={request._id} className="view-req-card">
+                        requests.flatMap((request) =>
+                            request.riderId?.map((rider) => (
+                                <article key={`${request._id}-${rider._id}`} className="view-req-card">
                                     <Avatar
-                                        alt={request.riderId[0]?.fullName || 'Rider'}
-                                        src={request.riderId[0]?.profilePicture || "https://via.placeholder.com/150"}
+                                        alt={rider.fullName || 'Rider'}
+                                        src={rider.profilePicture || "https://via.placeholder.com/150"}
                                         sx={{ width: 70, height: 70 }}
                                     />
                                     <div className="view-ridereq-details">
                                         <p className="view-ride-pickup" style={{ color: "#f59e0b", fontSize: "18px", marginLeft: "40px" }}>
-                                            {request.riderId[0]?.fullName || 'Unknown Rider'}
+                                            {rider.fullName || 'Unknown Rider'}
                                         </p>
                                         <p className="view-Req-details">
                                             <EmailIcon className="view-ride-marker" />
-                                            {request.riderId[0]?.email || 'No email provided'}
+                                            {rider.email || 'No email provided'}
                                         </p>
                                         <p className="view-Req-details">
                                             <PhoneIcon className="view-ride-marker" />
-                                            {request.riderId[0]?.phoneNumber || 'No phone provided'}
+                                            {rider.phoneNumber || 'No phone provided'}
                                         </p>
                                         <p className="view-Req-details">
                                             <LocationOnIcon className="view-ride-marker" />
@@ -312,7 +312,7 @@ const ViewRequest = () => {
                                             <Button
                                                 variant="outlined"
                                                 startIcon={<CheckCircleIcon />}
-                                                onClick={() => handleApproveRequest(request._id, request.riderId[0]._id)}
+                                                onClick={() => handleApproveRequest(request._id, rider._id)}
                                                 sx={{
                                                     color: '#4caf50',
                                                     borderColor: '#4caf50',
@@ -327,7 +327,7 @@ const ViewRequest = () => {
                                             <Button
                                                 variant="outlined"
                                                 startIcon={<CancelIcon />}
-                                                onClick={() => handleRejectRequest(request._id, request.riderId[0]._id)}
+                                                onClick={() => handleRejectRequest(request._id, rider._id)}
                                                 sx={{
                                                     color: '#f44336',
                                                     borderRadius: "25px",
@@ -354,8 +354,8 @@ const ViewRequest = () => {
                                         </div>
                                     </div>
                                 </article>
-                            )
-                        ))
+                            ))
+                        )
                     ) : (
                         <Box
                             sx={{
@@ -370,7 +370,6 @@ const ViewRequest = () => {
                                 No ride requests at the moment
                             </Typography>
                         </Box>
-
                     )}
                 </section>
             </main>

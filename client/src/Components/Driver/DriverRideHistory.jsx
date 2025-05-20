@@ -1,147 +1,288 @@
-import React, { useState } from 'react';
-import { Button, Divider } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Button, Divider, IconButton, Typography, Box, Tabs, Tab, TextField, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import HistoryIcon from '@mui/icons-material/History';
+import { FaTimes, FaMapMarkerAlt, FaStar } from 'react-icons/fa';
 import '../Style/RiderRideHistory.css';
-import { Link } from 'react-router-dom';
-import DriverNav from '../Driver/DriverNav'
-const rideHistoryData = [
-  {
-    id: 1,
-    rideId: 'RD25589',
-    date: 'April 10, 2025',
-    pickUpLocation: '125, City Center',
-    dropOffLocation: '78, Downtown',
-    pickUpTime: 'Apr 10 2025, 10:00 AM',
-    dropOffTime: 'Apr 10 2025, 10:30 AM',
-    paymentAmount: '₹100',
-    paymentId: 'PAY78945612',
-    riderId: 'RID125487',
-    driverId: 'DRV889565',
-    paymentMethod: 'UPI',
-    paymentStatus: 'Completed',
-    transactionDate: 'Apr 10 2025, 10:35 AM'
-  },
-  {
-    id: 2,
-    rideId: 'RD36589',
-    date: 'April 9, 2025',
-    pickUpLocation: '45, Mall Road',
-    dropOffLocation: '22, Business Park',
-    pickUpTime: 'Apr 9 2025, 02:30 PM',
-    dropOffTime: 'Apr 9 2025, 03:00 PM',
-    paymentAmount: '₹150',
-    paymentId: 'PAY36589654',
-    riderId: 'RID125487',
-    driverId: 'DRV745896',
-    paymentMethod: 'Credit Card',
-    paymentStatus: 'Completed',
-    transactionDate: 'Apr 9 2025, 03:05 PM'
-  },
-  {
-    id: 3,
-    rideId: 'RD78541',
-    date: 'April 8, 2025',
-    pickUpLocation: '89, Suburb Lane',
-    dropOffLocation: 'Central Station',
-    pickUpTime: 'Apr 8 2025, 08:45 AM',
-    dropOffTime: 'Apr 8 2025, 09:15 AM',
-    paymentAmount: '₹200',
-    paymentId: 'PAY78541236',
-    riderId: 'RID125487',
-    driverId: 'DRV125487',
-    paymentMethod: 'Wallet',
-    paymentStatus: 'Completed',
-    transactionDate: 'Apr 8 2025, 09:20 AM'
-  },
-  {
-    id: 4,
-    rideId: 'RD96587',
-    date: 'April 7, 2025',
-    pickUpLocation: '12, Park Street',
-    dropOffLocation: 'Airport Terminal',
-    pickUpTime: 'Apr 7 2025, 06:15 PM',
-    dropOffTime: 'Apr 7 2025, 07:00 PM',
-    paymentAmount: '₹350',
-    paymentId: 'PAY96587412',
-    riderId: 'RID125487',
-    driverId: 'DRV963258',
-    paymentMethod: 'Cash',
-    paymentStatus: 'Completed',
-    transactionDate: 'Apr 7 2025, 07:05 PM'
-  },
-  {
-    id: 5,
-    rideId: 'RD32569',
-    date: 'April 6, 2025',
-    pickUpLocation: '56, Lake View',
-    dropOffLocation: '34, Tech Park',
-    pickUpTime: 'Apr 6 2025, 11:30 AM',
-    dropOffTime: 'Apr 6 2025, 12:00 PM',
-    paymentAmount: '₹180',
-    paymentId: 'PAY32569874',
-    riderId: 'RID125487',
-    driverId: 'DRV369852',
-    paymentMethod: 'Debit Card',
-    paymentStatus: 'Completed',
-    transactionDate: 'Apr 6 2025, 12:05 PM'
-  },
-  {
-    id: 6,
-    rideId: 'RD74125',
-    date: 'April 5, 2025',
-    pickUpLocation: '90, Hillside Avenue',
-    dropOffLocation: '65, Market Square',
-    pickUpTime: 'Apr 5 2025, 05:45 PM',
-    dropOffTime: 'Apr 5 2025, 06:15 PM',
-    paymentAmount: '₹120',
-    paymentId: 'PAY74125896',
-    riderId: 'RID125487',
-    driverId: 'DRV852147',
-    paymentMethod: 'UPI',
-    paymentStatus: 'Completed',
-    transactionDate: 'Apr 5 2025, 06:20 PM'
-  },
-  {
-    id: 7,
-    rideId: 'RD85214',
-    date: 'April 4, 2025',
-    pickUpLocation: '33, Riverfront',
-    dropOffLocation: '78, University Campus',
-    pickUpTime: 'Apr 4 2025, 09:00 AM',
-    dropOffTime: 'Apr 4 2025, 09:40 AM',
-    paymentAmount: '₹220',
-    paymentId: 'PAY85214796',
-    riderId: 'RID125487',
-    driverId: 'DRV741258',
-    paymentMethod: 'Wallet',
-    paymentStatus: 'Completed',
-    transactionDate: 'Apr 4 2025, 09:45 AM'
-  },
-  {
-    id: 8,
-    rideId: 'RD96325',
-    date: 'April 3, 2025',
-    pickUpLocation: '21, Old Town',
-    dropOffLocation: '43, New District',
-    pickUpTime: 'Apr 3 2025, 03:15 PM',
-    dropOffTime: 'Apr 3 2025, 03:50 PM',
-    paymentAmount: '₹170',
-    paymentId: 'PAY96325874',
-    riderId: 'RID125487',
-    driverId: 'DRV325698',
-    paymentMethod: 'Credit Card',
-    paymentStatus: 'Completed',
-    transactionDate: 'Apr 3 2025, 03:55 PM'
-  }
-];
+import DriverNav from '../Driver/DriverNav';
+import apiService from '../../Services/apiService';
+import { toast } from 'react-toastify';
 
 function DriverRideHistory() {
+  const [allRides, setAllRides] = useState([]);
+  const [acceptedRides, setAcceptedRides] = useState([]);
+  const [completedRides, setCompletedRides] = useState([]);
   const [selectedRide, setSelectedRide] = useState(null);
+  const [tabValue, setTabValue] = useState(0);
+  const [showChatModal, setShowChatModal] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState(null);
+  const [localMessages, setLocalMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const driverId = localStorage.getItem('driverId');
+  const driverName = localStorage.getItem('driverName');
+
+  useEffect(() => {
+    const fetchRides = async () => {
+      try {
+        setLoading(true);
+        const response = await apiService.getAllRides();
+        console.log(response);
+
+        if (response.status === 'success') {
+          setAllRides(response.data.rides);
+
+          // Filter rides where driver is the current driver
+          const driverRides = response.data.rides.filter(ride =>
+            ride.VehicleId?.driverId?._id === driverId
+          );
+
+          // Accepted and pending rides
+          const accepted = driverRides.filter(ride =>
+            (ride.status === 'accepted' || ride.status === 'pending') &&
+            ride.acceptedRiderId?.length > 0
+          );
+          setAcceptedRides(accepted);
+
+          // Completed rides
+          const completed = driverRides.filter(ride =>
+            ride.status === 'completed'
+          );
+          setCompletedRides(completed);
+        }
+      } catch (err) {
+        console.error('Error fetching rides:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (driverId) {
+      fetchRides();
+    }
+  }, [driverId]);
+
+  useEffect(() => {
+    if (selectedRide) {
+      setLocalMessages(selectedRide.messages || []);
+    }
+  }, [selectedRide]);
 
   const handleViewMore = (ride) => {
     setSelectedRide(ride);
   };
 
+  const handleOpenChat = () => {
+    setShowChatModal(true);
+  };
+
+  const handleCloseChat = () => {
+    setShowChatModal(false);
+    setError(null);
+  };
+
+  const handleSendMessage = async () => {
+    setError(null);
+    try {
+      if (!message.trim()) {
+        setError('Message cannot be empty');
+        return;
+      }
+
+      if (!selectedRide?._id) {
+        setError('No ride selected');
+        return;
+      }
+
+      // Create a temporary message object for immediate display
+      const tempMessage = {
+        text: message,
+        sender: {
+          _id: driverId,
+          fullname: driverName || 'You'
+        },
+        senderType: 'Driver',
+        createdAt: new Date().toISOString()
+      };
+
+      // Immediately add the message to local state
+      setLocalMessages(prev => [...prev, tempMessage]);
+
+      // Clear the input field
+      setMessage('');
+
+      const isDriver = true; // Since this is the driver component
+      const response = await apiService.updateRideMessage(
+        selectedRide._id,
+        message.trim(),
+        driverId,
+        isDriver
+      );
+
+      if (response.status === 'success') {
+        // Update all rides state
+        setAllRides(prevRides =>
+          prevRides.map(ride =>
+            ride._id === selectedRide._id
+              ? {
+                ...ride,
+                messages: [...(ride.messages || []), tempMessage]
+              }
+              : ride
+          )
+        );
+
+        // Update accepted/completed rides
+        setAcceptedRides(prev => prev.map(r => r._id === selectedRide._id ? { ...r, messages: [...(r.messages || []), tempMessage] } : r));
+        setCompletedRides(prev => prev.map(r => r._id === selectedRide._id ? { ...r, messages: [...(r.messages || []), tempMessage] } : r));
+
+        // Update selected ride
+        setSelectedRide(prev => ({
+          ...prev,
+          messages: [...(prev.messages || []), tempMessage]
+        }));
+      }
+    } catch (err) {
+      console.error('Error sending message:', err);
+      setError(err.message || 'Failed to send message');
+
+      // Remove the temporary message if the send failed
+      setLocalMessages(prev => prev.slice(0, -1));
+    }
+  };
+  const handleAcceptRide = async (rideId) => {
+    try {
+      setLoading(true);
+
+      setAcceptedRides(prev =>
+        prev.map(ride =>
+          ride._id === rideId
+            ? { ...ride, status: 'accepted' }
+            : ride
+        )
+      );
+
+      const response = await apiService.acceptRide(rideId, driverId);
+
+      if (response.status === 'success') {
+        const updatedRide = response.data.ride;
+        setAcceptedRides(prev =>
+          prev.map(ride =>
+            ride._id === rideId
+              ? updatedRide
+              : ride
+          )
+
+        );
+      }
+      toast.success("Accepted Successfully")
+
+    } catch (err) {
+      console.error('Error accepting ride:', err);
+      // Revert status if API call fails
+      setAcceptedRides(prev =>
+        prev.map(ride =>
+          ride._id === rideId
+            ? { ...ride, status: 'pending' }
+            : ride
+        )
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+  const formatDate = (dateString) => {
+    const options = { month: 'short', day: 'numeric', year: 'numeric' };
+    return new Date(dateString).toLocaleDateString('en-US', options);
+  };
+
+  const formatDateTime = (dateString, timeString) => {
+    const date = new Date(dateString);
+    const options = { month: 'short', day: 'numeric', year: 'numeric' };
+    const formattedDate = date.toLocaleDateString('en-US', options);
+    return `${formattedDate}, ${timeString}`;
+  };
+
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+    setSelectedRide(null);
+  };
+
+  const getSenderName = (message) => {
+    if (message.senderType === 'Driver') {
+      return 'You';
+    }
+
+    // For User messages
+    if (message.sender?._id) {
+      // Find the rider in acceptedRiderId array
+      const rider = selectedRide?.acceptedRiderId?.find(r => r._id === message.sender._id);
+      return rider?.fullName || 'Passenger';
+    }
+
+    return 'Unknown';
+  };
+
+  const renderRideList = (rides) => {
+    if (loading) {
+      return (
+        <Typography variant="body1" sx={{ textAlign: 'center', width: '100%', mt: 4 }}>
+          Loading rides...
+        </Typography>
+      );
+    }
+
+    return rides.length > 0 ? (
+      rides.map((ride) => (
+        <div
+          key={ride._id}
+          className={`ride-card ${selectedRide?._id === ride._id ? 'selected' : ''}`}
+          onClick={() => handleViewMore(ride)}
+        >
+          <div className="ride-icon">
+            <HistoryIcon />
+          </div>
+          <div className="ride-info" style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+            gap: '16px'
+          }}>
+            <div style={{ flex: 1 }}>
+              <h4>Ride ID: {ride._id.slice(-6).toUpperCase()}</h4>
+              <p>From: {ride.origin}</p>
+              <p>To: {ride.destination}</p>
+              <p>Fare: ₹{ride.price}</p>
+              <p>Date: {formatDate(ride.rideDate)}</p>
+            </div>
+            {tabValue === 0 && ride.status === 'pending' && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAcceptRide(ride._id);
+                }}
+                sx={{
+                  backgroundColor: '#4CAF50',
+                  minWidth: '120px',
+                  '&:hover': {
+                    backgroundColor: '#388E3C',
+                  }
+                }}
+              >
+                Accept Ride
+              </Button>
+            )}
+          </div>
+        </div>
+      ))
+    ) : (
+      <Typography variant="body1" sx={{ textAlign: 'center', width: '100%', mt: 4 }}>
+        No rides found
+      </Typography>
+    );
+  };
   return (
     <div className="rider-ride-history-container">
       <DriverNav />
@@ -150,77 +291,272 @@ function DriverRideHistory() {
           <h2>RIDE HISTORY</h2>
           <div className="header-actions">
             <h4>Your Ride History</h4>
-           
           </div>
-          <div className="month-header">April 2025</div>
         </div>
 
-        <div className="ride-history-main">
-          <div className="ride-list">
-            {rideHistoryData.map((ride) => (
-              <div key={ride.id} className="ride-card">
-                <div className="ride-icon">
-                  <HistoryIcon />
-                </div>
-                <div className="ride-info">
-                  <h4>Ride ID: {ride.rideId}</h4>
-                  <p>Pick Up: {ride.pickUpLocation}</p>
-                  <p>Payment Amount: {ride.paymentAmount}</p>
-                  <div className="ride-actions">
-                    <Button 
-                      variant="contained" 
-                      style={{ backgroundColor: '#F1B92E', color: 'black' }}
-                      onClick={() => handleViewMore(ride)}
-                    >
-                      View More
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))}
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+          <Tabs value={tabValue} onChange={handleTabChange}>
+            <Tab label="Accepted Requests" />
+            <Tab label="Completed Rides" />
+          </Tabs>
+        </Box>
+
+        <div className="ride-history-main split-view">
+          <div className="ride-list-container">
+            <div className="ride-list">
+              {tabValue === 0 && renderRideList(acceptedRides)}
+              {tabValue === 1 && renderRideList(completedRides)}
+            </div>
           </div>
 
-          {selectedRide && (
-            <div className="ride-details">
-              <div className="payment-section">
-                <h3 className="section-header">Payment</h3>
-                <Divider />
-                <div className="details-grid">
-                  <div className="details-left">
-                    <p><strong>Payment ID:</strong> {selectedRide.paymentId}</p>
-                    <p><strong>Rider ID:</strong> {selectedRide.riderId}</p>
-                    <p><strong>Payment Amount:</strong> {selectedRide.paymentAmount}</p>
-                    <p><strong>Payment Status:</strong> {selectedRide.paymentStatus}</p>
-                  </div>
-                  <div className="details-right">
-                    <p><strong>Ride ID:</strong> {selectedRide.rideId}</p>
-                    <p><strong>Driver ID:</strong> {selectedRide.driverId}</p>
-                    <p><strong>Payment Method:</strong> {selectedRide.paymentMethod}</p>
-                    <p><strong>Transaction Date & Time:</strong> {selectedRide.transactionDate}</p>
-                  </div>
+          <div className="ride-details-container">
+            {selectedRide ? (
+              <div className="ride-details">
+                <div className="details-header">
+                  <h3>RIDE DETAILS</h3>
+                  <Button
+                    variant="contained"
+                    style={{ backgroundColor: '#F1B92E', color: 'black' }}
+                    onClick={handleOpenChat}
+                  >
+                    Chat
+                  </Button>
                 </div>
-              </div>
 
-              <div className="route-section">
-                <h3 className="section-header">Route</h3>
-                <Divider />
-                <div className="details-grid">
-                  <div className="details-left">
-                    <p><strong>Pick Up Location:</strong> {selectedRide.pickUpLocation}</p>
-                    <p><strong>Pick Up Date & Time:</strong> {selectedRide.pickUpTime}</p>
-                  </div>
-                  <div className="details-right">
-                    <p><strong>Drop-Off Location:</strong> {selectedRide.dropOffLocation}</p>
-                    <p><strong>Drop-Off Date & Time:</strong> {selectedRide.dropOffTime}</p>
+                <div className="payment-section">
+                  <h4 className="section-header">RIDE INFO</h4>
+                  <Divider />
+                  <div className="details-grid">
+                    <div className="details-left">
+                      <p><strong>Ride ID:</strong> {selectedRide._id.slice(-6).toUpperCase()}</p>
+                      <p><strong>Driver ID:</strong> {driverId.slice(-6).toUpperCase()}</p>
+                      <p><strong>Fare:</strong> ₹{selectedRide.price}</p>
+                      {/* <p><strong>Status:</strong> {selectedRide.status || 'N/A'}</p> */}
+                    </div>
+                    <div className="details-right">
+                      <p><strong>Vehicle:</strong> {selectedRide.VehicleId?.vehicleMake || 'N/A'} {selectedRide.VehicleId?.vehicleModel || ''}</p>
+                      <p><strong>Vehicle Number:</strong> {selectedRide.VehicleId?.vehicleRegistrationNo || 'N/A'}</p>
+                      <p><strong>Seats :</strong> {selectedRide.availableSeats || 'N/A'}</p>
+                      <p><strong>Date:</strong> {formatDate(selectedRide.rideDate)}</p>
+                    </div>
                   </div>
                 </div>
+
+                <div className="route-section">
+                  <h4 className="section-header">Route</h4>
+                  <Divider />
+                  <div className="details-grid">
+                    <div className="details-left">
+                      <p><strong>Pick Up:</strong> {selectedRide.origin}</p>
+                      <p><strong>Date & Time:</strong> {formatDateTime(selectedRide.rideDate, selectedRide.rideTime)}</p>
+                      <p><strong>Route:</strong> {selectedRide.route || 'N/A'}</p>
+                    </div>
+                    <div className="details-right">
+                      <p><strong>Destination:</strong> {selectedRide.destination}</p>
+                      <p><strong>Special Note:</strong> {selectedRide.specialNote || 'None'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="passenger-section">
+                  <h4 className="section-header">Passenger Info</h4>
+                  <Divider />
+                  {selectedRide.acceptedRiderId?.length > 0 ? (
+                    selectedRide.acceptedRiderId.map((rider, index) => (
+                      <div key={index} className="details-grid">
+                        <div className="details-left">
+                          <p><strong>Name:</strong> {rider.fullName || 'N/A'}</p>
+                          <p><strong>Phone:</strong> {rider.phoneNumber || 'N/A'}</p>
+                        </div>
+                        <div className="details-right">
+                          <p><strong>Email:</strong> {rider.email || 'N/A'}</p>
+                          <p><strong>Emergency Contact:</strong> {rider.emergencyNo || 'N/A'}</p>
+                        </div>
+                        {selectedRide.acceptedRiderId.length > 1 && index < selectedRide.acceptedRiderId.length - 1 && (
+                          <Divider sx={{ my: 1, width: '100%' }} />
+                        )}
+                      </div>
+                    ))
+                  ) : selectedRide.riderId?.length > 0 ? (
+                    // Fallback to riderId if no acceptedRiderId but riderId exists
+                    selectedRide.riderId.map((rider, index) => (
+                      <div key={index} className="details-grid">
+                        <div className="details-left">
+                          <p><strong>Name:</strong> {rider.fullName || 'N/A'}</p>
+                          <p><strong>Phone:</strong> {rider.phoneNumber || 'N/A'}</p>
+                        </div>
+                        <div className="details-right">
+                          <p><strong>Email:</strong> {rider.email || 'N/A'}</p>
+                          <p><strong>Emergency Contact:</strong> {rider.emergencyNo || 'N/A'}</p>
+                        </div>
+                        {selectedRide.riderId.length > 1 && index < selectedRide.riderId.length - 1 && (
+                          <Divider sx={{ my: 1, width: '100%' }} />
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <p>No passenger information available</p>
+                  )}
+                </div>
+
+                <div className="payment-info-section">
+                  <h4 className="section-header">Payment Information</h4>
+                  <Divider />
+                  {selectedRide.successfulPayments?.length > 0 ? (
+                    <div className="payment-details">
+                      {selectedRide.successfulPayments.map((payment, index) => {
+                        // Correctly find the rider using payment.riderId._id
+                        const rider = selectedRide.acceptedRiderId?.find(
+                          r => r._id === payment.riderId._id
+                        );
+
+                        return (
+                          <div key={index} className="details-grid">
+                            <div className="details-left">
+                              {/* Display rider's full name */}
+                              <p><strong>Rider:</strong> {rider?.fullName || 'Unknown Rider'}</p>
+                              <p><strong>Amount:</strong> ₹{payment.amount}</p>
+                            </div>
+                            <div className="details-right">
+                              <p><strong>Payment Time:</strong>
+                                {new Date(payment.paymentTime).toLocaleString()}
+                              </p>
+                              <p><strong>Status:</strong> Paid</p>
+                            </div>
+                            {index < selectedRide.successfulPayments.length - 1 && (
+                              <Divider sx={{ my: 1, width: '100%' }} />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p>No payment information available</p>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="no-ride-selected">
+                <Typography variant="h6" sx={{ textAlign: 'center', color: 'text.secondary', mt: 10 }}>
+                  Select a ride to view details
+                </Typography>
+              </div>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Chat Dialog */}
+      <Dialog open={showChatModal} onClose={handleCloseChat} fullWidth maxWidth="sm">
+        <DialogTitle style={{ color: "#F1B92E" }}>
+          CHAT WITH PASSENGER
+          <IconButton onClick={handleCloseChat} sx={{ position: 'absolute', right: 8, top: 8 }}>
+            <FaTimes />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="subtitle1">
+              Ride: {selectedRide?.origin} to {selectedRide?.destination}
+            </Typography>
+          </Box>
+
+          {/* Message History */}
+          <Box sx={{
+            height: 300,
+            overflow: 'auto',
+            mb: 2,
+            p: 1,
+            bgcolor: '#f5f5f5',
+            borderRadius: 1,
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            {localMessages.map((msg, index) => {
+              const isCurrentUser = msg.senderType === 'Driver' && msg.sender?._id === driverId;
+              const isPassenger = msg.senderType === 'User';
+              const senderName = getSenderName(msg);
+
+              return (
+                <Box key={index} sx={{
+                  mb: 1,
+                  p: 1,
+                  maxWidth: '80%',
+                  alignSelf: isCurrentUser ? 'flex-end' : 'flex-start',
+                  bgcolor: isCurrentUser ? '#e3f2fd' : isPassenger ? '#ffebee' : '#f1f1f1',
+                  borderRadius: 2,
+                  borderBottomRightRadius: isCurrentUser ? 0 : 2,
+                  borderBottomLeftRadius: isCurrentUser ? 2 : 0
+                }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: isPassenger ? '#d32f2f' : 'inherit' }}>
+                    {senderName}
+                  </Typography>
+                  <Typography variant="body1">{msg.text}</Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', textAlign: 'right' }}>
+                    {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </Typography>
+                </Box>
+              );
+            })}
+          </Box>
+
+          {/* New Message Input */}
+          <TextField
+            label="Your Message"
+            fullWidth
+            multiline
+            rows={3}
+            margin="normal"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder={tabValue === 1 ? "Chat is closed for completed rides" : "Type your message here..."}
+            disabled={tabValue === 1}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey && tabValue !== 1) {
+                e.preventDefault();
+                handleSendMessage();
+              }
+            }}
+          />
+
+          {error && (
+            <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+              {error}
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          {tabValue === 1 ? (
+            <Button
+              onClick={handleCloseChat}
+              variant="contained"
+              sx={{
+                backgroundColor: '#f59e0b',
+                color: 'black',
+                '&:hover': { backgroundColor: '#e69100' },
+                width: '100%',
+              }}
+            >
+              Close Chat
+            </Button>
+          ) : (
+            <Button
+              onClick={handleSendMessage}
+              variant="contained"
+              sx={{
+                backgroundColor: '#f59e0b',
+                color: 'black',
+                '&:hover': { backgroundColor: '#e69100' },
+                width: '100%',
+              }}
+            >
+              Send Message
+            </Button>
+          )}
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
 
-export default DriverRideHistory;
+export default DriverRideHistory;  

@@ -25,7 +25,7 @@ export const responseDispute = catchAsync(async (req, res, next) => {
     { 
       responseText,
       resolutionStatus,
-      resolutionAt: Date.now()
+      ...(resolutionStatus !== 'Pending' && { resolutionAt: Date.now() })
     },
     {
       new: true,
@@ -37,8 +37,6 @@ export const responseDispute = catchAsync(async (req, res, next) => {
     return next(new AppError('Dispute not found', 404));
   }
 
-  // Here you could add notification logic to notify the user/driver
-
   res.status(200).json({
     status: 'success',
     data: {
@@ -46,6 +44,7 @@ export const responseDispute = catchAsync(async (req, res, next) => {
     }
   });
 });
+
 export const disputeSolve = catchAsync(async (req, res, next) => {
   const dispute = await Dispute.findByIdAndUpdate(
     req.params.id,

@@ -172,13 +172,15 @@
 /* Details Grid */
 .details-grid {
   display: flex;
-  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 15px;
 }
 
 .details-left,
 .details-right {
-  flex: 1;
-}
+flex: 1;
+  min-width: 200px;}
 
 /* Chat Section */
 .chat-section {

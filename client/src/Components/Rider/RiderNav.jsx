@@ -85,7 +85,7 @@ export default function RiderNav({onAvatarClick}) {
 
 
             </Link>
-            <Link to="/User-payment">
+            {/* <Link to="/User-payment">
             <Button
               sx={{
                 color: 'white',
@@ -98,7 +98,7 @@ export default function RiderNav({onAvatarClick}) {
               PAYMENT
             </Button>
 
-            </Link>
+            </Link> */}
             <Link to='/User-ride-History'>
             <Button
               sx={{

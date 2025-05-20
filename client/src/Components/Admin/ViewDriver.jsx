@@ -11,7 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Service from '../../Services/apiService';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import { imageBaseUrl} from '../../Services/apiService';
+export const imageBaseUrl = import.meta.env.VITE_API_URL;
 
 function ViewDriver() {
     const [drivers, setDrivers] = useState([]);
@@ -43,9 +43,10 @@ function ViewDriver() {
 
         fetchDrivers();
     }, []);
-  const UserProfile = drivers.driverPic 
-    ? `${imageBaseUrl}${drivers.driverPic}`
-    : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"; 
+    console.log(drivers);
+
+
+    // const imageUrl = `${imageBaseUrl}ride_share_api/uploads/driverPic-1745147990206.avif`;
 
     const toggleExpand = (driverId) => {
         if (expandedDriverId === driverId) {
@@ -80,10 +81,10 @@ function ViewDriver() {
                 <div className="content-wrapper">
                     {filteredDrivers.length > 0 ? (
                         filteredDrivers.map((driver) => (
-                            <div 
-                                key={driver._id} 
+                            <div
+                                key={driver._id}
                                 className="driver-card"
-                                style={{ 
+                                style={{
                                     height: expandedDriverId === driver._id ? 'auto' : '180px',
                                     overflow: 'hidden'
                                 }}
@@ -92,9 +93,11 @@ function ViewDriver() {
                                     <div className="avatar-container">
                                         <Avatar
                                             alt={driver.fullname}
-                                            src={UserProfile}
+                                            src={`http://localhost:4052/ride_share_api/uploads/drivers/${driver.driverPic}`}
                                             sx={{ width: 120, height: 120 }}
-                                        />
+                                        >
+                                            {!driver.driverPic && driver.fullname.charAt(0)}
+                                        </Avatar>
                                     </div>
 
                                     <div className="text-container">
@@ -107,8 +110,8 @@ function ViewDriver() {
                                             <LocalPhoneOutlinedIcon style={{ fontSize: 20, marginRight: 8 }} />
                                             <span>{driver.phoneNumber}</span>
                                         </div>
-                                        
-                                        <div 
+
+                                        <div
                                             className="view-details-link"
                                             onClick={() => toggleExpand(driver._id)}
                                         >
@@ -126,7 +129,7 @@ function ViewDriver() {
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 {expandedDriverId === driver._id && (
                                     <div className="driver-details-expanded">
                                         <div className="detail-row">

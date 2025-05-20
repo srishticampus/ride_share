@@ -77,24 +77,10 @@ const AddComplaints = () => {
             const response = await service.createDispute(formDataToSend);
 
             if (response) {
-                toast.success('Complaint submitted successfully!', {
-                    position: "top-right",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
+                toast.success('Complaint submitted successfully!');
                 resetForm();
             } else {
-                toast.error('Failed to submit complaint. Please try again.', {
-                    position: "top-right",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
+                toast.error('Failed to submit complaint. Please try again.');
             }
         } catch (err) {
             toast.error(err.response?.data?.message || err.message || 'Something went wrong', {

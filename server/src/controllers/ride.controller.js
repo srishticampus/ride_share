@@ -27,6 +27,9 @@ export const showAllRides = catchAsync(async (req, res, next) => {
     .populate('acceptedRiderId')
     .populate({
       path: 'messages.sender',
+    })
+    .populate({
+      path: 'successfulPayments.riderId'
     });
     
   res.status(200).json({
@@ -36,7 +39,8 @@ export const showAllRides = catchAsync(async (req, res, next) => {
       rides
     }
   });
-});export const viewAride = catchAsync(async (req, res, next) => {
+});
+export const viewAride = catchAsync(async (req, res, next) => {
   const ride = await Ride.findById(req.params.id)
     .populate('driverId')
     .populate('riderId');
@@ -211,7 +215,127 @@ export const rejectReq = catchAsync(async (req, res, next) => {
     }
   });
 });
+export const processRidePayment = catchAsync(async (req, res, next) => {
+  const { riderId, paymentMode, paymentStatus } = req.body;
 
+  if (!riderId || !paymentStatus) {
+    return next(new AppError('Please provide rider ID and payment status', 400));
+  }
+
+  // Find the ride
+  const ride = await Ride.findById(req.params.id);
+  if (!ride) {
+    return next(new AppError('No ride found with that ID', 404));
+  }
+
+  // Check if rider is part of the accepted riders
+  if (!ride.acceptedRiderId.includes(riderId)) {
+    return next(new AppError('You are not an accepted rider for this ride', 403));
+  }
+
+  // Update payment status in messages or create new payment message
+  const paymentMessage = {
+    text: `Payment Successful`,
+    // text: `Payment ${paymentStatus.toLowerCase()} by rider ${riderId}`,
+    sender: riderId,
+    senderType: 'User',
+    PaymentMode: paymentMode || 'OnlinePayment',
+    paymentStatus: paymentStatus === 'success' ? 'Completed' : 'Failed',
+    createdAt: new Date()
+  };
+
+  // Add payment message
+  ride.messages.push(paymentMessage);
+  
+  // Track successful payments
+  if (paymentStatus === 'success') {
+    if (!ride.successfulPayments) {
+      ride.successfulPayments = [];
+    }
+    
+    // Check if this rider already made a successful payment
+    const existingPayment = ride.successfulPayments.find(
+      p => p.riderId.toString() === riderId.toString()
+    );
+    
+    if (!existingPayment) {
+      ride.successfulPayments.push({
+        riderId,
+        paymentTime: new Date(),
+        amount: ride.price // Assuming equal share for all riders
+      });
+    }
+  }
+
+  // Check if all accepted riders have made successful payments
+  const allPaid = ride.acceptedRiderId.every(acceptedRiderId => 
+    ride.successfulPayments?.some(
+      payment => payment.riderId.toString() === acceptedRiderId.toString()
+    )
+  );
+
+  // If all paid and ride isn't already completed, update status
+  if (allPaid && ride.status !== 'completed') {
+    ride.status = 'completed';
+    ride.completedAt = new Date();
+  }
+
+  await ride.save();
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      ride,
+      paymentStatus: paymentMessage.paymentStatus,
+      allPaymentsCompleted: allPaid
+    }
+  });
+});
+
+export const acceptRide = async (req, res) => {
+  try {
+    const { rideId } = req.params;
+    const { driverId } = req.body; // Assuming driverId is sent in the request body
+
+    // Check if ride exists
+    const ride = await Ride.findById(rideId);
+    if (!ride) {
+      return res.status(404).json({ success: false, message: 'Ride not found' });
+    }
+
+    // Validate that the ride is in a state that can be accepted
+    if (ride.status !== 'pending' && ride.status !== 'available') {
+      return res.status(400).json({ 
+        success: false, 
+        message: `Ride cannot be accepted from current status: ${ride.status}` 
+      });
+    }
+
+    // Update the ride status and set the driver
+    const updatedRide = await Ride.findByIdAndUpdate(
+      rideId,
+      { 
+        status: 'accepted',
+        driverId: driverId 
+      },
+      { new: true }
+    ).populate('driverId').populate('riderId');
+
+    res.status(200).json({ 
+      success: true, 
+      message: 'Ride accepted successfully',
+      ride: updatedRide 
+    });
+
+  } catch (error) {
+    console.error('Error accepting ride:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Internal server error',
+      error: error.message 
+    });
+  }
+};
 export default {
   newRide,
   showAllRides,
@@ -220,5 +344,7 @@ export default {
   deleteRide,
   acceptReq,
   joinRide,
-  rejectReq
+  rejectReq,
+  processRidePayment,
+  acceptRide
 };

@@ -214,7 +214,11 @@ const getAllUsers = async (page = 1, limit = 10) => {
   try {
     const response = await apiClient.get(
       `/users?page=${page}&limit=${limit}`
-    );
+    ,{
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('adminToken')}`
+      }
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -349,7 +353,7 @@ const createRide = async (rideData) => {
 
     const response = await apiClient.post("/rides", rideData, {
       headers: {
-        "Content-Type": "application/json", 
+        "Content-Type": "application/json",
         'Authorization': `Bearer ${token}`
       }
     });
@@ -366,8 +370,8 @@ const getAllRides = async () => {
     throw error.response?.data || error.message;
   }
 };
-const rejectRideRequest=(rideId, data) => {
-    return apiClient.patch(`/rides/${rideId}/reject`, data);
+const rejectRideRequest = (rideId, data) => {
+  return apiClient.patch(`/rides/${rideId}/reject`, data);
 }
 const getRideById = async (rideId) => {
   try {
@@ -389,15 +393,35 @@ const joinRide = async (rideId, riderId) => {
   const response = await apiClient.patch(`/rides/${rideId}/join`, { riderId });
   return response.data;
 };
-const acceptRideRequest= async (rideId, data) => {
-      const token = localStorage.getItem("driverToken");
+const acceptRideRequest = async (rideId, data) => {
+  const token = localStorage.getItem("driverToken");
 
-    return await apiClient.post(`/rides/${rideId}/accept`, data, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
+  return await apiClient.post(`/rides/${rideId}/accept`, data, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
 }
+const processPayment = (id, paymentData) => {
+  return apiClient.post(`/rides/${id}/payment`, paymentData);
+};
+const acceptRide = async (rideId, driverId) => {
+  try {
+    const response = await apiClient.put(
+      `/rides/${rideId}/accept`,
+      { driverId },
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw new Error(error.response.data.message || 'Failed to accept ride');
+    } else if (error.request) {
+      throw new Error('No response from server. Please check your connection.');
+    } else {
+      throw new Error('Error setting up request to accept ride');
+    }
+  }
+};
 /**
  * Ride Request Services
  */
@@ -489,6 +513,7 @@ const solveDispute = async (disputeId) => {
     throw error.response?.data || error.message;
   }
 };
+// Ensure proper authorization headers in apiService:
 const responseDispute = async (disputeId, responseData) => {
   try {
     const token = localStorage.getItem('adminToken');
@@ -584,14 +609,19 @@ const getAllProfiles = async () => {
  * Rating Services
  */
 const createRating = async (ratingData) => {
+  const token = localStorage.getItem("authToken");
   try {
-    const response = await apiClient.post("/ratings", ratingData);
+    const response = await apiClient.post("/ratings", ratingData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      }
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
   }
 };
-
 const updateRating = async (ratingId, ratingData) => {
   try {
     const response = await apiClient.patch(`/ratings/${ratingId}`, ratingData);
@@ -611,8 +641,15 @@ const deleteRating = async (ratingId) => {
 };
 
 const getAllRatings = async () => {
+    const token = localStorage.getItem("authToken");
+
   try {
-    const response = await apiClient.get("/ratings");
+    const response = await apiClient.get("/ratings",{
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      }
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -653,6 +690,8 @@ export default {
   updateRideMessage,
   joinRide,
   rejectRideRequest,
+  processPayment,
+  acceptRide,
 
   // Ride Request
   createRideRequest,
