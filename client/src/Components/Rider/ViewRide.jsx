@@ -11,50 +11,78 @@ import '../Style/ViewRide.css';
 import image from '../../Assets/car4.png';
 import RiderNav from './RiderNav';
 import RiderSearch from './RiderSearch';
-import { Box, TextField, InputAdornment } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
+import { Box } from '@mui/material';
 import apiService from '../../Services/apiService';
 import { toast } from 'react-toastify';
+import { ClickAwayListener } from '@mui/material';
+import RiderViewProfile from './RiderViewProfile';
+import RiderEditProfile from './RiderEditProfile';
+
 const ViewRide = () => {
   const riderId = localStorage.getItem('riderId');
   const [rides, setRides] = useState([]);
   const [selectedRide, setSelectedRide] = useState(null);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Profile state
+  const [showProfileCard, setShowProfileCard] = useState(false);
+  const [showProfileEditCard, setShowProfileEditCard] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
+  // Profile handlers
+  const onAvatarClick = () => {
+    setShowProfileCard(prev => !prev);
+    if (!showProfileCard) {
+      setShowProfileEditCard(false);
+    }
+  };
+
+  const onEditClick = () => {
+    setShowProfileEditCard(true);
+    setShowProfileCard(false);
+  };
+
+  // Fetch current user
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const userData = await apiService.getCurrentUser();
+        localStorage.setItem("UserInfo", JSON.stringify(userData.data.user));
+        setCurrentUser(userData.data.user);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchCurrentUser();
+  }, []);
+
+  // Existing ride fetching logic
   useEffect(() => {
     const fetchRides = async () => {
       try {
         const response = await apiService.getAllRides();
-
         if (response.status === 'success') {
           const now = new Date();
-
           const filteredRides = response.data.rides.filter(ride => {
             const isInAcceptedRiders = ride.acceptedRiderId?.some(rider => rider._id === riderId);
             const isInRiders = ride.riderId?.some(rider => rider._id === riderId);
-
             const rideDate = new Date(ride.rideDate);
             const [hours, minutes] = ride.rideTime.split(':').map(Number);
             rideDate.setHours(hours, minutes, 0, 0);
-
             return !isInAcceptedRiders && !isInRiders &&
               rideDate > now &&
               ride.status === 'pending';
           });
-
           filteredRides.sort((a, b) => {
             const dateA = new Date(a.rideDate);
             const [hoursA, minutesA] = a.rideTime.split(':').map(Number);
             dateA.setHours(hoursA, minutesA, 0, 0);
-
             const dateB = new Date(b.rideDate);
             const [hoursB, minutesB] = b.rideTime.split(':').map(Number);
             dateB.setHours(hoursB, minutesB, 0, 0);
-
             return dateA - dateB;
           });
-
           setRides(filteredRides);
         }
       } catch (err) {
@@ -70,7 +98,6 @@ const ViewRide = () => {
     const driverName = ride.VehicleId?.driverId?.fullname?.toLowerCase() || '';
     const vehicleMake = ride.VehicleId?.vehicleMake?.toLowerCase() || '';
     const vehicleModel = ride.VehicleId?.vehicleModel?.toLowerCase() || '';
-
     return (
       ride.origin.toLowerCase().includes(searchLower) ||
       ride.destination.toLowerCase().includes(searchLower) ||
@@ -89,9 +116,7 @@ const ViewRide = () => {
         setError('No ride selected');
         return;
       }
-
       const response = await apiService.joinRide(selectedRide._id, riderId);
-
       if (response.status === 'success') {
         setRides(prevRides => prevRides.filter(ride => ride._id !== selectedRide._id));
         setSelectedRide(null);
@@ -101,7 +126,6 @@ const ViewRide = () => {
       console.error('Error joining ride:', err);
       setError(err.message || 'Failed to join ride');
       toast.error('Ride joined Unsuccessfully');
-
     }
   };
 
@@ -112,7 +136,45 @@ const ViewRide = () => {
 
   return (
     <div className="view-ride-container">
-      <RiderNav />
+      <RiderNav onAvatarClick={onAvatarClick} />
+
+      {/* Profile components */}
+      {showProfileCard && (
+        <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
+          <div style={{ 
+            position: "absolute", 
+            top: "40px", 
+            right: "20px", 
+            zIndex: 1000 
+          }}>
+            <RiderViewProfile
+              onEditClick={onEditClick}
+              currentUser={currentUser}
+            />
+          </div>
+        </ClickAwayListener>
+      )}
+
+      {showProfileEditCard && (
+        <ClickAwayListener onClickAway={() => setShowProfileEditCard(false)}>
+          <div style={{ 
+            position: "absolute", 
+            top: "10vh", 
+            left: "50%", 
+            transform: "translateX(-50%)", 
+            backgroundColor: "white", 
+            zIndex: 1000, 
+            borderRadius: "25px",
+            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)'
+          }}>
+            <RiderEditProfile
+              setShowProfileEditCard={setShowProfileEditCard}
+              currentUser={currentUser}
+              setCurrentUser={setCurrentUser}
+            />
+          </div>
+        </ClickAwayListener>
+      )}
 
       <main className="view-ride-main">
         <h1 className="view-ride-title">RIDE</h1>
@@ -189,56 +251,43 @@ const ViewRide = () => {
         </DialogTitle>
         <DialogContent dividers>
           {selectedRide && (
-            <Box sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 2
-            }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Driver:</Typography>
-                <Typography variant="body1" sx={{ textAlign: 'right' }}>{selectedRide.VehicleId.driverId.fullname}</Typography>
+                <Typography variant="body1">{selectedRide.VehicleId.driverId.fullname}</Typography>
               </Box>
-
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Vehicle:</Typography>
                 <Typography variant="body1">{selectedRide.VehicleId.vehicleMake} {selectedRide.VehicleId.vehicleModel}</Typography>
               </Box>
-
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Vehicle Color:</Typography>
                 <Typography variant="body1">{selectedRide.VehicleId.vehicleColor}</Typography>
               </Box>
-
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Vehicle Type:</Typography>
                 <Typography variant="body1">{selectedRide.VehicleId.vehicleType}</Typography>
               </Box>
-
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Available Seats:</Typography>
                 <Typography variant="body1">{selectedRide.availableSeats}</Typography>
               </Box>
-
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Price:</Typography>
                 <Typography variant="body1">₹{selectedRide.price}</Typography>
               </Box>
-
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Status:</Typography>
                 <Typography variant="body1">{selectedRide.status}</Typography>
               </Box>
-
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Contact:</Typography>
                 <Typography variant="body1">{selectedRide.VehicleId.driverId.phoneNumber}</Typography>
               </Box>
-
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Route:</Typography>
                 <Typography variant="body1">{selectedRide.route}</Typography>
               </Box>
-
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Special Note:</Typography>
                 <Typography variant="body1">{selectedRide.specialNote}</Typography>
@@ -271,4 +320,3 @@ const ViewRide = () => {
 };
 
 export default ViewRide;
-

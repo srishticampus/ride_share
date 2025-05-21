@@ -343,8 +343,8 @@ const ViewComplaints = () => {
                 </article>
               ))
             ) : (
-              <div className="no-complaints">
-                No pending {activeTab} complaints found
+              <div className="no-complaints" style={{ textAlign: 'center', marginTop: '20px' }}>
+                <h3>No pending {activeTab} complaints found</h3>
               </div>
             )}
           </section>

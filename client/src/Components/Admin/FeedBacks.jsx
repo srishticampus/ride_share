@@ -4,9 +4,8 @@ import AdminNav from './AdminNav';
 import AdminSidemenu from './AdminSidemenu';
 import Avatar from '@mui/material/Avatar';
 import Rating from '@mui/material/Rating';
-import apiService from '../../Services/apiService';
+import apiService, { imageBaseUrl } from '../../Services/apiService';
 function FeedBacks() {
-      const imageBaseUrl = 'http://localhost:4052/ride_share_api';
 
   const [ratings, setRatings] = useState([]);
 

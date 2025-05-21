@@ -23,11 +23,14 @@ import {
   TextareaAutosize
 } from '@mui/material';
 import HistoryIcon from '@mui/icons-material/History';
-import { FaTimes, FaMapMarkerAlt, FaStar, FaCalendarAlt, FaCheckCircle } from 'react-icons/fa';
+import { FaTimes, FaMapMarkerAlt } from 'react-icons/fa';
 import '../Style/RiderRideHistory.css';
 import { Link } from 'react-router-dom';
 import apiService from '../../Services/apiService';
 import { toast } from 'react-toastify';
+import { ClickAwayListener } from '@mui/material';
+import RiderViewProfile from './RiderViewProfile';
+import RiderEditProfile from './RiderEditProfile';
 
 function RiderRideHistory() {
   const riderId = localStorage.getItem('riderId');
@@ -51,12 +54,42 @@ function RiderRideHistory() {
     rating: 0
   });
 
+  // Profile State
+  const [showProfileCard, setShowProfileCard] = useState(false);
+  const [showProfileEditCard, setShowProfileEditCard] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  // Profile Handlers
+  const onAvatarClick = () => {
+    setShowProfileCard(prev => !prev);
+    if (!showProfileCard) {
+      setShowProfileEditCard(false);
+    }
+  };
+
+  const onEditClick = () => {
+    setShowProfileEditCard(true);
+    setShowProfileCard(false);
+  };
+
+  // Fetch Current User
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const userData = await apiService.getCurrentUser();
+        localStorage.setItem("UserInfo", JSON.stringify(userData.data.user));
+        setCurrentUser(userData.data.user);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchCurrentUser();
+  }, []);
+
   const fetchRides = async () => {
     setIsLoading(true);
     try {
       const response = await apiService.getAllRides();
-      console.log(response);
-
       if (response.status === 'success') {
         setAllRides(response.data.rides || []);
 
@@ -91,8 +124,7 @@ function RiderRideHistory() {
     if (!ride || !ride.successfulPayments) return false;
     return ride.successfulPayments.some(payment =>
       (payment.riderId && (payment.riderId._id === riderId || payment.riderId === riderId))
-    );
-  };
+  )};
 
   const handleViewMore = (ride) => {
     setSelectedRide(ride);
@@ -182,7 +214,6 @@ function RiderRideHistory() {
 
       if (response.status === 'success') {
         const updatedRide = response.data.ride;
-
         setAllRides(prev => prev.map(r => r._id === updatedRide._id ? updatedRide : r));
         setPendingRides(prev => prev.map(r => r._id === updatedRide._id ? updatedRide : r));
         setAcceptedRides(prev => prev.map(r => r._id === updatedRide._id ? updatedRide : r));
@@ -238,7 +269,6 @@ function RiderRideHistory() {
         if (selectedRide._id === response.data?.ride?._id) {
           setSelectedRide(response.data.ride);
         }
-        // Show rating modal after successful payment
         handleOpenRating();
       } else {
         throw new Error(response.message || 'Payment processing failed');
@@ -304,11 +334,9 @@ function RiderRideHistory() {
     if (message.senderType === 'Driver') {
       return selectedRide?.VehicleId?.driverId?.fullname || 'Driver';
     }
-
     if (message.sender?._id === riderId) {
       return 'You';
     }
-
     return message.sender?.fullName || 'Rider';
   };
 
@@ -328,73 +356,92 @@ function RiderRideHistory() {
         </Typography>
       );
     }
-    const submitReview = async () => {
-      try {
-        if (!selectedRide) return;
 
-        const reviewData = {
-          rideId: selectedRide._id,
-          reviewerId: riderId,
-          rating: review.rating,
-          reviewText: review.comment
-        };
+    return rides.map((ride) => {
+      const isJoined = ride.acceptedRiderId?.some(rider => rider._id === riderId) ||
+        ride.riderId?.some(rider => rider._id === riderId);
 
-        const response = await apiService.submitReview(reviewData);
-
-        if (response.status === 'success') {
-          toast.success("Review submitted successfully");
-          handleCloseRating();
-        } else {
-          throw new Error(response.message || 'Failed to submit review');
-        }
-      } catch (err) {
-        console.error('Error submitting review:', err);
-        toast.error(err.message || 'Failed to submit review');
-      }
-    };
-
-    // Update the review state initialization
-    return rides.map((ride) => (
-      <div
-        key={ride._id}
-        className={`ride-card ${selectedRide?._id === ride._id ? 'selected' : ''}`}
-        onClick={() => handleViewMore(ride)}
-      >
-        <div className="ride-icon">
-          <HistoryIcon />
+      return (
+        <div
+          key={ride._id}
+          className={`ride-card ${selectedRide?._id === ride._id ? 'selected' : ''}`}
+          onClick={() => handleViewMore(ride)}
+        >
+          <div className="ride-icon">
+            <HistoryIcon />
+          </div>
+          <div className="ride-info">
+            <h4>Ride ID: {ride._id?.slice(-6).toUpperCase() || 'N/A'}</h4>
+            <p>Pick Up: {ride.origin || 'N/A'}</p>
+            <p>Price: ₹{ride.price || '0'}</p>
+            <p>Date: {formatDate(ride.rideDate)}</p>
+            {tabValue === 1 && !hasPaid(ride) && (
+              <Button
+                variant="contained"
+                color="primary"
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleOpenPayment(ride);
+                }}
+                sx={{ mt: 1 }}
+              >
+                Pay
+              </Button>
+            )}
+            {tabValue === 1 && hasPaid(ride) && (
+              <Typography variant="caption" color="success" sx={{ mt: 1, display: 'block' }}>
+                Paid
+              </Typography>
+            )}
+          </div>
         </div>
-        <div className="ride-info">
-          <h4>Ride ID: {ride._id?.slice(-6).toUpperCase() || 'N/A'}</h4>
-          <p>Pick Up: {ride.origin || 'N/A'}</p>
-          <p>Price: ₹{ride.price || '0'}</p>
-          <p>Date: {formatDate(ride.rideDate)}</p>
-          {tabValue === 1 && !hasPaid(ride) && (
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOpenPayment(ride);
-              }}
-              sx={{ mt: 1 }}
-            >
-              Pay
-            </Button>
-          )}
-          {tabValue === 1 && hasPaid(ride) && (
-            <Typography variant="caption" color="success" sx={{ mt: 1, display: 'block' }}>
-              Paid
-            </Typography>
-          )}
-        </div>
-      </div>
-    ));
+      );
+    });
   };
 
   return (
     <div className="rider-ride-history-container">
-      <RiderNav />
+      <RiderNav onAvatarClick={onAvatarClick} />
+
+      {/* Profile Components */}
+      {showProfileCard && (
+        <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
+          <div style={{ 
+            position: "absolute", 
+            top: "40px", 
+            right: "20px", 
+            zIndex: 1000 
+          }}>
+            <RiderViewProfile
+              onEditClick={onEditClick}
+              currentUser={currentUser}
+            />
+          </div>
+        </ClickAwayListener>
+      )}
+
+      {showProfileEditCard && (
+        <ClickAwayListener onClickAway={() => setShowProfileEditCard(false)}>
+          <div style={{ 
+            position: "absolute", 
+            top: "10vh", 
+            left: "50%", 
+            transform: "translateX(-50%)", 
+            backgroundColor: "white", 
+            zIndex: 1000, 
+            borderRadius: "25px",
+            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)'
+          }}>
+            <RiderEditProfile
+              setShowProfileEditCard={setShowProfileEditCard}
+              currentUser={currentUser}
+              setCurrentUser={setCurrentUser}
+            />
+          </div>
+        </ClickAwayListener>
+      )}
+
       <div className="ride-history-content">
         <div className="ride-history-header">
           <h2>RIDE HISTORY</h2>
@@ -914,8 +961,6 @@ function RiderRideHistory() {
                 </Typography>
               </Box>
             </Box>
-
-
           </DialogContent>
           <DialogActions style={{
             padding: '16px 24px',

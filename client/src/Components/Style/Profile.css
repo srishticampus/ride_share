@@ -7,6 +7,8 @@
   background-color: #fff;
   display: flex;
   flex-direction: column;
+  position: fixed;
+  right: 0;
 }
 
 .profile-card img {

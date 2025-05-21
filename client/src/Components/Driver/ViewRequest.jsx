@@ -22,6 +22,7 @@ import { toast } from 'react-toastify';
 import { ClickAwayListener } from '@mui/material';
 import DriverViewProfile from './DriverViewProfile';
 import DriverEditProfile from './DriverEditProfile';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 const ViewRequest = () => {
     const driverId = localStorage.getItem('driverId');
     const [requests, setRequests] = useState([]);
@@ -301,7 +302,6 @@ const ViewRequest = () => {
         const options = { weekday: 'short', month: 'short', day: 'numeric' };
         return new Date(dateString).toLocaleDateString('en-US', options);
     };
-console.log(`${imageBaseUrl}${requests.riderId?.profilePicture}`);
 
     return (
         <div className="view-ride-container">
@@ -316,9 +316,13 @@ console.log(`${imageBaseUrl}${requests.riderId?.profilePicture}`);
                                 <article key={`${request._id}-${rider._id}`} className="view-req-card">
                                     <Avatar
                                         alt={rider.fullName || 'Rider'}
-                                        src={`${imageBaseUrl}${rider.riderId?.profilePicture}`}
+                                        src={`${imageBaseUrl}${rider.profilePicture}`}
                                         sx={{ width: 70, height: 70 }}
                                     />
+                                    {
+                                        console.log(`${imageBaseUrl}${rider.profilePicture}`)
+                                        
+                                    }
                                     <div className="view-ridereq-details">
                                         <p className="view-ride-pickup" style={{ color: "#f59e0b", fontSize: "18px", marginLeft: "40px" }}>
                                             {rider.fullName || 'Unknown Rider'}
@@ -336,7 +340,7 @@ console.log(`${imageBaseUrl}${requests.riderId?.profilePicture}`);
                                             {request.origin} to {request.destination}
                                         </p>
                                         <p className="view-Req-details">
-                                            <PhoneIcon className="view-ride-marker" />
+                                            <AccessTimeIcon className="view-ride-marker" />
                                             {request.rideTime} on {formatDate(request.rideDate)}
                                         </p>
                                         <div style={{ display: 'flex', gap: '10px' }}>
