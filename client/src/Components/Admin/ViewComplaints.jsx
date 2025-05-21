@@ -52,7 +52,7 @@ const ViewComplaints = () => {
             title: complaint.subject,
             content: complaint.description,
             bgColor: getRandomBgColor(),
-            image: `${imageBaseUrl}${complaint.driverId.driverPic}`,
+            image: `${imageBaseUrl}uploads/drivers/${complaint.driverId.driverPic}`,
             incidentDate: complaint.incidentDate,
             attachment: `${imageBaseUrl}uploads/disputes/${complaint.attachment}`,
           }));

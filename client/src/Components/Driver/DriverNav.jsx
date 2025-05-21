@@ -57,8 +57,8 @@ export default function DriverNav({ onAvatarClick }) {
     };
 
     return (
-        <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="fixed" style={{ backgroundColor: 'black', zIndex: '2' }}>
+        <Box sx={{ flexGrow: 1 , zIndex: '100'}}>
+            <AppBar position="fixed" style={{ backgroundColor: 'black',  zIndex: '100' }}>
 
                 <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Link to="/driver-home-page" style={{ display: 'flex', alignItems: 'center' }}>
