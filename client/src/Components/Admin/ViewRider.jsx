@@ -149,7 +149,7 @@ console.log(import.meta.env.VITE_API_URL);
                                     <td>{rider.fullName}</td>
                                     <td>
                                         <Avatar
-                                            src={`${imageBaseUrl}${rider.profilePicture}`}
+                                            src={`${imageBaseUrl}/${rider.profilePicture}`}
                                             alt={rider.fullName}
                                             sx={{ width: 40, height: 40 }}
                                         >

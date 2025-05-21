@@ -3,64 +3,99 @@ import '../Style/DriverPaymentHistory.css'
 import DriverNav from './DriverNav'
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import apiService from '../../Services/apiService';
+import { 
+  Avatar,
+  ClickAwayListener
+} from '@mui/material';
+import DriverViewProfile from './DriverViewProfile';
+import DriverEditProfile from './DriverEditProfile';
 
 function DriverPaymentHistory() {
+  // Payment History States
   const [paymentHistory, setPaymentHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const driverId = localStorage.getItem('driverId');
 
-useEffect(() => {
-  const fetchRides = async () => {
+  // Profile Management States
+  const [showProfileCard, setShowProfileCard] = useState(false);
+  const [showProfileEditCard, setShowProfileEditCard] = useState(false);
+  const [currentDriver, setCurrentDriver] = useState({});
+
+  // Profile Functions
+  const onAvatarClick = () => {
+    setShowProfileCard(prev => !prev);
+    setShowProfileEditCard(false);
+  };
+
+  const onEditClick = () => {
+    setShowProfileEditCard(true);
+    setShowProfileCard(false);
+  };
+
+  const fetchDriverData = async () => {
     try {
-      const response = await apiService.getAllRides();
-      if (response.status === 'success' && response.data.rides.length > 0) {
-        // Filter rides with safe optional chaining
-        const driverRides = response.data.rides.filter(ride => 
-          ride.driverId?._id === driverId || 
-          ride.VehicleId?.driverId?._id === driverId
-        );
-
-        // Extract payments from filtered rides
-        const allPayments = driverRides.flatMap(ride => 
-          ride.successfulPayments?.map(payment => ({
-            id: payment._id,
-            paymentId: payment._id,
-            amount: `₹${payment.amount}`,
-            rideId: ride._id,
-            riderId: payment.riderId?._id,
-            riderName: payment.riderId?.fullName,
-            method: payment.PaymentMode || 'UPI',
-            invoice: `INV${payment._id.slice(-8).toUpperCase()}`,
-            date: new Date(payment.paymentTime).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            }),
-            paymentTime: payment.paymentTime,
-            rideDetails: {
-              origin: ride.origin,
-              destination: ride.destination,
-              rideDate: ride.rideDate
-            }
-          })) || []
-        );
-
-        // Sort by payment time (newest first)
-        allPayments.sort((a, b) => new Date(b.paymentTime) - new Date(a.paymentTime));
-        setPaymentHistory(allPayments);
-      }
+      const driverData = await apiService.getCurrentDriver();
+      setCurrentDriver(driverData.data.driver);
+      localStorage.setItem("driverData", JSON.stringify(driverData.data.driver));
     } catch (error) {
-      console.error('Error fetching rides:', error);
-    } finally {
-      setLoading(false);
+      console.error("Failed to load driver data:", error);
     }
   };
-  fetchRides();
-}, [driverId]);
+
+  // Payment History Functions
+  useEffect(() => {
+    const fetchRides = async () => {
+      try {
+        const response = await apiService.getAllRides();
+        if (response.status === 'success' && response.data.rides.length > 0) {
+          const driverRides = response.data.rides.filter(ride => 
+            ride.driverId?._id === driverId || 
+            ride.VehicleId?.driverId?._id === driverId
+          );
+
+          const allPayments = driverRides.flatMap(ride => 
+            ride.successfulPayments?.map(payment => ({
+              id: payment._id,
+              paymentId: payment._id,
+              amount: `₹${payment.amount}`,
+              rideId: ride._id,
+              riderId: payment.riderId?._id,
+              riderName: payment.riderId?.fullName,
+              method: payment.PaymentMode || 'UPI',
+              invoice: `INV${payment._id.slice(-8).toUpperCase()}`,
+              date: new Date(payment.paymentTime).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              }),
+              paymentTime: payment.paymentTime,
+              rideDetails: {
+                origin: ride.origin,
+                destination: ride.destination,
+                rideDate: ride.rideDate
+              }
+            })) || []
+          );
+
+          allPayments.sort((a, b) => new Date(b.paymentTime) - new Date(a.paymentTime));
+          setPaymentHistory(allPayments);
+        }
+      } catch (error) {
+        console.error('Error fetching rides:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRides();
+  }, [driverId]);
+
+  useEffect(() => {
+    fetchDriverData();
+  }, []);
 
   if (loading) {
     return <div className="driver-payment-history">
-      <DriverNav/>
+      <DriverNav onAvatarClick={onAvatarClick} currentDriver={currentDriver} />
       Loading...</div>;
   }
 
@@ -78,7 +113,39 @@ useEffect(() => {
 
   return (
     <div className="driver-payment-history">
-      <DriverNav/>
+      <DriverNav onAvatarClick={onAvatarClick} currentDriver={currentDriver} />
+
+      {/* Profile Components */}
+      {showProfileCard && (
+        <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
+          <div style={{ position: "absolute", top: "40px", right: "20px", zIndex: 2 }}>
+            <DriverViewProfile onEditClick={onEditClick} driver={currentDriver} />
+          </div>
+        </ClickAwayListener>
+      )}
+
+      {showProfileEditCard && (
+        <ClickAwayListener onClickAway={() => setShowProfileEditCard(false)}>
+          <div style={{ 
+            position: "absolute", 
+            top: "10vh", 
+            left: "50%", 
+            transform: "translateX(-50%)",
+            backgroundColor: "white", 
+            zIndex: 5, 
+            borderRadius: "25px",
+            boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)"
+          }}>
+            <DriverEditProfile
+              setShowProfileEditCard={setShowProfileEditCard}
+              currentDriver={currentDriver}
+              setCurrentDriver={setCurrentDriver}
+              fetchDriverData={fetchDriverData}
+            />
+          </div>
+        </ClickAwayListener>
+      )}
+
       <h2 className="page-title-payment">PAYMENT HISTORY</h2>
       
       <div className="payment-container-driver">
@@ -88,7 +155,6 @@ useEffect(() => {
 
         {Object.entries(paymentsByMonth).map(([monthYear, payments]) => (
           <div key={monthYear}>
-            {/* <div className="month-header">{monthYear}</div> */}
             <div className="payment-list">
               {payments.map(payment => (
                 <div key={payment.id} className="payment-card">

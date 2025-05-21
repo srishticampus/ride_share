@@ -17,12 +17,11 @@ import Typography from '@mui/material/Typography';
 import { Box } from '@mui/material';
 import { FaTimes } from 'react-icons/fa';
 import '../Style/ViewRide.css';
-import apiService from '../../Services/apiService';
+import apiService, { imageBaseUrl } from '../../Services/apiService';
 import { toast } from 'react-toastify';
 import { ClickAwayListener } from '@mui/material';
 import DriverViewProfile from './DriverViewProfile';
 import DriverEditProfile from './DriverEditProfile';
-
 const ViewRequest = () => {
     const driverId = localStorage.getItem('driverId');
     const [requests, setRequests] = useState([]);
@@ -302,6 +301,7 @@ const ViewRequest = () => {
         const options = { weekday: 'short', month: 'short', day: 'numeric' };
         return new Date(dateString).toLocaleDateString('en-US', options);
     };
+console.log(`${imageBaseUrl}${requests.riderId?.profilePicture}`);
 
     return (
         <div className="view-ride-container">
@@ -316,7 +316,7 @@ const ViewRequest = () => {
                                 <article key={`${request._id}-${rider._id}`} className="view-req-card">
                                     <Avatar
                                         alt={rider.fullName || 'Rider'}
-                                        src={rider.profilePicture || "https://via.placeholder.com/150"}
+                                        src={`${imageBaseUrl}${rider.riderId?.profilePicture}`}
                                         sx={{ width: 70, height: 70 }}
                                     />
                                     <div className="view-ridereq-details">
