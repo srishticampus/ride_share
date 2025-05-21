@@ -47,8 +47,9 @@ export const deleteRating = catchAsync(async (req, res, next) => {
 });
 
 export const viewAllRating = catchAsync(async (req, res, next) => {
-  const ratings = await Rating.find();
-
+  const ratings = await Rating.find()
+    .populate('rideId')
+    .populate('reviewerId');
   res.status(200).json({
     status: 'success',
     results: ratings.length,

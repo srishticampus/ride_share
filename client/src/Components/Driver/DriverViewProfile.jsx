@@ -1,16 +1,20 @@
 import React from 'react';
 import '../Style/Profile.css';
 import { Button } from '@mui/material';
+import { imageBaseUrl } from '../../Services/apiService';
 
 function DriverViewProfile({ onEditClick, driver }) {
+  console.log(imageBaseUrl);
+  console.log(driver);
+  
   const DriverProfile = driver?.driverPic?.filename 
-    ? `http://localhost:4040/api/v1/${driver.driverPic.filename}`
+    ? `${imageBaseUrl}/uploads/drivers/${driver.driverPic.filename}`
     : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png";
 
   return (
     <div className="profile-card">
       <img 
-        src={DriverProfile}
+        src={`${imageBaseUrl}uploads/drivers/${driver.driverPic}`}
         alt={driver.fullname || "Driver Profile"} 
       />
       <div className='profile-details'>

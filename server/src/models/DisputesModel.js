@@ -54,11 +54,18 @@ const DisputeSchema = new Schema({
     ref: 'User',
     // required: [true, 'Reporter ID is required']
   },
+  driverName: {
+    type: String
+  },
 
   driverId: {
     type: Schema.Types.ObjectId,
     ref: 'Driver',
     // required: [true, 'Driver ID is required']
+  },
+  driverData: {
+    type: Schema.Types.ObjectId,
+    ref: 'Driver',
   },
   subject: {
     type: String,
@@ -79,14 +86,17 @@ const DisputeSchema = new Schema({
     type: Date,
     required: [true, 'Incident date is required'],
     validate: {
-      validator: function(date) {
+      validator: function (date) {
         return date <= new Date();
       },
       message: 'Incident date cannot be in the future'
     }
   },
+  responseText: {
+    type: String,
+  },
   attachment: {
-    type: Object, 
+    type: Object,
     required: false
   },
   resolutionStatus: {

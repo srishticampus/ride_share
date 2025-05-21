@@ -6,6 +6,7 @@ import { validate } from '../middlewares/validation.middleware.js';
 import { protect, restrictTo } from '../middlewares/auth.middleware.js';
 import { uploadDisputeAttachment } from '../middlewares/upload.middleware.js';
 const router = express.Router();
+router.patch('/:id/response', DisputeController.responseDispute);
 
 /**
  * @swagger
@@ -151,5 +152,4 @@ router.patch('/:id/solve', restrictTo('admin'), DisputeController.disputeSolve);
  *         description: Dispute not found
  */
 router.patch('/:id/dismiss', restrictTo('admin'), DisputeController.disputeDismissed);
-
 export default router;

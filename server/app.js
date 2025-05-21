@@ -35,9 +35,12 @@ if (process.env.NODE_ENV === "production") {
 }
 
 // Implement CORS
-app.use(cors());
-app.options("*", cors());
-
+// Implement CORS
+app.use(cors({
+  origin: true, // or specify your frontend URL e.g., 'http://localhost:3000'
+  credentials: true
+}));
+// Security HTTP headers
 // Security HTTP headers
 app.use(
   helmet({
@@ -46,13 +49,16 @@ app.use(
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", "data:", "blob:"],
+        imgSrc: ["'self'", "data:", "blob:", "*"],
         connectSrc: ["'self'"],
         fontSrc: ["'self'"],
         objectSrc: ["'none'"],
-        mediaSrc: ["'self'"]
+        mediaSrc: ["'self'", "blob:"],
+        frameSrc: ["'self'", "blob:"], // Add this for PDFs
+        frameAncestors: ["'self'", "http://localhost:5173"] // Allow framing from your frontend
       }
-    }
+    },
+    crossOriginResourcePolicy: { policy: "cross-origin" }
   })
 );
 
@@ -105,7 +111,20 @@ app.use(hpp({
 app.use(compression());
 
 // Static files
-app.use(expressStatic(join(__dirname, "./uploads")));
+// app.use(expressStatic(join(__dirname, "./uploads")));
+// Static files
+app.use('/ride_share_api/uploads', express.static(join(__dirname, 'uploads'), {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.pdf')) {
+      res.set('Content-Type', 'application/pdf');
+      res.set('Cross-Origin-Resource-Policy', 'cross-origin');
+    }
+    // Keep your existing image headers
+    if (path.endsWith('.png') || path.endsWith('.jpg') || path.endsWith('.jpeg')) {
+      res.set('Cross-Origin-Resource-Policy', 'cross-origin');
+    }
+  }
+}));
 
 // Swagger docs
 setupSwagger(app);

@@ -149,7 +149,7 @@
 
 .profile-name {
   font-weight: 700;
-  font-size: 0.875rem;
+  font-size: 1rem;
   line-height: 1;
 }
 
@@ -161,13 +161,13 @@
 
 .complaint-title {
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 1rem;
   margin-bottom: 0.5rem;
   line-height: 1.25;
 }
 
 .complaint-content {
-  font-size: 0.75rem;
+  font-size: 1rem;
   line-height: 1.5;
   color: #374151;
 }
@@ -249,4 +249,43 @@
 .pagination-number.active {
   background-color: black;
   color: white;
+}
+.response-form {
+  margin-top: 15px;
+}
+
+.response-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.response-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.status-dropdown {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  position: relative;
+  margin-left: 700px;
+}
+
+.response-btn {
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.response-btn:hover {
+  background-color: #45a049;
 }

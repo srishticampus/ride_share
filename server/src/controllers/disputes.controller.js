@@ -5,11 +5,39 @@ import catchAsync from '../utils/catchAsync.js';
 
 export const newDispute = catchAsync(async (req, res, next) => {
    if (req.file) {
-    req.body.attachment = req.file.filename; // or req.file.path for full path
+    req.body.attachment = req.file.filename; 
   }
   const dispute = await Dispute.create(req.body);
 
   res.status(201).json({
+    status: 'success',
+    data: {
+      dispute
+    }
+  });
+});
+
+export const responseDispute = catchAsync(async (req, res, next) => {
+  const { responseText, resolutionStatus } = req.body;
+  
+  const dispute = await Dispute.findByIdAndUpdate(
+    req.params.id,
+    { 
+      responseText,
+      resolutionStatus,
+      ...(resolutionStatus !== 'Pending' && { resolutionAt: Date.now() })
+    },
+    {
+      new: true,
+      runValidators: true
+    }
+  );
+
+  if (!dispute) {
+    return next(new AppError('Dispute not found', 404));
+  }
+
+  res.status(200).json({
     status: 'success',
     data: {
       dispute
@@ -58,7 +86,7 @@ export const disputeDismissed = catchAsync(async (req, res, next) => {
 export const showAllDisputes = catchAsync(async (req, res, next) => {
   const disputes = await Dispute.find()
     .populate('reportedBy')
-    .populate('rideId');
+    .populate('driverId');
 
   res.status(200).json({
     status: 'success',
@@ -91,5 +119,6 @@ export default {
   disputeSolve,
   disputeDismissed,
   showAllDisputes,
-  showADisputes
+  showADisputes,
+  responseDispute
 };

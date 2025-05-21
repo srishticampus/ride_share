@@ -1,121 +1,80 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import '../Style/DriverPaymentHistory.css'
 import DriverNav from './DriverNav'
 import CreditCardIcon from '@mui/icons-material/CreditCard';
+import apiService from '../../Services/apiService';
 
 function DriverPaymentHistory() {
-  const paymentHistory = [
-    {
-      id: 1,
-      paymentId: 'PAY78901234',
-      amount: '₹150',
-      rideId: 'RIDE78901',
-      riderId: 'RIDER7890',
-      driverId: 'DRIVER123',
-      method: 'UPI',
-      invoice: 'INV52478965',
-      date: 'April 28, 2025'
-    },
-    {
-      id: 2,
-      paymentId: 'PAY12345678',
-      amount: '₹100',
-      rideId: 'RIDE12345',
-      riderId: 'RIDER1234',
-      driverId: 'DRIVER123',
-      method: 'Cash',
-      invoice: 'INV12345678',
-      date: 'April 25, 2025'
-    },
-    {
-      id: 3,
-      paymentId: 'PAY23456789',
-      amount: '₹120',
-      rideId: 'RIDE23456',
-      riderId: 'RIDER2345',
-      driverId: 'DRIVER123',
-      method: 'Credit Card',
-      invoice: 'INV23456789',
-      date: 'April 22, 2025'
-    },
-    {
-      id: 4,
-      paymentId: 'PAY34567890',
-      amount: '₹95',
-      rideId: 'RIDE34567',
-      riderId: 'RIDER3456',
-      driverId: 'DRIVER123',
-      method: 'Wallet',
-      invoice: 'INV34567890',
-      date: 'April 18, 2025'
-    },
-    {
-      id: 5,
-      paymentId: 'PAY45678901',
-      amount: '₹110',
-      rideId: 'RIDE45678',
-      riderId: 'RIDER4567',
-      driverId: 'DRIVER123',
-      method: 'Debit Card',
-      invoice: 'INV45678901',
-      date: 'April 15, 2025'
-    },
-    {
-      id: 6,
-      paymentId: 'PAY56789012',
-      amount: '₹85',
-      rideId: 'RIDE56789',
-      riderId: 'RIDER5678',
-      driverId: 'DRIVER123',
-      method: 'Cash',
-      invoice: 'INV56789012',
-      date: 'April 12, 2025'
-    },
-    {
-      id: 7,
-      paymentId: 'PAY67890123',
-      amount: '₹130',
-      rideId: 'RIDE67890',
-      riderId: 'RIDER6789',
-      driverId: 'DRIVER123',
-      method: 'UPI',
-      invoice: 'INV67890123',
-      date: 'April 8, 2025'
-    },
-    {
-      id: 8,
-      paymentId: 'PAY78901234',
-      amount: '₹105',
-      rideId: 'RIDE78901',
-      riderId: 'RIDER7890',
-      driverId: 'DRIVER123',
-      method: 'Cash',
-      invoice: 'INV78901234',
-      date: 'April 5, 2025'
-    },
-    {
-      id: 9,
-      paymentId: 'PAY89012345',
-      amount: '₹90',
-      rideId: 'RIDE89012',
-      riderId: 'RIDER8901',
-      driverId: 'DRIVER123',
-      method: 'Wallet',
-      invoice: 'INV89012345',
-      date: 'April 3, 2025'
-    },
-    {
-      id: 10,
-      paymentId: 'PAY90123456',
-      amount: '₹115',
-      rideId: 'RIDE90123',
-      riderId: 'RIDER9012',
-      driverId: 'DRIVER123',
-      method: 'Credit Card',
-      invoice: 'INV90123456',
-      date: 'April 1, 2025'
+  const [paymentHistory, setPaymentHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const driverId = localStorage.getItem('driverId');
+
+useEffect(() => {
+  const fetchRides = async () => {
+    try {
+      const response = await apiService.getAllRides();
+      if (response.status === 'success' && response.data.rides.length > 0) {
+        // Filter rides with safe optional chaining
+        const driverRides = response.data.rides.filter(ride => 
+          ride.driverId?._id === driverId || 
+          ride.VehicleId?.driverId?._id === driverId
+        );
+
+        // Extract payments from filtered rides
+        const allPayments = driverRides.flatMap(ride => 
+          ride.successfulPayments?.map(payment => ({
+            id: payment._id,
+            paymentId: payment._id,
+            amount: `₹${payment.amount}`,
+            rideId: ride._id,
+            riderId: payment.riderId?._id,
+            riderName: payment.riderId?.fullName,
+            method: payment.PaymentMode || 'UPI',
+            invoice: `INV${payment._id.slice(-8).toUpperCase()}`,
+            date: new Date(payment.paymentTime).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            }),
+            paymentTime: payment.paymentTime,
+            rideDetails: {
+              origin: ride.origin,
+              destination: ride.destination,
+              rideDate: ride.rideDate
+            }
+          })) || []
+        );
+
+        // Sort by payment time (newest first)
+        allPayments.sort((a, b) => new Date(b.paymentTime) - new Date(a.paymentTime));
+        setPaymentHistory(allPayments);
+      }
+    } catch (error) {
+      console.error('Error fetching rides:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+  fetchRides();
+}, [driverId]);
+
+  if (loading) {
+    return <div className="driver-payment-history">
+      <DriverNav/>
+      Loading...</div>;
+  }
+
+  const paymentsByMonth = paymentHistory.reduce((acc, payment) => {
+    const monthYear = new Date(payment.paymentTime).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long'
+    });
+    if (!acc[monthYear]) {
+      acc[monthYear] = [];
+    }
+    acc[monthYear].push(payment);
+    return acc;
+  }, {});
 
   return (
     <div className="driver-payment-history">
@@ -125,34 +84,45 @@ function DriverPaymentHistory() {
       <div className="payment-container-driver">
         <div className="header-actions-driver">
           <h4 className="section-title">Your Payment History</h4>
-
         </div>
-        <div className="month-header">April 2025</div>
 
-        <div className="payment-list">
-          {paymentHistory.map(payment => (
-            <div key={payment.id} className="payment-card">
-              <div className="payment-header">
-                <div className="icon-container">
-                  <CreditCardIcon className="payment-icon"/>
+        {Object.entries(paymentsByMonth).map(([monthYear, payments]) => (
+          <div key={monthYear}>
+            {/* <div className="month-header">{monthYear}</div> */}
+            <div className="payment-list">
+              {payments.map(payment => (
+                <div key={payment.id} className="payment-card">
+                  <div className="payment-header">
+                    <div className="icon-container">
+                      <CreditCardIcon className="payment-icon"/>
+                    </div>
+                    <h4 className="payment-info">
+                      Payment ID: {payment.paymentId.slice(-8)} • {payment.amount}
+                    </h4>
+                  </div>
+                  <p className="payment-detail">
+                    Ride: {payment.rideDetails.origin} → {payment.rideDetails.destination}
+                  </p>
+                  <p className="payment-detail">
+                    Rider: {payment.riderName} 
+                  </p>
+                  <p className="payment-detail">
+                    Payment Method: {payment.method} • {payment.date}
+                  </p>
                 </div>
-                <h4 className="payment-info">
-                  Payment ID: {payment.paymentId} • {payment.amount}
-                </h4>
-              </div>
-              <p className="payment-detail">
-                Ride ID: {payment.rideId} • Rider ID: {payment.riderId} • Driver ID: {payment.driverId}
-              </p>
-              <p className="payment-detail">
-                Payment Method: {payment.method} • Invoice Number: {payment.invoice}
-              </p>
-              {/* <p className="payment-date">{payment.date}</p> */}
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
+
+        {paymentHistory.length === 0 && (
+          <div className="no-payments">
+            <p>No payment history found</p>
+          </div>
+        )}
       </div>
     </div>
-  )
+  );
 }
 
-export default DriverPaymentHistory
+export default DriverPaymentHistory;
