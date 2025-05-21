@@ -73,7 +73,7 @@ function DriverHomePage() {
   }, []);
   return (
     <div className="landing-container">
-      
+
       <DriverNav onAvatarClick={onAvatarClick} currentDriver={currentDriver} />
       <div className='landing-bg'>
         <div className="bg-image-container">
@@ -238,6 +238,7 @@ function DriverHomePage() {
               setShowProfileEditCard={setShowProfileEditCard}
               currentDriver={currentDriver}
               setCurrentDriver={setCurrentDriver}
+              fetchDriverData={fetchDriverData} 
             />
           </div>
         </ClickAwayListener>

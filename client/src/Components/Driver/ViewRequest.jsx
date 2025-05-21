@@ -19,6 +19,9 @@ import { FaTimes } from 'react-icons/fa';
 import '../Style/ViewRide.css';
 import apiService from '../../Services/apiService';
 import { toast } from 'react-toastify';
+import { ClickAwayListener } from '@mui/material';
+import DriverViewProfile from './DriverViewProfile';
+import DriverEditProfile from './DriverEditProfile';
 
 const ViewRequest = () => {
     const driverId = localStorage.getItem('driverId');
@@ -29,6 +32,35 @@ const ViewRequest = () => {
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState(null);
     const [localMessages, setLocalMessages] = useState([]);
+    const [showProfileCard, setShowProfileCard] = useState(false);
+    const [showProfileEditCard, setShowProfileEditCard] = useState(false);
+    const [currentDriver, setCurrentDriver] = useState({});
+
+    const onAvatarClick = () => {
+        setShowProfileCard(prev => !prev);
+        if (!showProfileCard) {
+            setShowProfileEditCard(false);
+        }
+    };
+
+    const onEditClick = () => {
+        setShowProfileEditCard(true);
+        setShowProfileCard(false);
+    };
+
+    const fetchDriverData = async () => {
+        try {
+            const driverData = await apiService.getCurrentDriver();
+            setCurrentDriver(driverData.data.driver);
+            localStorage.setItem("driverData", JSON.stringify(driverData.data.driver));
+        } catch (error) {
+            console.error("Failed to load driver data:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchDriverData();
+    }, []);
 
     useEffect(() => {
         const fetchRequests = async () => {
@@ -273,10 +305,9 @@ const ViewRequest = () => {
 
     return (
         <div className="view-ride-container">
-            <DriverNav />
+            <DriverNav onAvatarClick={onAvatarClick} currentDriver={currentDriver} />
             <main className="view-ride-main">
                 <h1 className="payment-title" style={{ marginTop: "50px" }}>VIEW REQUESTS</h1>
-
 
                 <section className="view-ride-grid">
                     {requests.length > 0 ? (
@@ -383,13 +414,6 @@ const ViewRequest = () => {
                     </IconButton>
                 </DialogTitle>
                 <DialogContent dividers>
-                    {/* <Box sx={{ mb: 2 }}>
-                        <Typography variant="subtitle1">
-                            Rider: {selectedRequest?.riderId?.[0]?.fullName || 'Unknown Rider'}
-                        </Typography>
-                    </Box> */}
-
-                    {/* Message History */}
                     <Box sx={{
                         height: 300,
                         overflow: 'auto',
@@ -466,6 +490,38 @@ const ViewRequest = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+
+            {/* Profile View Card */}
+            {showProfileCard && currentDriver && (
+                <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
+                    <div style={{ position: "absolute", top: "40px", right: "20px" }}>
+                        <DriverViewProfile onEditClick={onEditClick} driver={currentDriver} />
+                    </div>
+                </ClickAwayListener>
+            )}
+
+            {/* Profile Edit Card */}
+            {showProfileEditCard && currentDriver && (
+                <ClickAwayListener onClickAway={() => setShowProfileEditCard(false)}>
+                    <div style={{ 
+                        position: "absolute", 
+                        top: "10vh", 
+                        left: "50%", 
+                        transform: "translateX(-50%)",
+                        backgroundColor: "white", 
+                        zIndex: "5", 
+                        borderRadius: "25px",
+                        boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)"
+                    }}>
+                        <DriverEditProfile
+                            setShowProfileEditCard={setShowProfileEditCard}
+                            currentDriver={currentDriver}
+                            setCurrentDriver={setCurrentDriver}
+                            fetchDriverData={fetchDriverData} 
+                        />
+                    </div>
+                </ClickAwayListener>
+            )}
         </div>
     );
 };

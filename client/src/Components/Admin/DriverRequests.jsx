@@ -16,11 +16,10 @@ import {
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import '../Style/Table.css';
-import Service from '../../Services/apiService';
+import Service, { imageBaseUrl } from '../../Services/apiService';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
-
 function DriverRequests() {
     const navigate = useNavigate();
     const [allDrivers, setAllDrivers] = useState([]);
@@ -30,6 +29,7 @@ function DriverRequests() {
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
+console.log(imageBaseUrl);
 
     useEffect(() => {
         const fetchDrivers = async () => {
@@ -189,7 +189,7 @@ function DriverRequests() {
                                         <td>{driver.fullname || 'N/A'}</td>
                                         <td>
                                             <Avatar
-                                                src={`http://localhost:4052/ride_share_api/uploads/drivers/${driver.driverPic}`}
+                                                src={`${imageBaseUrl}uploads/drivers/${driver.driverPic}`}
                                                 alt={driver.fullname}
                                                 sx={{ width: 40, height: 40 }}
                                             />

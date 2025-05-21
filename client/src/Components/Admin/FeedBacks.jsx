@@ -5,8 +5,9 @@ import AdminSidemenu from './AdminSidemenu';
 import Avatar from '@mui/material/Avatar';
 import Rating from '@mui/material/Rating';
 import apiService from '../../Services/apiService';
-
 function FeedBacks() {
+      const imageBaseUrl = 'http://localhost:4052/ride_share_api';
+
   const [ratings, setRatings] = useState([]);
 
   const formatDate = (dateString) => {
@@ -45,7 +46,7 @@ function FeedBacks() {
                   <div className="user-info">
                     <Avatar
                       alt={rating.reviewerId?.fullName || 'Anonymous'}
-                      src={`http://localhost:4052/ride_share_api${rating.reviewerId?.profilePicture}`}
+                      src={`${imageBaseUrl}${rating.reviewerId?.profilePicture}`}
                       sx={{ width: 56, height: 56 }}
                     />
                     

@@ -2,8 +2,16 @@ import React, { useEffect, useState } from 'react';
 import '../Style/DriverComplaint.css';
 import AdminNav from './AdminNav';
 import AdminSidemenu from './AdminSidemenu';
-import apiService from '../../Services/apiService';
+import apiService, { imageBaseUrl } from '../../Services/apiService';
 import { toast } from 'react-toastify';
+import {
+  Modal,
+  Box,
+  IconButton,
+  Typography,
+  Button
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 const ViewComplaints = () => {
   const [activeTab, setActiveTab] = useState('driver');
@@ -12,6 +20,9 @@ const ViewComplaints = () => {
   const [loading, setLoading] = useState(true);
   const [responseTexts, setResponseTexts] = useState({});
   const [resolutionStatuses, setResolutionStatuses] = useState({});
+  const [selectedAttachment, setSelectedAttachment] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+  const riderBaseUrl = 'http://localhost:4052/ride_share_api';
 
   useEffect(() => {
     fetchComplaints();
@@ -21,6 +32,7 @@ const ViewComplaints = () => {
     try {
       setLoading(true);
       const response = await apiService.getAllDisputes();
+      console.log(response);
 
       if (response.status === 'success') {
         const pendingComplaints = response.data.disputes.filter(
@@ -40,9 +52,9 @@ const ViewComplaints = () => {
             title: complaint.subject,
             content: complaint.description,
             bgColor: getRandomBgColor(),
-            image: complaint.driverId.driverPic || 'https://via.placeholder.com/150',
+            image: `${imageBaseUrl}${complaint.driverId.driverPic}`,
             incidentDate: complaint.incidentDate,
-            attachment: complaint.attachment,
+            attachment: `${imageBaseUrl}uploads/disputes/${complaint.attachment}`,
           }));
 
         const riderComplaintsData = pendingComplaints
@@ -58,11 +70,11 @@ const ViewComplaints = () => {
             title: complaint.subject,
             content: complaint.description,
             bgColor: getRandomBgColor(),
-            image: complaint.reportedBy.profilePicture || 'https://via.placeholder.com/150',
+            image: `${riderBaseUrl}/${complaint.reportedBy?.profilePicture}`,
             incidentDate: complaint.incidentDate,
-            attachment: complaint.attachment,
+            attachment: `${imageBaseUrl}uploads/disputes/${complaint.attachment}`,
           }));
-
+          
         setDriverComplaints(driverComplaintsData);
         setRiderComplaints(riderComplaintsData);
 
@@ -124,7 +136,7 @@ const ViewComplaints = () => {
 
       if (response.status === 'success') {
         toast.success('Response submitted successfully');
-        fetchComplaints(); 
+        fetchComplaints();
       }
     } catch (error) {
       console.error('Error submitting response:', error);
@@ -132,31 +144,113 @@ const ViewComplaints = () => {
     }
   };
 
+  const handleOpenAttachment = (attachment) => {
+    setSelectedAttachment(attachment);
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setSelectedAttachment(null);
+  };
+
   const renderAttachment = (attachment) => {
     if (!attachment) return null;
 
-    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
-    const isImage = imageExtensions.some(ext => attachment.toLowerCase().endsWith(ext));
-
     return (
       <div className="attachment-container">
-        {isImage ? (
-          <img 
-            src={attachment} 
-            alt="Complaint attachment" 
-            className="complaint-attachment"
-          />
-        ) : (
-          <a 
-            href={attachment} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="attachment-link"
-          >
-            View Attachment
-          </a>
-        )}
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => handleOpenAttachment(attachment)}
+          sx={{ textTransform: 'none', p: 0.5 }}
+        >
+          View Attachment
+        </Button>
       </div>
+    );
+  };
+
+  const AttachmentModal = () => {
+    if (!selectedAttachment) return null;
+
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+    const isImage = selectedAttachment && 
+      imageExtensions.some(ext => selectedAttachment.toLowerCase().endsWith(ext));
+
+    return (
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        aria-labelledby="attachment-modal-title"
+        aria-describedby="attachment-modal-description"
+       style={{marginLeft:"240px"}}
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '80%',
+            maxWidth: '800px',
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            borderRadius: 2,
+            p: 2,
+            outline: 'none',
+            maxHeight: '90vh',
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              mb: 1,
+              borderBottom: '1px solid #eee',
+              pb: 1
+            }}
+          >
+            <Typography id="attachment-modal-title" variant="h6" style={{color:"#f59e0b"}}>
+              Attachment Preview
+            </Typography>
+            <IconButton onClick={handleCloseModal}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <Box
+            sx={{
+              flex: 1,
+              overflow: 'auto',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              p: 2
+            }}
+          >
+            {isImage ? (
+              <img
+                src={selectedAttachment}
+                alt="Complaint attachment"
+                style={{ maxWidth: '100%', maxHeight: '70vh', objectFit: 'contain' }}
+              />
+            ) : (
+              <iframe
+                src={selectedAttachment}
+                title="Complaint attachment"
+                style={{
+                  width: '100%',
+                  height: '70vh',
+                  border: 'none'
+                }}
+              />
+            )}
+          </Box>
+        </Box>
+      </Modal>
     );
   };
 
@@ -254,6 +348,7 @@ const ViewComplaints = () => {
               </div>
             )}
           </section>
+          <AttachmentModal />
         </main>
       </div>
     </div>

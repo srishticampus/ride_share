@@ -8,11 +8,9 @@ import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import Service from '../../Services/apiService';
+import Service, { imageBaseUrl } from '../../Services/apiService';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-export const imageBaseUrl = import.meta.env.VITE_API_URL;
-
 function ViewDriver() {
     const [drivers, setDrivers] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -93,7 +91,7 @@ function ViewDriver() {
                                     <div className="avatar-container">
                                         <Avatar
                                             alt={driver.fullname}
-                                            src={`http://localhost:4052/ride_share_api/uploads/drivers/${driver.driverPic}`}
+                                            src={`${imageBaseUrl}uploads/drivers/${driver.driverPic}`}
                                             sx={{ width: 120, height: 120 }}
                                         >
                                             {!driver.driverPic && driver.fullname.charAt(0)}
