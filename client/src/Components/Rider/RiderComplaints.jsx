@@ -112,7 +112,7 @@ const RiderComplaints = () => {
       
       await service.createDispute(payload, token);
       toast.success('Complaint submitted successfully!');
-      navigate('/rider/complaints'); 
+      // navigate('/rider/complaints'); 
     } catch (error) {
       console.error('Submission error:', error);
       toast.error(error.response?.data?.message || error.message || 'Submission failed');
