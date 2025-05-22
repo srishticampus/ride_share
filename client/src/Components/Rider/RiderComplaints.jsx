@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import '../Style/RiderPayment.css';
 import { FaCalendarAlt } from 'react-icons/fa';
@@ -15,6 +15,7 @@ const RiderComplaints = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("riderToken");
   const riderId = localStorage.getItem("riderId");
+  const fileInputRef = useRef(null);
   
   const [showProfileCard, setShowProfileCard] = useState(false);
   const [showProfileEditCard, setShowProfileEditCard] = useState(false);
@@ -112,7 +113,24 @@ const RiderComplaints = () => {
       
       await service.createDispute(payload, token);
       toast.success('Complaint submitted successfully!');
-      // navigate('/rider/complaints'); 
+      
+      // Reset form
+      setFormData({
+        reportedBy: riderId,
+        driverName: '',
+        driverData: '',
+        subject: '',
+        incidentDate: '',
+        priorityLevel: '',
+        description: '',
+        attachment: null,
+      });
+      
+      // Clear file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      
     } catch (error) {
       console.error('Submission error:', error);
       toast.error(error.response?.data?.message || error.message || 'Submission failed');
@@ -194,6 +212,7 @@ const RiderComplaints = () => {
                     accept="image/*,.pdf,.doc,.docx"
                     onChange={handleChange}
                     className="form-input"
+                    ref={fileInputRef}
                   />
                 </div>
                 <div className="form-group">
