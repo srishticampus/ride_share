@@ -387,11 +387,11 @@ export const rejectDriver = catchAsync(async (req, res, next) => {
   }
 
   // Send rejection email
-  await sendEmail({
-    email: driver.email,
-    subject: 'Your Driver Application Has Been Rejected',
-    message: `We regret to inform you that your driver application has been rejected. ${req.body.reason || ''}`
-  });
+  // await sendEmail({
+  //   email: driver.email,
+  //   subject: 'Your Driver Application Has Been Rejected',
+  //   message: `We regret to inform you that your driver application has been rejected. ${req.body.reason || ''}`
+  // });
 
   res.status(204).json({
     status: 'success',
