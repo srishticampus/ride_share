@@ -7,7 +7,7 @@ import Button from '@mui/material/Button';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import { IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import Logo from '../../Assets/Logo1.png';
-// import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import RiderViewProfile from './RiderViewProfile';
 
