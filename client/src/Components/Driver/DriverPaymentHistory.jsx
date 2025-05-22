@@ -11,17 +11,14 @@ import DriverViewProfile from './DriverViewProfile';
 import DriverEditProfile from './DriverEditProfile';
 
 function DriverPaymentHistory() {
-  // Payment History States
   const [paymentHistory, setPaymentHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const driverId = localStorage.getItem('driverId');
 
-  // Profile Management States
   const [showProfileCard, setShowProfileCard] = useState(false);
   const [showProfileEditCard, setShowProfileEditCard] = useState(false);
   const [currentDriver, setCurrentDriver] = useState({});
 
-  // Profile Functions
   const onAvatarClick = () => {
     setShowProfileCard(prev => !prev);
     setShowProfileEditCard(false);
@@ -42,7 +39,6 @@ function DriverPaymentHistory() {
     }
   };
 
-  // Payment History Functions
   useEffect(() => {
     const fetchRides = async () => {
       try {
@@ -115,7 +111,6 @@ function DriverPaymentHistory() {
     <div className="driver-payment-history">
       <DriverNav onAvatarClick={onAvatarClick} currentDriver={currentDriver} />
 
-      {/* Profile Components */}
       {showProfileCard && (
         <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
           <div style={{ position: "absolute", top: "40px", right: "20px", zIndex: 2 }}>

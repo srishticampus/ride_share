@@ -72,7 +72,6 @@ const ViewRequest = () => {
                     const ridesWithRequests = response.data.rides.filter(ride => {
                         const isDriverRide = ride.VehicleId?.driverId?._id === driverId;
                         const hasPendingRiders = ride.riderId && ride.riderId.length > 0;
-                        // Check if any rider hasn't been accepted yet
                         const hasUnacceptedRiders = ride.riderId.some(rider =>
                             !ride.acceptedRiderId?.includes(rider._id)
                         );
@@ -149,7 +148,6 @@ const ViewRequest = () => {
                     )
                 );
 
-                // Update selected request
                 setSelectedRequest(prev => ({
                     ...prev,
                     messages: [...(prev.messages || []), tempMessage]
@@ -158,7 +156,7 @@ const ViewRequest = () => {
         } catch (err) {
             console.error('Error sending message:', err);
             setError(err.message || 'Failed to send message');
-            setLocalMessages(prev => prev.slice(0, -1)); // Remove failed message
+            setLocalMessages(prev => prev.slice(0, -1)); 
         }
     };
 
@@ -178,7 +176,6 @@ const ViewRequest = () => {
 
     const handleApproveRequest = async (rideId, riderId) => {
         try {
-            // Optimistic UI update - remove the request immediately
             setRequests(prevRequests =>
                 prevRequests.map(request => {
                     if (request._id === rideId) {
@@ -190,16 +187,13 @@ const ViewRequest = () => {
                     }
                     return request;
                 }).filter(request =>
-                    // Remove the ride completely if it has no more pending riders
                     request.riderId && request.riderId.length > 0
                 )
             );
 
-            // Then make the API call
             const response = await apiService.acceptRideRequest(rideId, { riderId });
 
             if (response.status !== 'success') {
-                // If the API call fails, refetch the data to sync with server
                 setError('Failed to accept ride request');
                 setTimeout(() => setError(null), 3000);
 
@@ -226,7 +220,6 @@ const ViewRequest = () => {
             setError(error.response?.data?.message || 'Failed to accept ride request');
             setTimeout(() => setError(null), 3000);
 
-            // Refetch requests to sync with server
             const fetchResponse = await apiService.getAllRides();
             if (fetchResponse.status === 'success') {
                 setRequests(fetchResponse.data.rides.filter(ride => {
@@ -256,7 +249,6 @@ const ViewRequest = () => {
                 )
             );
 
-            // Then make the API call
             const response = await apiService.rejectRideRequest(rideId, { riderId });
 
             if (response.status !== 'success') {
@@ -283,7 +275,6 @@ const ViewRequest = () => {
             console.error('Error rejecting request:', error);
             setError(error.response?.data?.message || 'Failed to reject ride request');
             setTimeout(() => setError(null), 3000);
-            // Refetch requests to sync with server
             const fetchResponse = await apiService.getAllRides();
             if (fetchResponse.status === 'success') {
                 setRequests(fetchResponse.data.rides.filter(ride => {
@@ -409,7 +400,6 @@ const ViewRequest = () => {
                 </section>
             </main>
 
-            {/* Chat Dialog */}
             <Dialog open={showChatModal} onClose={handleCloseChat} fullWidth maxWidth="sm">
                 <DialogTitle style={{ color: "#F1B92E" }}>
                     CHAT WITH RIDER
@@ -455,7 +445,6 @@ const ViewRequest = () => {
                         })}
                     </Box>
 
-                    {/* Message Input */}
                     <TextField
                         label="Your Message"
                         fullWidth
@@ -495,7 +484,6 @@ const ViewRequest = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* Profile View Card */}
             {showProfileCard && currentDriver && (
                 <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
                     <div style={{ position: "absolute", top: "40px", right: "20px" }}>
@@ -504,7 +492,6 @@ const ViewRequest = () => {
                 </ClickAwayListener>
             )}
 
-            {/* Profile Edit Card */}
             {showProfileEditCard && currentDriver && (
                 <ClickAwayListener onClickAway={() => setShowProfileEditCard(false)}>
                     <div style={{ 

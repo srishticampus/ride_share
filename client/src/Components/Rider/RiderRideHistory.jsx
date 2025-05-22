@@ -54,12 +54,10 @@ function RiderRideHistory() {
     rating: 0
   });
 
-  // Profile State
   const [showProfileCard, setShowProfileCard] = useState(false);
   const [showProfileEditCard, setShowProfileEditCard] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
-  // Profile Handlers
   const onAvatarClick = () => {
     setShowProfileCard(prev => !prev);
     if (!showProfileCard) {
@@ -72,7 +70,6 @@ function RiderRideHistory() {
     setShowProfileCard(false);
   };
 
-  // Fetch Current User
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
@@ -404,7 +401,6 @@ function RiderRideHistory() {
     <div className="rider-ride-history-container">
       <RiderNav onAvatarClick={onAvatarClick} />
 
-      {/* Profile Components */}
       {showProfileCard && (
         <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
           <div style={{ 

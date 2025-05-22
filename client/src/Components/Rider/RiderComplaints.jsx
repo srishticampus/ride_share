@@ -16,12 +16,10 @@ const RiderComplaints = () => {
   const token = localStorage.getItem("riderToken");
   const riderId = localStorage.getItem("riderId");
   
-  // Profile view/edit states
   const [showProfileCard, setShowProfileCard] = useState(false);
   const [showProfileEditCard, setShowProfileEditCard] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
-  // Form states
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     reportedBy: riderId,
@@ -35,7 +33,6 @@ const RiderComplaints = () => {
   });
   const [errors, setErrors] = useState({});
 
-  // Fetch current user data
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
@@ -115,7 +112,7 @@ const RiderComplaints = () => {
       
       await service.createDispute(payload, token);
       toast.success('Complaint submitted successfully!');
-      navigate('/rider/complaints'); // Redirect after successful submission
+      navigate('/rider/complaints'); 
     } catch (error) {
       console.error('Submission error:', error);
       toast.error(error.response?.data?.message || error.message || 'Submission failed');
@@ -223,7 +220,6 @@ const RiderComplaints = () => {
         </section>
       </main>
 
-      {/* Profile View and Edit Components */}
       {showProfileCard && (
         <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
           <div style={{ position: "absolute", top: "40px", right: "20px", zIndex: 1000 }}>

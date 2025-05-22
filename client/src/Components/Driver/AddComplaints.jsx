@@ -52,7 +52,6 @@ const AddComplaints = () => {
 
     const resetForm = () => {
         setFormData(initialFormState);
-        // Clear the file input
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
@@ -100,7 +99,6 @@ const AddComplaints = () => {
         <div className="payment-container">
             <DriverNav onAvatarClick={onAvatarClick} currentDriver={currentDriver} />
 
-            {/* Profile View Card */}
             {showProfileCard && currentDriver && (
                 <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
                     <div style={{ position: "absolute", top: "40px", right: "20px" }}>
@@ -109,7 +107,6 @@ const AddComplaints = () => {
                 </ClickAwayListener>
             )}
 
-            {/* Profile Edit Card */}
             {showProfileEditCard && currentDriver && (
                 <ClickAwayListener onClickAway={() => setShowProfileEditCard(false)}>
                     <div style={{ 

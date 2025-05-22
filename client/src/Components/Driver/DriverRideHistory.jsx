@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Avatar from '@mui/material/Avatar';
 import { Button, Divider, IconButton, Typography, Box, Tabs, Tab, TextField, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import HistoryIcon from '@mui/icons-material/History';
 import { FaTimes, FaMapMarkerAlt, FaStar } from 'react-icons/fa';
@@ -6,6 +7,9 @@ import '../Style/RiderRideHistory.css';
 import DriverNav from '../Driver/DriverNav';
 import apiService from '../../Services/apiService';
 import { toast } from 'react-toastify';
+import DriverViewProfile from './DriverViewProfile';
+import DriverEditProfile from './DriverEditProfile';
+import { ClickAwayListener } from '@mui/material';
 
 function DriverRideHistory() {
   const [allRides, setAllRides] = useState([]);
@@ -18,10 +22,24 @@ function DriverRideHistory() {
   const [error, setError] = useState(null);
   const [localMessages, setLocalMessages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showProfileCard, setShowProfileCard] = useState(false);
+  const [showProfileEditCard, setShowProfileEditCard] = useState(false);
+  const [currentDriver, setCurrentDriver] = useState({});
+  
   const driverId = localStorage.getItem('driverId');
   const driverName = localStorage.getItem('driverName');
 
   useEffect(() => {
+    const fetchDriverData = async () => {
+      try {
+        const driverData = await apiService.getCurrentDriver();
+        setCurrentDriver(driverData.data.driver);
+        localStorage.setItem("driverData", JSON.stringify(driverData.data.driver));
+      } catch (error) {
+        console.error("Failed to load driver data:", error);
+      }
+    };
+
     const fetchRides = async () => {
       try {
         setLoading(true);
@@ -31,19 +49,16 @@ function DriverRideHistory() {
         if (response.status === 'success') {
           setAllRides(response.data.rides);
 
-          // Filter rides where driver is the current driver
           const driverRides = response.data.rides.filter(ride =>
             ride.VehicleId?.driverId?._id === driverId
           );
 
-          // Accepted and pending rides
           const accepted = driverRides.filter(ride =>
             (ride.status === 'accepted' || ride.status === 'pending') &&
             ride.acceptedRiderId?.length > 0
           );
           setAcceptedRides(accepted);
 
-          // Completed rides
           const completed = driverRides.filter(ride =>
             ride.status === 'completed'
           );
@@ -57,6 +72,7 @@ function DriverRideHistory() {
     };
 
     if (driverId) {
+      fetchDriverData();
       fetchRides();
     }
   }, [driverId]);
@@ -66,6 +82,28 @@ function DriverRideHistory() {
       setLocalMessages(selectedRide.messages || []);
     }
   }, [selectedRide]);
+
+  const onAvatarClick = () => {
+    setShowProfileCard(prev => !prev);
+    if (!showProfileCard) {
+      setShowProfileEditCard(false);
+    }
+  };
+
+  const onEditClick = () => {
+    setShowProfileEditCard(true);
+    setShowProfileCard(false);
+  };
+
+  const fetchDriverData = async () => {
+    try {
+      const driverData = await apiService.getCurrentDriver();
+      setCurrentDriver(driverData.data.driver);
+      localStorage.setItem("driverData", JSON.stringify(driverData.data.driver));
+    } catch (error) {
+      console.error("Failed to load driver data:", error);
+    }
+  };
 
   const handleViewMore = (ride) => {
     setSelectedRide(ride);
@@ -93,7 +131,6 @@ function DriverRideHistory() {
         return;
       }
 
-      // Create a temporary message object for immediate display
       const tempMessage = {
         text: message,
         sender: {
@@ -104,13 +141,11 @@ function DriverRideHistory() {
         createdAt: new Date().toISOString()
       };
 
-      // Immediately add the message to local state
       setLocalMessages(prev => [...prev, tempMessage]);
 
-      // Clear the input field
       setMessage('');
 
-      const isDriver = true; // Since this is the driver component
+      const isDriver = true; 
       const response = await apiService.updateRideMessage(
         selectedRide._id,
         message.trim(),
@@ -119,7 +154,6 @@ function DriverRideHistory() {
       );
 
       if (response.status === 'success') {
-        // Update all rides state
         setAllRides(prevRides =>
           prevRides.map(ride =>
             ride._id === selectedRide._id
@@ -131,11 +165,9 @@ function DriverRideHistory() {
           )
         );
 
-        // Update accepted/completed rides
         setAcceptedRides(prev => prev.map(r => r._id === selectedRide._id ? { ...r, messages: [...(r.messages || []), tempMessage] } : r));
         setCompletedRides(prev => prev.map(r => r._id === selectedRide._id ? { ...r, messages: [...(r.messages || []), tempMessage] } : r));
 
-        // Update selected ride
         setSelectedRide(prev => ({
           ...prev,
           messages: [...(prev.messages || []), tempMessage]
@@ -145,10 +177,10 @@ function DriverRideHistory() {
       console.error('Error sending message:', err);
       setError(err.message || 'Failed to send message');
 
-      // Remove the temporary message if the send failed
       setLocalMessages(prev => prev.slice(0, -1));
     }
   };
+
   const handleAcceptRide = async (rideId) => {
     try {
       setLoading(true);
@@ -171,14 +203,12 @@ function DriverRideHistory() {
               ? updatedRide
               : ride
           )
-
         );
       }
       toast.success("Accepted Successfully")
 
     } catch (err) {
       console.error('Error accepting ride:', err);
-      // Revert status if API call fails
       setAcceptedRides(prev =>
         prev.map(ride =>
           ride._id === rideId
@@ -190,6 +220,7 @@ function DriverRideHistory() {
       setLoading(false);
     }
   };
+
   const formatDate = (dateString) => {
     const options = { month: 'short', day: 'numeric', year: 'numeric' };
     return new Date(dateString).toLocaleDateString('en-US', options);
@@ -212,9 +243,7 @@ function DriverRideHistory() {
       return 'You';
     }
 
-    // For User messages
     if (message.sender?._id) {
-      // Find the rider in acceptedRiderId array
       const rider = selectedRide?.acceptedRiderId?.find(r => r._id === message.sender._id);
       return rider?.fullName || 'Passenger';
     }
@@ -283,9 +312,10 @@ function DriverRideHistory() {
       </Typography>
     );
   };
+
   return (
     <div className="rider-ride-history-container">
-      <DriverNav />
+      <DriverNav onAvatarClick={onAvatarClick} currentDriver={currentDriver} />
       <div className="ride-history-content">
         <div className="ride-history-header">
           <h2>RIDE HISTORY</h2>
@@ -331,7 +361,6 @@ function DriverRideHistory() {
                       <p><strong>Ride ID:</strong> {selectedRide._id.slice(-6).toUpperCase()}</p>
                       <p><strong>Driver ID:</strong> {driverId.slice(-6).toUpperCase()}</p>
                       <p><strong>Fare:</strong> ₹{selectedRide.price}</p>
-                      {/* <p><strong>Status:</strong> {selectedRide.status || 'N/A'}</p> */}
                     </div>
                     <div className="details-right">
                       <p><strong>Vehicle:</strong> {selectedRide.VehicleId?.vehicleMake || 'N/A'} {selectedRide.VehicleId?.vehicleModel || ''}</p>
@@ -378,7 +407,6 @@ function DriverRideHistory() {
                       </div>
                     ))
                   ) : selectedRide.riderId?.length > 0 ? (
-                    // Fallback to riderId if no acceptedRiderId but riderId exists
                     selectedRide.riderId.map((rider, index) => (
                       <div key={index} className="details-grid">
                         <div className="details-left">
@@ -405,7 +433,6 @@ function DriverRideHistory() {
                   {selectedRide.successfulPayments?.length > 0 ? (
                     <div className="payment-details">
                       {selectedRide.successfulPayments.map((payment, index) => {
-                        // Correctly find the rider using payment.riderId._id
                         const rider = selectedRide.acceptedRiderId?.find(
                           r => r._id === payment.riderId._id
                         );
@@ -413,7 +440,6 @@ function DriverRideHistory() {
                         return (
                           <div key={index} className="details-grid">
                             <div className="details-left">
-                              {/* Display rider's full name */}
                               <p><strong>Rider:</strong> {rider?.fullName || 'Unknown Rider'}</p>
                               <p><strong>Amount:</strong> ₹{payment.amount}</p>
                             </div>
@@ -446,7 +472,6 @@ function DriverRideHistory() {
         </div>
       </div>
 
-      {/* Chat Dialog */}
       <Dialog open={showChatModal} onClose={handleCloseChat} fullWidth maxWidth="sm">
         <DialogTitle style={{ color: "#F1B92E" }}>
           CHAT WITH PASSENGER
@@ -500,7 +525,6 @@ function DriverRideHistory() {
             })}
           </Box>
 
-          {/* New Message Input */}
           <TextField
             label="Your Message"
             fullWidth
@@ -555,8 +579,40 @@ function DriverRideHistory() {
           )}
         </DialogActions>
       </Dialog>
+
+      {showProfileCard && currentDriver && (
+        <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
+          <div style={{ position: "absolute", top: "40px", right: "20px" }}>
+            <DriverViewProfile onEditClick={onEditClick} driver={currentDriver} />
+          </div>
+        </ClickAwayListener>
+      )}
+
+      {showProfileEditCard && currentDriver && (
+        <ClickAwayListener onClickAway={() => setShowProfileEditCard(false)}>
+          <div style={{ 
+            position: "fixed", 
+            top: "50%", 
+            left: "50%", 
+            transform: "translate(-50%, -50%)", 
+            backgroundColor: "white", 
+            zIndex: "5", 
+            borderRadius: "25px",
+            boxShadow: "0px 0px 20px rgba(0,0,0,0.2)",
+            maxHeight: "90vh",
+            overflowY: "auto"
+          }}>
+            <DriverEditProfile
+              setShowProfileEditCard={setShowProfileEditCard}
+              currentDriver={currentDriver}
+              setCurrentDriver={setCurrentDriver}
+              fetchDriverData={fetchDriverData}
+            />
+          </div>
+        </ClickAwayListener>
+      )}
     </div>
   );
 }
 
-export default DriverRideHistory;  
+export default DriverRideHistory;

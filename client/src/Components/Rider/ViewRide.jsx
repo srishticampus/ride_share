@@ -25,12 +25,10 @@ const ViewRide = () => {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   
-  // Profile state
   const [showProfileCard, setShowProfileCard] = useState(false);
   const [showProfileEditCard, setShowProfileEditCard] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
-  // Profile handlers
   const onAvatarClick = () => {
     setShowProfileCard(prev => !prev);
     if (!showProfileCard) {
@@ -43,7 +41,6 @@ const ViewRide = () => {
     setShowProfileCard(false);
   };
 
-  // Fetch current user
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
@@ -57,7 +54,6 @@ const ViewRide = () => {
     fetchCurrentUser();
   }, []);
 
-  // Existing ride fetching logic
   useEffect(() => {
     const fetchRides = async () => {
       try {
@@ -92,7 +88,6 @@ const ViewRide = () => {
     fetchRides();
   }, [riderId]);
 
-  // Search functionality
   const filteredRides = rides.filter(ride => {
     const searchLower = searchQuery.toLowerCase();
     const driverName = ride.VehicleId?.driverId?.fullname?.toLowerCase() || '';
@@ -138,7 +133,6 @@ const ViewRide = () => {
     <div className="view-ride-container">
       <RiderNav onAvatarClick={onAvatarClick} />
 
-      {/* Profile components */}
       {showProfileCard && (
         <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
           <div style={{ 
