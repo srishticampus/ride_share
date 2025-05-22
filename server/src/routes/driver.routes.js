@@ -94,7 +94,7 @@ router.use(restrictTo('admin'));
 router.get('/', driverController.viewDrivers);
 router.get('/:id', driverController.viewADriver);
 router.patch('/:id/approve', driverController.ApproveDriver);
-router.patch('/:id/reject', driverController.rejectDriver);
+router.delete('/:id/reject', driverController.rejectDriver);
 router.patch('/:id/activate', driverController.ActivateDriver);
 router.patch('/:id/deactivate', driverController.DeactivateDriver);
 
