@@ -3,8 +3,7 @@ import RiderNav from '../Rider/RiderNav';
 import '../Style/FeedBacks.css';
 import Avatar from '@mui/material/Avatar';
 import Rating from '@mui/material/Rating';
-import apiService from '../../Services/apiService';
-
+import apiService, { imageBaseUrl } from '../../Services/apiService';
 function RiderReview() {
   const [ratings, setRatings] = useState([]);
 
@@ -45,7 +44,7 @@ function RiderReview() {
                   <div className="user-info">
                     <Avatar
                       alt={rating.reviewerId?.fullName || 'Anonymous'}
-                      src={rating.reviewerId?.profilePicture}
+                      src={`${imageBaseUrl}${rating.reviewerId?.profilePicture}`}
                       sx={{ width: 56, height: 56 }}
                     />
                     <div className="user-details">

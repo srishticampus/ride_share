@@ -6,6 +6,7 @@ import { createSendToken } from '../utils/jwt.js';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
 
 // Configure multer storage with better file handling
 const storage = multer.diskStorage({
@@ -176,44 +177,86 @@ export const updateProfile = catchAsync(async (req, res, next) => {
     address: req.body.address
   };
 
+  // Validate email format
+  if (req.body.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(req.body.email)) {
+    return next(new AppError('Please provide a valid email address', 400));
+  }
+
+  // Check if email is being changed
+  if (req.body.email) {
+    const existingUserWithEmail = await User.findOne({ 
+      email: req.body.email,
+      _id: { $ne: req.user.id }
+    });
+    
+    if (existingUserWithEmail) {
+      return next(new AppError('This email is already registered', 400));
+    }
+  }
+
+  // Check if phone number is being changed
+  if (req.body.phoneNumber) {
+    const existingUserWithPhone = await User.findOne({ 
+      phoneNumber: req.body.phoneNumber,
+      _id: { $ne: req.user.id }
+    });
+    
+    if (existingUserWithPhone) {
+      return next(new AppError('This phone number is already registered', 400));
+    }
+  }
+
   // Handle file upload
   if (req.file) {
     const user = await User.findById(req.user.id);
     
     // Delete old profile picture if exists
-    if (user.profilePicture) {
-      const oldFilePath = path.join(__dirname, '..', '..', 'public', user.profilePicture);
-      if (fs.existsSync(oldFilePath)) {
-        fs.unlinkSync(oldFilePath);
-      }
-    }
+    // if (user.profilePicture) {
+    //   const oldFilePath = path.join(__dirname, '..', '..', 'public', user.profilePicture);
+    //   if (fs.existsSync(oldFilePath)) {
+    //     fs.unlinkSync(oldFilePath);
+    //   }
+    // }
     
-    filteredBody.profilePicture = `/uploads/users/${req.file.filename}`;
+    filteredBody.profilePicture = `uploads/users/${req.file.filename}`;
   }
 
-  const updatedUser = await User.findByIdAndUpdate(
-    req.user.id,
-    filteredBody,
-    {
-      new: true,
-      runValidators: true
-    }
-  );
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      filteredBody,
+      {
+        new: true,
+        runValidators: true
+      }
+    ).select('-password -__v');
 
-  if (!updatedUser) {
-    return next(new AppError('User not found', 404));
+    if (!updatedUser) {
+      return next(new AppError('User not found', 404));
+    }
+
+    console.log('Updated user:', updatedUser); // Debug
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user: filterUserData(updatedUser)
+      }
+    });
+  } catch (err) {
+    // Handle MongoDB duplicate key errors
+    if (err.code === 11000) {
+      const field = Object.keys(err.keyPattern)[0];
+      let errorMessage = 'This value is already registered';
+      
+      if (field === 'email') errorMessage = 'This email is already registered';
+      if (field === 'phoneNumber') errorMessage = 'This phone number is already registered';
+      
+      return next(new AppError(errorMessage, 400));
+    }
+    return next(err);
   }
-
-  console.log('Updated user:', updatedUser); // Debug
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      user: filterUserData(updatedUser)
-    }
-  });
-});
-// Get all users (admin only) with pagination
+});// Get all users (admin only) with pagination
 export const getAllUsers = catchAsync(async (req, res, next) => {
   // Pagination
   const page = parseInt(req.query.page, 10) || 1;

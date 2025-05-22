@@ -38,7 +38,6 @@ const AddRide = () => {
       const driverData = await apiService.getCurrentDriver();
       const driver = driverData.data.driver;
       setCurrentDriver(driver);
-      // Update hasVehicle based on the fetched driver data
       setHasVehicle(!!driver.vehicleId);
     } catch (error) {
       console.error("Failed to load driver data:", error);
@@ -48,7 +47,6 @@ const AddRide = () => {
   useEffect(() => {
     fetchDriverData();
     
-    // Set minimum datetime
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     setMinDateTime(now.toISOString().slice(0, 16));
@@ -127,7 +125,6 @@ const handleSubmit = async (e) => {
     const rideDateTime = new Date(formData.rideDateTime);
     const rideDate = rideDateTime.toISOString().split('T')[0];
     
-    // Format time as HH:MM (24-hour format)
     const hours = rideDateTime.getHours().toString().padStart(2, '0');
     const minutes = rideDateTime.getMinutes().toString().padStart(2, '0');
     const rideTime = `${hours}:${minutes}`;
@@ -137,15 +134,15 @@ const handleSubmit = async (e) => {
       origin: formData.origin.trim(),
       destination: formData.destination.trim(),
       rideDate: rideDate,
-      rideTime: rideTime, // Now properly formatted as HH:MM
+      rideTime: rideTime, 
       availableSeats: parseInt(formData.availableSeats),
-      price: parseFloat(formData.price), // Ensure this is a number
+      price: parseFloat(formData.price), 
       rideDescription: formData.rideDescription.trim(),
       specialNote: formData.specialNote.trim(),
       route: formData.route.trim()
     };
 
-    console.log('Submitting ride data:', rideData); // Debug log
+    console.log('Submitting ride data:', rideData);
 
     const response = await service.createRide(rideData);
     toast.success('Ride created successfully!');
@@ -207,7 +204,6 @@ const handleSubmit = async (e) => {
           
           <form className="payment-form" onSubmit={handleSubmit}>
             <div className="form-grid">
-              {/* Form fields remain the same as before */}
               <div className="form-group">
                 <label className="form-label" htmlFor="origin">Pick Up Location*</label>
                 <input

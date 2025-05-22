@@ -641,7 +641,7 @@ const deleteRating = async (ratingId) => {
 };
 
 const getAllRatings = async () => {
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("authToken") || localStorage.getItem("adminToken");
 
   try {
     const response = await apiClient.get("/ratings",{

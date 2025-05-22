@@ -12,7 +12,7 @@ function DriverViewProfile({ onEditClick, driver }) {
     : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png";
 
   return (
-    <div className="profile-card">
+    <div className="profile-card" >
       <img 
         src={`${imageBaseUrl}uploads/drivers/${driver.driverPic}`}
         alt={driver.fullname || "Driver Profile"} 

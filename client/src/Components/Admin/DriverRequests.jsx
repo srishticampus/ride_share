@@ -100,7 +100,6 @@ console.log(imageBaseUrl);
         );
     });
 
-    // Pagination calculations
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredDrivers.slice(indexOfFirstItem, indexOfLastItem);

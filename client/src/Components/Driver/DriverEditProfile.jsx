@@ -68,14 +68,12 @@ const DriverEditProfile = ({ setShowProfileEditCard, currentDriver, setCurrentDr
   };
 
   const validateVehicleReg = (reg) => {
-    // Basic validation - can be enhanced based on your country's vehicle registration format
     return reg.length >= 6 && reg.length <= 15;
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     
-    // Validation
     let error = "";
     if (name === "fullname") {
       if (!validateName(value)) {
@@ -99,10 +97,9 @@ const DriverEditProfile = ({ setShowProfileEditCard, currentDriver, setCurrentDr
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
- const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
 
-  // Final validation before submit
   let isValid = true;
   const newErrors = { ...errors };
 
@@ -145,13 +142,14 @@ const DriverEditProfile = ({ setShowProfileEditCard, currentDriver, setCurrentDr
       formDataToSend.append('driverPic', formData.driverPic);
     }
 
-    const response = await apiService.updateCurrentDriver(formDataToSend); // Make sure to use formDataToSend here
+    const response = await apiService.updateCurrentDriver(formData); 
 
-if (response.status === 'success') {
-  await fetchDriverData(); // This will refetch fresh data from the server
+ if (response.status === 'success') {
+  await fetchDriverData(); 
   toast.success('Profile updated successfully!');
   setTimeout(() => setShowProfileEditCard(false), 1500);
-} else {
+}
+    else {
       throw new Error(response.message || 'Failed to update profile');
     }
   } catch (error) {
@@ -169,7 +167,6 @@ if (response.status === 'success') {
     }
   }
 };
-
   return (
     <Box className="styled-container">
       <Box className="styled-header">

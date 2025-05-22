@@ -94,7 +94,7 @@ const RiderEditProfile = ({ setShowProfileEditCard, currentUser, setCurrentUser 
           setAvatarSrc(`http://localhost:4052${response.data.user.profilePicture}`);
         }
 
-        // toast.success('Profile updated successfully!');
+        toast.success('Profile updated successfully!');
         
         setTimeout(() => {
           setShowProfileEditCard(false);
@@ -111,23 +111,11 @@ const RiderEditProfile = ({ setShowProfileEditCard, currentUser, setCurrentUser 
   return (
     <div>
       <Box className="styled-container">
-      <ToastContainer
-                position="top-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                style={{ marginTop: "60px" }}
-            />
         
         <Box className="styled-header">
-          <Typography className="header-title" variant="h6">EDIT PROFILE</Typography>
-          <IconButton className="close-button" onClick={() => setShowProfileEditCard(false)}>
-            <CloseIcon />
+          <Typography className="header-title-edit" variant="h6">EDIT PROFILE</Typography>
+          <IconButton className="close-button" onClick={() => setShowProfileEditCard(false)} color='white'>
+            <CloseIcon  className="close-button"/>
           </IconButton>
         </Box>
 
