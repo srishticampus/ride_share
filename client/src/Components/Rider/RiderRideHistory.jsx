@@ -503,7 +503,7 @@ function RiderRideHistory() {
                       </p>
                     </div>
                     <div className="details-right">
-                      <p><strong>Driver ID:</strong> {selectedRide.VehicleId?.driverId?._id?.slice(-6).toUpperCase() || 'N/A'}</p>
+                      <p><strong>Driver ID:</strong> {selectedRide.VehicleId?.driverId?._id || 'N/A'}</p>
                       <p><strong>Driver Name:</strong> {selectedRide.VehicleId?.driverId?.fullname || 'N/A'}</p>
                       <p><strong>Payment Method:</strong>
                         {hasPaid(selectedRide)
