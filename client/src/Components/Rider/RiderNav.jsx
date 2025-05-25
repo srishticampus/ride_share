@@ -7,7 +7,7 @@ import Button from '@mui/material/Button';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import { IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import Logo from '../../Assets/Logo1.png';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import RiderViewProfile from './RiderViewProfile';
 
@@ -24,7 +24,10 @@ export default function RiderNav({onAvatarClick}) {
   };
 
   const handleConfirmLogout = () => {
-    localStorage.removeItem("riderData")
+    localStorage.removeItem("UserInfo")
+        localStorage.removeItem("authToken")
+        localStorage.removeItem("riderId")
+
     toast.success('User logged out');
     setOpenLogoutDialog(false);
     setTimeout(() => {
@@ -34,9 +37,9 @@ export default function RiderNav({onAvatarClick}) {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <ToastContainer />
-      <AppBar position="fixed" style={{ backgroundColor: 'black', zIndex: '10' }}>
+    <Box sx={{ flexGrow: 1 , zIndex:'100' }}>
+      {/* <ToastContainer /> */}
+      <AppBar position="fixed" style={{ backgroundColor: 'black', zIndex:100 }}>
         <Toolbar style={{ display: 'flex', justifyContent: 'right' }}>
           <div style={{ display: 'flex', gap: '10px' }}>
             <Link to='/User-home-page'>
@@ -82,7 +85,7 @@ export default function RiderNav({onAvatarClick}) {
 
 
             </Link>
-            <Link to="/User-payment">
+            {/* <Link to="/User-payment">
             <Button
               sx={{
                 color: 'white',
@@ -95,7 +98,7 @@ export default function RiderNav({onAvatarClick}) {
               PAYMENT
             </Button>
 
-            </Link>
+            </Link> */}
             <Link to='/User-ride-History'>
             <Button
               sx={{

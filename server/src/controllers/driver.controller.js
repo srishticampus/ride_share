@@ -370,11 +370,6 @@ export const ApproveDriver = catchAsync(async (req, res, next) => {
   }
 
   // Send approval email
-  await sendEmail({
-    email: driver.email,
-    subject: 'Your Driver Account Has Been Approved',
-    message: `Congratulations! Your driver account has been approved. You can now log in and start accepting rides.`
-  });
 
   res.status(200).json({
     status: 'success',
@@ -392,11 +387,11 @@ export const rejectDriver = catchAsync(async (req, res, next) => {
   }
 
   // Send rejection email
-  await sendEmail({
-    email: driver.email,
-    subject: 'Your Driver Application Has Been Rejected',
-    message: `We regret to inform you that your driver application has been rejected. ${req.body.reason || ''}`
-  });
+  // await sendEmail({
+  //   email: driver.email,
+  //   subject: 'Your Driver Application Has Been Rejected',
+  //   message: `We regret to inform you that your driver application has been rejected. ${req.body.reason || ''}`
+  // });
 
   res.status(204).json({
     status: 'success',

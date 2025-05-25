@@ -35,20 +35,16 @@ function DriverRegistration() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     
-    // Apply different validation based on field name
     let filteredValue = value;
     
     switch(name) {
       case 'fullname':
-        // Only allow alphabets and spaces
         filteredValue = value.replace(/[^a-zA-Z\s]/g, '');
         break;
       case 'phoneNumber':
-        // Only allow numbers and limit to 10 digits
         filteredValue = value.replace(/\D/g, '').slice(0, 10);
         break;
       case 'licenseNumber':
-        // Only allow numbers and limit to 16 digits
         filteredValue = value.replace(/\D/g, '').slice(0, 16);
         break;
       case 'vehicleRegNumber':
@@ -56,7 +52,6 @@ function DriverRegistration() {
       case 'password':
       case 'confirmPassword':
       default:
-        // No special filtering for other fields
         break;
     }
     
@@ -65,7 +60,6 @@ function DriverRegistration() {
 
   const handleVehicleRegChange = (e) => {
     const { value } = e.target;
-    // Only allow alphanumeric characters and convert to uppercase
     const filteredValue = value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
     setDriver(prev => ({ ...prev, vehicleRegNumber: filteredValue }));
   };
@@ -77,7 +71,6 @@ function DriverRegistration() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Field presence validation
     if (!driver.email || !driver.password || !driver.fullname ||
       !driver.phoneNumber || !driver.licenseNumber ||
       !driver.vehicleRegNumber || !driver.driverPic) {
@@ -85,37 +78,31 @@ function DriverRegistration() {
       return;
     }
 
-    // Email validation
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(driver.email)) {
       toast.error('Please enter a valid email address');
       return;
     }
 
-    // Full name validation (only alphabets)
     if (!/^[a-zA-Z\s]+$/.test(driver.fullname)) {
       toast.error('Full name should only contain alphabets');
       return;
     }
 
-    // Phone number validation (exactly 10 digits)
     if (!/^\d{10}$/.test(driver.phoneNumber)) {
       toast.error('Phone number must be 10 digits');
       return;
     }
 
-    // License number validation (exactly 16 digits)
     if (!/^\d{16}$/.test(driver.licenseNumber)) {
       toast.error('License number must be 16 digits');
       return;
     }
 
-    // Vehicle registration validation (alphanumeric, no spaces/special chars)
     if (!/^[A-Z0-9]+$/.test(driver.vehicleRegNumber)) {
       toast.error('Vehicle registration should be uppercase alphanumeric with no spaces or special characters');
       return;
     }
 
-    // Password validation
     if (driver.password.length < 8) {
       toast.error('Password must be at least 8 characters long');
       return;

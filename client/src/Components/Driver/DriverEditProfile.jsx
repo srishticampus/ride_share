@@ -13,10 +13,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import apiService from '../../Services/apiService';
+import apiService, { imageBaseUrl } from '../../Services/apiService';
 import { useNavigate } from 'react-router-dom';
-
-const DriverEditProfile = ({ setShowProfileEditCard, currentDriver, setCurrentDriver }) => {
+const DriverEditProfile = ({ setShowProfileEditCard, currentDriver, setCurrentDriver,fetchDriverData }) => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
@@ -36,7 +35,7 @@ const DriverEditProfile = ({ setShowProfileEditCard, currentDriver, setCurrentDr
 
   const [avatarSrc, setAvatarSrc] = useState(
     currentDriver.driverPic
-      ? `http://localhost:4052/ride_share_api/${currentDriver.driverPic}`
+      ?`${imageBaseUrl}uploads/drivers/${currentDriver.driverPic}`
       : 'https://passport-photo.online/images/cms/prepare_light_b364e3ec37.webp?quality=80&format=webp&width=1920'
   );
 
@@ -69,14 +68,12 @@ const DriverEditProfile = ({ setShowProfileEditCard, currentDriver, setCurrentDr
   };
 
   const validateVehicleReg = (reg) => {
-    // Basic validation - can be enhanced based on your country's vehicle registration format
     return reg.length >= 6 && reg.length <= 15;
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     
-    // Validation
     let error = "";
     if (name === "fullname") {
       if (!validateName(value)) {
@@ -100,84 +97,76 @@ const DriverEditProfile = ({ setShowProfileEditCard, currentDriver, setCurrentDr
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    // Final validation before submit
-    let isValid = true;
-    const newErrors = { ...errors };
+  let isValid = true;
+  const newErrors = { ...errors };
 
-    if (!validateName(formData.fullname)) {
-      newErrors.fullname = "Name should contain only alphabets";
-      isValid = false;
+  if (!validateName(formData.fullname)) {
+    newErrors.fullname = "Name should contain only alphabets";
+    isValid = false;
+  }
+
+  if (!validatePhone(formData.phoneNumber)) {
+    newErrors.phoneNumber = "Phone number must be 10 digits";
+    isValid = false;
+  }
+
+  if (!validateEmail(formData.email)) {
+    newErrors.email = "Please enter a valid email";
+    isValid = false;
+  }
+
+  if (!validateVehicleReg(formData.vehicleRegNumber)) {
+    newErrors.vehicleRegNumber = "Please enter a valid registration number";
+    isValid = false;
+  }
+
+  setErrors(newErrors);
+
+  if (!isValid) {
+    toast.error("Please fix the errors in the form");
+    return;
+  }
+
+  try {
+    const formDataToSend = new FormData();
+
+    formDataToSend.append('fullname', formData.fullname);
+    formDataToSend.append('email', formData.email);
+    formDataToSend.append('phoneNumber', formData.phoneNumber);
+    formDataToSend.append('vehicleRegNumber', formData.vehicleRegNumber);
+
+    if (formData.driverPic) {
+      formDataToSend.append('driverPic', formData.driverPic);
     }
 
-    if (!validatePhone(formData.phoneNumber)) {
-      newErrors.phoneNumber = "Phone number must be 10 digits";
-      isValid = false;
+    const response = await apiService.updateCurrentDriver(formData); 
+
+ if (response.status === 'success') {
+  await fetchDriverData(); 
+  toast.success('Profile updated successfully!');
+  setTimeout(() => setShowProfileEditCard(false), 1500);
+}
+    else {
+      throw new Error(response.message || 'Failed to update profile');
     }
+  } catch (error) {
+    console.error('Update error:', error);
 
-    if (!validateEmail(formData.email)) {
-      newErrors.email = "Please enter a valid email";
-      isValid = false;
+    if (error.response?.data?.message?.includes('E11000 duplicate key error') &&
+      error.response?.data?.message?.includes('phoneNumber')) {
+      toast.error('This phone number is already registered', {
+        autoClose: 3000
+      });
+    } else {
+      toast.error(error.response?.data?.message || error.message || 'Failed to update profile', {
+        autoClose: 3000
+      });
     }
-
-    if (!validateVehicleReg(formData.vehicleRegNumber)) {
-      newErrors.vehicleRegNumber = "Please enter a valid registration number";
-      isValid = false;
-    }
-
-    setErrors(newErrors);
-
-    if (!isValid) {
-      toast.error("Please fix the errors in the form");
-      return;
-    }
-
-    try {
-      const formDataToSend = new FormData();
-
-      formDataToSend.append('fullname', formData.fullname);
-      formDataToSend.append('email', formData.email);
-      formDataToSend.append('phoneNumber', formData.phoneNumber);
-      formDataToSend.append('vehicleRegNumber', formData.vehicleRegNumber);
-
-      if (formData.driverPic) {
-        formDataToSend.append('driverPic', formData.driverPic);
-      }
-
-      const response = await apiService.updateCurrentDriver(formData);
-
-      if (response.status === 'success') {
-        setCurrentDriver(prev => ({
-          ...prev,
-          ...response.data.driver,
-          driverPic: formData.driverPic
-            ? URL.createObjectURL(formData.driverPic)
-            : response.data.driver.driverPic
-        }));
-
-        toast.success('Profile updated successfully!');
-        setTimeout(() => setShowProfileEditCard(false), 1500);
-      } else {
-        throw new Error(response.message || 'Failed to update profile');
-      }
-    } catch (error) {
-      console.error('Update error:', error);
-
-      if (error.response?.data?.message?.includes('E11000 duplicate key error') &&
-        error.response?.data?.message?.includes('phoneNumber')) {
-        toast.error('This phone number is already registered', {
-          autoClose: 3000
-        });
-      } else {
-        toast.error(error.response?.data?.message || error.message || 'Failed to update profile', {
-          autoClose: 3000
-        });
-      }
-    }
-  };
-
+  }
+};
   return (
     <Box className="styled-container">
       <Box className="styled-header">

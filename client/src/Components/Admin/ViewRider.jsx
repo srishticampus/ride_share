@@ -15,12 +15,13 @@ import {
   Typography
 } from '@mui/material';
 import '../Style/Table.css';
-import Service from '../../Services/apiService';
+import Service, { imageBaseUrl } from '../../Services/apiService';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
-
+// imageBaseUrl
 function ViewRider() {
+    // const imageBaseUrl = 'http://localhost:4052/ride_share_api';
     const navigate = useNavigate()
     const [riders, setRiders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -149,7 +150,7 @@ console.log(import.meta.env.VITE_API_URL);
                                     <td>{rider.fullName}</td>
                                     <td>
                                         <Avatar
-                                            src={UserProfile}
+                                            src={`${imageBaseUrl}${rider.profilePicture}`}
                                             alt={rider.fullName}
                                             sx={{ width: 40, height: 40 }}
                                         >

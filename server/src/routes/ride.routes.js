@@ -93,7 +93,7 @@ router.post('/', validate(rideSchema), RideController.newRide);
  *               items:
  *                 $ref: '#/components/schemas/Ride'
  */
-router.get('/', RideController.showAllRides);
+router.get('/showAllRide', RideController.showAllRides);
 
 /**
  * @swagger
@@ -143,9 +143,11 @@ router.get('/:id', RideController.viewAride);
  *       404:
  *         description: Ride not found
  */
-router.patch('/:id', validate(updateRideSchema), RideController.updateRide);
-
-/**
+// router.patch('/:id', validate(updateRideSchema), RideController.updateRide);
+router.patch(
+  '/:id/message',
+  RideController.addRideMessage
+);/**
  * @swagger
  * /rides/{id}:
  *   delete:
@@ -164,5 +166,16 @@ router.patch('/:id', validate(updateRideSchema), RideController.updateRide);
  *         description: Ride not found
  */
 router.delete('/:id', RideController.deleteRide);
-
+router.post(
+  '/:id/accept',
+  protect,
+  RideController.acceptReq
+);
+router.patch('/:id/join', RideController.joinRide);
+router.patch('/:id/reject', RideController.rejectReq);
+router.post('/:id/payment', RideController.processRidePayment);
+router.put(
+  '/:rideId/accept',
+ RideController.acceptRide
+);
 export default router;

@@ -85,7 +85,6 @@ const AddVehicle = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Validate the field
     const error = validateField(name, value);
     setErrors(prev => ({
       ...prev,
@@ -101,7 +100,6 @@ const AddVehicle = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check for any validation errors before submitting
     const hasErrors = Object.values(errors).some(error => error !== '');
     if (hasErrors) {
       toast.error('Please fix the form errors before submitting');
@@ -236,7 +234,6 @@ const AddVehicle = () => {
                 </div>
               </div>
 
-              {/* Right Column */}
               <div className="form-column">
                 <div className="form-group">
                   <label className="form-label" htmlFor="vehicleType">Vehicle Type</label>

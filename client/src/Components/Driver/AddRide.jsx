@@ -11,29 +11,46 @@ import Avatar from '@mui/material/Avatar';
 import { ClickAwayListener } from '@mui/material';
 import DriverViewProfile from './DriverViewProfile';
 import DriverEditProfile from './DriverEditProfile';
+import apiService from '../../Services/apiService';
 
 const AddRide = () => {
-  const navigate = useNavigate();
-  const currentDriver = JSON.parse(localStorage.getItem("driverData"));
-  const [minDate, setMinDate] = useState('');
-  const [minTime, setMinTime] = useState('');
+  const [currentDriver, setCurrentDriver] = useState({});
+  const [minDateTime, setMinDateTime] = useState('');
   const [errors, setErrors] = useState({});
   const [hasVehicle, setHasVehicle] = useState(false);
   const [showProfileCard, setShowProfileCard] = useState(false);
   const [showProfileEditCard, setShowProfileEditCard] = useState(false);
+  const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
     origin: '',
     destination: '',
-    rideDate: '',
-    rideTime: '',
+    rideDateTime: '',
     availableSeats: 1,
     price: '',
-    status: 'pending',
     rideDescription: '',
     specialNote: '',
     route: ''
   });
+
+  const fetchDriverData = async () => {
+    try {
+      const driverData = await apiService.getCurrentDriver();
+      const driver = driverData.data.driver;
+      setCurrentDriver(driver);
+      setHasVehicle(!!driver.vehicleId);
+    } catch (error) {
+      console.error("Failed to load driver data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDriverData();
+    
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    setMinDateTime(now.toISOString().slice(0, 16));
+  }, []);
 
   const onAvatarClick = () => {
     setShowProfileCard(prev => !prev);
@@ -47,65 +64,26 @@ const AddRide = () => {
     setShowProfileCard(false);
   };
 
-  useEffect(() => {
-    if (currentDriver?.vehicleId) {
-      setHasVehicle(true);
-    } else {
-      setHasVehicle(false);
-    }
-
-    // Set minimum date to today
-    const today = new Date().toISOString().split('T')[0];
-    setMinDate(today);
-    
-    // Set minimum time to current time if date is today
-    if (formData.rideDate === today) {
-      const now = new Date();
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      setMinTime(`${hours}:${minutes}`);
-    } else {
-      setMinTime('00:00');
-    }
-  }, [formData.rideDate]);
-
   const validateForm = () => {
     const newErrors = {};
-    const today = new Date().toISOString().split('T')[0];
     const now = new Date();
     
     if (!formData.origin) newErrors.origin = 'Pickup location is required';
     if (!formData.destination) newErrors.destination = 'Destination is required';
     
-    // Date validation
-    if (!formData.rideDate) {
-      newErrors.rideDate = 'Ride date is required';
+    if (!formData.rideDateTime) {
+      newErrors.rideDateTime = 'Ride date and time are required';
     } else {
-      const selectedDate = new Date(formData.rideDate);
-      if (selectedDate < new Date(today)) {
-        newErrors.rideDate = 'Cannot select past dates';
+      const selectedDateTime = new Date(formData.rideDateTime);
+      if (selectedDateTime < now) {
+        newErrors.rideDateTime = 'Cannot select past date and time';
       }
     }
     
-    // Time validation
-    if (!formData.rideTime) {
-      newErrors.rideTime = 'Ride time is required';
-    } else if (formData.rideDate === today) {
-      const [hours, minutes] = formData.rideTime.split(':').map(Number);
-      const selectedTime = new Date();
-      selectedTime.setHours(hours, minutes);
-      
-      if (selectedTime < now) {
-        newErrors.rideTime = 'Cannot select past time for today';
-      }
-    }
-    
-    // Available seats validation
     if (!formData.availableSeats || formData.availableSeats < 1) {
       newErrors.availableSeats = 'Must have at least 1 seat';
     }
     
-    // Price validation
     if (!formData.price || formData.price <= 0) {
       newErrors.price = 'Price must be greater than 0';
     }
@@ -129,59 +107,62 @@ const AddRide = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  if (!hasVehicle) {
+    toast.error('You must add vehicle details before creating a ride');
+    navigate('/driver-Add-Vehicle'); 
+    return;
+  }
+
+  if (!validateForm()) {
+    toast.error('Please fix the form errors');
+    return;
+  }
+
+  try {
+    const rideDateTime = new Date(formData.rideDateTime);
+    const rideDate = rideDateTime.toISOString().split('T')[0];
     
-    if (!hasVehicle) {
-      toast.error('You must add vehicle details before creating a ride');
-      navigate('/driver-Add-Vehicle'); 
-      return;
-    }
+    const hours = rideDateTime.getHours().toString().padStart(2, '0');
+    const minutes = rideDateTime.getMinutes().toString().padStart(2, '0');
+    const rideTime = `${hours}:${minutes}`;
 
-    if (!validateForm()) {
-      toast.error('Please fix the form errors');
-      return;
-    }
+    const rideData = {
+      VehicleId: currentDriver.vehicleId,
+      origin: formData.origin.trim(),
+      destination: formData.destination.trim(),
+      rideDate: rideDate,
+      rideTime: rideTime, 
+      availableSeats: parseInt(formData.availableSeats),
+      price: parseFloat(formData.price), 
+      rideDescription: formData.rideDescription.trim(),
+      specialNote: formData.specialNote.trim(),
+      route: formData.route.trim()
+    };
 
-    try {
-      const rideData = {
-        VehicleId: currentDriver.vehicleId,
-        origin: formData.origin.trim(),
-        destination: formData.destination.trim(),
-        rideDate: formData.rideDate,
-        rideTime: formData.rideTime,
-        availableSeats: parseInt(formData.availableSeats),
-        price: parseFloat(formData.price),
-        status: formData.status,
-        rideDescription: formData.rideDescription.trim(),
-        specialNote: formData.specialNote.trim(),
-        route: formData.route.trim()
-      };
+    console.log('Submitting ride data:', rideData);
 
-      const response = await service.createRide(rideData);
-      
-      toast.success('Ride created successfully!');
-      
-      // Reset form
-      setFormData({
-        origin: '',
-        destination: '',
-        rideDate: '',
-        rideTime: '',
-        availableSeats: 1,
-        price: '',
-        status: 'pending',
-        rideDescription: '',
-        specialNote: '',
-        route: ''
-      });
+    const response = await service.createRide(rideData);
+    toast.success('Ride created successfully!');
+    
+    setFormData({
+      origin: '',
+      destination: '',
+      rideDateTime: '',
+      availableSeats: 1,
+      price: '',
+      rideDescription: '',
+      specialNote: '',
+      route: ''
+    });
 
-    } catch (error) {
-      console.error('Error creating ride:', error);
-      toast.error(error.response?.data?.message || 'Failed to create ride');
-    } 
-  };
-
+  } catch (error) {
+    console.error('Error creating ride:', error);
+    toast.error(error.response?.data?.message || 'Failed to create ride');
+  } 
+};
   return (
     <div className="payment-container">
       <DriverNav onAvatarClick={onAvatarClick} currentDriver={currentDriver} />
@@ -208,6 +189,8 @@ const AddRide = () => {
               setShowProfileEditCard={setShowProfileEditCard}
               currentDriver={currentDriver}
               setCurrentDriver={(updatedDriver) => {
+                setCurrentDriver(updatedDriver);
+                setHasVehicle(!!updatedDriver.vehicleId);
                 localStorage.setItem("driverData", JSON.stringify(updatedDriver));
               }}
             />
@@ -219,8 +202,6 @@ const AddRide = () => {
         <section className="payment-section">
           <h1 className="payment-title">ADD RIDE</h1>
           
-         
-
           <form className="payment-form" onSubmit={handleSubmit}>
             <div className="form-grid">
               <div className="form-group">
@@ -252,31 +233,17 @@ const AddRide = () => {
               </div>
 
               <div className="form-group">
-                <label className="form-label" htmlFor="rideDate">Ride Date*</label>
+                <label className="form-label" htmlFor="rideDateTime">Ride Date & Time*</label>
                 <input
-                  className={`form-input ${errors.rideDate ? 'is-invalid' : ''}`}
-                  id="rideDate"
-                  name="rideDate"
-                  type="date"
-                  min={minDate}
-                  value={formData.rideDate}
+                  className={`form-input ${errors.rideDateTime ? 'is-invalid' : ''}`}
+                  id="rideDateTime"
+                  name="rideDateTime"
+                  type="datetime-local"
+                  min={minDateTime}
+                  value={formData.rideDateTime}
                   onChange={handleChange}
                 />
-                {errors.rideDate && <div className="invalid-feedback">{errors.rideDate}</div>}
-              </div>
-
-              <div className="form-group">
-                <label className="form-label" htmlFor="rideTime">Ride Time*</label>
-                <input
-                  className={`form-input ${errors.rideTime ? 'is-invalid' : ''}`}
-                  id="rideTime"
-                  name="rideTime"
-                  type="time"
-                  min={formData.rideDate === minDate ? minTime : undefined}
-                  value={formData.rideTime}
-                  onChange={handleChange}
-                />
-                {errors.rideTime && <div className="invalid-feedback">{errors.rideTime}</div>}
+                {errors.rideDateTime && <div className="invalid-feedback">{errors.rideDateTime}</div>}
               </div>
 
               <div className="form-group">
@@ -308,21 +275,6 @@ const AddRide = () => {
                   onChange={handleChange}
                 />
                 {errors.price && <div className="invalid-feedback">{errors.price}</div>}
-              </div>
-
-              <div className="form-group">
-                <label className="form-label" htmlFor="status">Ride Status</label>
-                <select
-                  className="form-input"
-                  id="status"
-                  name="status"
-                  value={formData.status}
-                  onChange={handleChange}
-                >
-                  <option value="pending">Pending</option>
-                  <option value="scheduled">Scheduled</option>
-                  <option value="available">Available</option>
-                </select>
               </div>
 
               <div className="form-group">

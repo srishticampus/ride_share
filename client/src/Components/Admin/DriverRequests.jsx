@@ -16,11 +16,10 @@ import {
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import '../Style/Table.css';
-import Service from '../../Services/apiService';
+import Service, { imageBaseUrl } from '../../Services/apiService';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
-
 function DriverRequests() {
     const navigate = useNavigate();
     const [allDrivers, setAllDrivers] = useState([]);
@@ -30,6 +29,7 @@ function DriverRequests() {
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
+console.log(imageBaseUrl);
 
     useEffect(() => {
         const fetchDrivers = async () => {
@@ -37,7 +37,6 @@ function DriverRequests() {
                 const response = await Service.getAllDrivers();
                 console.log('API Response:', response);
                 
-                // Handle both possible response structures
                 const driversData = response.data?.drivers || response.drivers || [];
                 
                 if (!driversData.length) {
@@ -46,7 +45,6 @@ function DriverRequests() {
 
                 setAllDrivers(driversData);
                 
-                // Filter for pending drivers (backgroundCheck: false)
                 const pending = driversData.filter(driver => 
                     driver.backgroundCheck === false || 
                     driver.backgroundCheck === undefined
@@ -102,7 +100,6 @@ function DriverRequests() {
         );
     });
 
-    // Pagination calculations
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredDrivers.slice(indexOfFirstItem, indexOfLastItem);
@@ -191,7 +188,7 @@ function DriverRequests() {
                                         <td>{driver.fullname || 'N/A'}</td>
                                         <td>
                                             <Avatar
-                                                src={getProfileImageUrl(driver.driverPic)}
+                                                src={`${imageBaseUrl}uploads/drivers/${driver.driverPic}`}
                                                 alt={driver.fullname}
                                                 sx={{ width: 40, height: 40 }}
                                             />

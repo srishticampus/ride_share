@@ -41,6 +41,8 @@ function RiderHomePage() {
             try {
                 const userData = await apiService.getCurrentUser();
                 console.log(userData);
+                
+localStorage.setItem("UserInfo", JSON.stringify(userData.data.user));
                 setCurrentUser(userData.data.user);
             } catch (err) {
                 console.log(err);

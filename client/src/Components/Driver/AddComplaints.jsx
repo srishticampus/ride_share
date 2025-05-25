@@ -52,7 +52,6 @@ const AddComplaints = () => {
 
     const resetForm = () => {
         setFormData(initialFormState);
-        // Clear the file input
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
@@ -77,24 +76,10 @@ const AddComplaints = () => {
             const response = await service.createDispute(formDataToSend);
 
             if (response) {
-                toast.success('Complaint submitted successfully!', {
-                    position: "top-right",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
+                toast.success('Complaint submitted successfully!');
                 resetForm();
             } else {
-                toast.error('Failed to submit complaint. Please try again.', {
-                    position: "top-right",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
+                toast.error('Failed to submit complaint. Please try again.');
             }
         } catch (err) {
             toast.error(err.response?.data?.message || err.message || 'Something went wrong', {
@@ -114,7 +99,6 @@ const AddComplaints = () => {
         <div className="payment-container">
             <DriverNav onAvatarClick={onAvatarClick} currentDriver={currentDriver} />
 
-            {/* Profile View Card */}
             {showProfileCard && currentDriver && (
                 <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
                     <div style={{ position: "absolute", top: "40px", right: "20px" }}>
@@ -123,7 +107,6 @@ const AddComplaints = () => {
                 </ClickAwayListener>
             )}
 
-            {/* Profile Edit Card */}
             {showProfileEditCard && currentDriver && (
                 <ClickAwayListener onClickAway={() => setShowProfileEditCard(false)}>
                     <div style={{ 

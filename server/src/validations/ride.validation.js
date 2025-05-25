@@ -20,7 +20,7 @@ export const rideSchema = Joi.object({
     .default('pending'),
   rideDescription: Joi.string().allow('').optional(),
   specialNote: Joi.string().allow('').optional(),
-  route: Joi.string().allow('').optional()
+  route: Joi.string().allow('').optional(),
 });
 export const updateRideSchema = rideSchema.keys({
   driverId: Joi.string().hex().length(24).required(),
@@ -41,5 +41,7 @@ export const updateRideSchema = rideSchema.keys({
     .default('pending'),
   rideDescription: Joi.string().allow('').optional(),
   specialNote: Joi.string().allow('').optional(),
-  route: Joi.string().allow('').optional()
+  route: Joi.string().allow('').optional(),
+    message: Joi.string().allow('').optional()
+
 }).min(1);

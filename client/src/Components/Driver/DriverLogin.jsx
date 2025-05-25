@@ -4,7 +4,7 @@ import { TextField, FormLabel, Button, InputAdornment, IconButton } from "@mui/m
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import apiService from "../../Services/apiService";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast , ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../Style/Login.css";
 import { Link } from "react-router-dom";
@@ -62,6 +62,7 @@ function DriverLogin() {
 
     return (
         <div className="admin-login-main-container">
+            <ToastContainer/>
             <LandingNav />
             <img src={Logo} alt="Company Logo" />
             <div className="admin-login-form">

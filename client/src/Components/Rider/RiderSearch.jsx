@@ -1,14 +1,14 @@
-import React from 'react';
-import { TextField, InputAdornment, Box, IconButton } from '@mui/material';
+import { Box, TextField, InputAdornment , IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
-function RiderSearch() {
+function RiderSearch({ searchQuery, setSearchQuery }) {
   return (
     <Box sx={{ width: '270px' }}>
       <TextField
         fullWidth
         placeholder="Search..."
-        // value={searchQuery}
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
         variant="outlined"
         sx={{
             backgroundColor: '#f5f5f5',
@@ -28,5 +28,4 @@ function RiderSearch() {
     </Box>
   );
 }
-
 export default RiderSearch;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import '../Style/RiderPayment.css';
 import { FaCalendarAlt } from 'react-icons/fa';
@@ -6,18 +6,26 @@ import Footer from '../Common/Footer';
 import RiderNav from './RiderNav';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import service from '../../Services/apiService'
+import service from '../../Services/apiService';
+import { ClickAwayListener } from '@mui/material';
+import RiderViewProfile from './RiderViewProfile';
+import RiderEditProfile from './RiderEditProfile';
+
 const RiderComplaints = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("riderToken");
   const riderId = localStorage.getItem("riderId");
-console.log(riderId);
+  const fileInputRef = useRef(null);
+  
+  const [showProfileCard, setShowProfileCard] = useState(false);
+  const [showProfileEditCard, setShowProfileEditCard] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    reportedBy:riderId,
+    reportedBy: riderId,
     driverName: '',
-    driverId: '',
+    driverData: '',
     subject: '',
     incidentDate: '',
     priorityLevel: '',
@@ -26,9 +34,35 @@ console.log(riderId);
   });
   const [errors, setErrors] = useState({});
 
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const userData = await service.getCurrentUser();
+        localStorage.setItem("UserInfo", JSON.stringify(userData.data.user));
+        setCurrentUser(userData.data.user);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
+
+  const onAvatarClick = () => {
+    setShowProfileCard(prev => !prev);
+    if (!showProfileCard) {
+      setShowProfileEditCard(false);
+    }
+  };
+
+  const onEditClick = () => {
+    setShowProfileEditCard(true);
+    setShowProfileCard(false);
+  };
+
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.driverId) newErrors.driverId = 'Driver ID is required';
+    if (!formData.driverData) newErrors.driverData = 'Driver ID is required';
     if (!formData.subject) newErrors.subject = 'Subject is required';
     if (!formData.incidentDate) newErrors.incidentDate = 'Incident date is required';
     if (!formData.priorityLevel) newErrors.priorityLevel = 'Priority level is required';
@@ -51,19 +85,19 @@ console.log(riderId);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+    
     if (!validateForm()) {
       toast.error('Please fill all required fields');
       return;
     }
-  
+
     setIsSubmitting(true);
-  
+    
     try {
       const payload = new FormData();
       payload.append('reportedBy', formData.reportedBy); 
       payload.append('driverName', formData.driverName);
-      payload.append('driverId', formData.driverId);
+      payload.append('driverData', formData.driverData);
       payload.append('subject', formData.subject);
       payload.append('incidentDate', formData.incidentDate);
       payload.append('priorityLevel', formData.priorityLevel);
@@ -71,21 +105,44 @@ console.log(riderId);
       if (formData.attachment) {
         payload.append('attachment', formData.attachment);
       }
-  
+      const token = localStorage.getItem("authToken");
+      
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+      
       await service.createDispute(payload, token);
-  
       toast.success('Complaint submitted successfully!');
-      navigate('/rider-dashboard');
+      
+      // Reset form
+      setFormData({
+        reportedBy: riderId,
+        driverName: '',
+        driverData: '',
+        subject: '',
+        incidentDate: '',
+        priorityLevel: '',
+        description: '',
+        attachment: null,
+      });
+      
+      // Clear file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      
     } catch (error) {
       console.error('Submission error:', error);
-      toast.error(error.response?.data?.message || 'Submission failed');
+      toast.error(error.response?.data?.message || error.message || 'Submission failed');
     } finally {
       setIsSubmitting(false);
     }
   };
+
   return (
     <div className="payment-container">
-      <RiderNav />
+      <RiderNav onAvatarClick={onAvatarClick} />
+      
       <main className="payment-main">
         <section className="payment-section">
           <h1 className="payment-title">ADD COMPLAINT</h1>
@@ -133,29 +190,19 @@ console.log(riderId);
                   </select>
                   {errors.priorityLevel && <span className="error-message">{errors.priorityLevel}</span>}
                 </div>
-                <div className="form-group">
-                  <label htmlFor="driverName">Driver Name (Optional)</label>
-                  <input
-                    id="driverName"
-                    value={formData.driverName}
-                    onChange={handleChange}
-                    placeholder="Enter driver name"
-                    className="form-input"
-                  />
-                </div>
               </div>
 
               <div className="complaint-right-column">
                 <div className="form-group">
                   <label htmlFor="driverId">Driver ID *</label>
                   <input
-                    id="driverId"
-                    value={formData.driverId}
+                    id="driverData"
+                    value={formData.driverData}
                     onChange={handleChange}
                     placeholder="Enter driver ID"
-                    className={`form-input ${errors.driverId ? 'error' : ''}`}
+                    className={`form-input ${errors.driverData ? 'error' : ''}`}
                   />
-                  {errors.driverId && <span className="error-message">{errors.driverId}</span>}
+                  {errors.driverData && <span className="error-message">{errors.driverData}</span>}
                 </div>
                 <div className="form-group">
                   <label htmlFor="attachment">Attachment (Optional)</label>
@@ -165,6 +212,7 @@ console.log(riderId);
                     accept="image/*,.pdf,.doc,.docx"
                     onChange={handleChange}
                     className="form-input"
+                    ref={fileInputRef}
                   />
                 </div>
                 <div className="form-group">
@@ -190,6 +238,38 @@ console.log(riderId);
           </form>
         </section>
       </main>
+
+      {showProfileCard && (
+        <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
+          <div style={{ position: "absolute", top: "40px", right: "20px", zIndex: 1000 }}>
+            <RiderViewProfile
+              onEditClick={onEditClick}
+              currentUser={currentUser}
+            />
+          </div>
+        </ClickAwayListener>
+      )}
+      {showProfileEditCard && (
+        <ClickAwayListener onClickAway={() => setShowProfileEditCard(false)}>
+          <div style={{ 
+            position: "absolute", 
+            top: "10vh", 
+            left: "50%", 
+            transform: "translateX(-50%)",
+            backgroundColor: "white", 
+            zIndex: 1000, 
+            borderRadius: "25px",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.15)"
+          }}>
+            <RiderEditProfile
+              setShowProfileEditCard={setShowProfileEditCard}
+              currentUser={currentUser}
+              setCurrentUser={setCurrentUser}
+            />
+          </div>
+        </ClickAwayListener>
+      )}
+
       <Footer />
     </div>
   );
