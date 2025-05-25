@@ -53,6 +53,11 @@ function RiderRideHistory() {
     comment: '',
     rating: 0
   });
+  const [reviewedRides, setReviewedRides] = useState(() => {
+    // Initialize from localStorage if available
+    const saved = localStorage.getItem('reviewedRides');
+    return saved ? JSON.parse(saved) : {};
+  });
 
   const [showProfileCard, setShowProfileCard] = useState(false);
   const [showProfileEditCard, setShowProfileEditCard] = useState(false);
@@ -83,6 +88,11 @@ function RiderRideHistory() {
     fetchCurrentUser();
   }, []);
 
+  // Save reviewed rides to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('reviewedRides', JSON.stringify(reviewedRides));
+  }, [reviewedRides]);
+
   const fetchRides = async () => {
     setIsLoading(true);
     try {
@@ -107,8 +117,25 @@ function RiderRideHistory() {
     }
   };
 
+  const fetchRatings = async () => {
+    try {
+      const response = await apiService.getRatingsByRider(riderId);
+      if (response.status === 'success') {
+        const ratingsMap = {};
+        response.data.ratings.forEach(rating => {
+          ratingsMap[rating.rideId] = true;
+        });
+        // Update both reviewedRides state and localStorage
+        setReviewedRides(prev => ({ ...prev, ...ratingsMap }));
+      }
+    } catch (err) {
+      console.error('Error fetching ratings:', err);
+    }
+  };
+
   useEffect(() => {
     fetchRides();
+    fetchRatings();
   }, [riderId]);
 
   useEffect(() => {
@@ -122,6 +149,10 @@ function RiderRideHistory() {
     return ride.successfulPayments.some(payment =>
       (payment.riderId && (payment.riderId._id === riderId || payment.riderId === riderId))
   )};
+
+  const hasReviewed = (rideId) => {
+    return reviewedRides[rideId] || false;
+  };
 
   const handleViewMore = (ride) => {
     setSelectedRide(ride);
@@ -266,7 +297,6 @@ function RiderRideHistory() {
         if (selectedRide._id === response.data?.ride?._id) {
           setSelectedRide(response.data.ride);
         }
-        handleOpenRating();
       } else {
         throw new Error(response.message || 'Payment processing failed');
       }
@@ -297,6 +327,11 @@ function RiderRideHistory() {
 
       if (response.status === 'success') {
         toast.success("Review submitted successfully");
+        // Update both state and localStorage
+        setReviewedRides(prev => ({
+          ...prev,
+          [selectedRide._id]: true
+        }));
         handleCloseRating();
       } else {
         throw new Error(response.message || 'Failed to submit review');
@@ -474,16 +509,27 @@ function RiderRideHistory() {
               <div className="ride-details">
                 <div className="details-header">
                   <h3>RIDE DETAILS</h3>
-                  {!hasPaid(selectedRide) && (
-                    <Button
-                      variant="contained"
-                      style={{ backgroundColor: '#F1B92E', color: 'black' }}
-                      onClick={handleOpenChat}
-                      disabled={!selectedRide.VehicleId?.driverId}
-                    >
-                      Chat
-                    </Button>
-                  )}
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {hasPaid(selectedRide) && !hasReviewed(selectedRide._id) && (
+                      <Button
+                        variant="contained"
+                        style={{ backgroundColor: '#F1B92E', color: 'black' }}
+                        onClick={handleOpenRating}
+                      >
+                        Review
+                      </Button>
+                    )}
+                    {!hasPaid(selectedRide) && (
+                      <Button
+                        variant="contained"
+                        style={{ backgroundColor: '#F1B92E', color: 'black' }}
+                        onClick={handleOpenChat}
+                        disabled={!selectedRide.VehicleId?.driverId}
+                      >
+                        Chat
+                      </Button>
+                    )}
+                  </div>
                 </div>
 
                 <div className="payment-section">

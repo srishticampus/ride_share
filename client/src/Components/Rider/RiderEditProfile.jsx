@@ -136,7 +136,7 @@ const RiderEditProfile = ({ setShowProfileEditCard, currentUser, setCurrentUser 
                 style={{ display: 'none' }}
               />
             </Box>
-            <Typography className="name-text" variant="h6">{formData.fullName}</Typography>
+            {/* <Typography className="name-text" variant="h6">{formData.fullName}</Typography> */}
           </Box>
 
           <Box sx={{ width: '100%' }} className="form-container">

@@ -1,9 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { ToastContainer, Bounce } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+
 import RideRegistration from "./Components/Rider/RiderRegistration";
 import AdminLogin from "./Components/Admin/AdminLogin";
-import 'react-toastify/dist/ReactToastify.css';
 import ViewDriver from "./Components/Admin/ViewDriver";
 import DriverLogin from "./Components/Driver/DriverLogin";
 import RiderLogin from "./Components/Rider/RiderLogin";
@@ -39,6 +40,23 @@ import RiderRideHistory from "./Components/Rider/RiderRideHistory";
 import RiderReview from "./Components/Rider/RiderReview";
 import DriverRideHistory from "./Components/Driver/DriverRideHistory";
 import DriverPaymentHistory from "./Components/Driver/DriverPaymentHistory";
+const NavigationHandler = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  React.useEffect(() => {
+    // Ensure browser navigation works
+    const unblock = window.addEventListener('popstate', () => {
+      navigate(location.pathname, { replace: true });
+    });
+
+    return () => {
+      window.removeEventListener('popstate', unblock);
+    };
+  }, [navigate, location]);
+
+  return null;
+};
 
 function App() {
   return (
@@ -55,20 +73,19 @@ function App() {
         pauseOnHover
         transition={Bounce}
         style={{ marginTop: "70px" }}
-
       />
-      <Router basename="ride_share">
+      
+      <Router basename="/ride_share">
+        <NavigationHandler />
         <Routes>
+          {/* Common Routes */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<ContactUs />} />
 
-
-
-
-          {/* Admin Route */}
+          {/* Admin Routes */}
           <Route path="/admin-login" element={<AdminLogin />} />
-          <Route path="/admin-all-drivers" element={< DriverRequests />} />
+          <Route path="/admin-all-drivers" element={<DriverRequests />} />
           <Route path="/admin-view-driver" element={<ViewDriver />} />
           <Route path="/admin-view-riders" element={<ViewRider />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
@@ -77,8 +94,7 @@ function App() {
           <Route path="/admin-ride-history" element={<RideHistory />} />
           <Route path="/admin-feedback" element={<FeedBacks />} />
 
-
-          {/* Driver Route */}
+          {/* Driver Routes */}
           <Route path="/driver-registration" element={<DriverRegistration />} />
           <Route path="/driver-login" element={<DriverLogin />} />
           <Route path="/driver-home-page" element={<DriverHomePage />} />
@@ -93,9 +109,7 @@ function App() {
           <Route path="/driver-View-history" element={<DriverRideHistory />} />
           <Route path="/driver-View-PaymentHistory" element={<DriverPaymentHistory />} />
 
-
-
-          {/* User Route */}
+          {/* Rider Routes */}
           <Route path="/User-registration" element={<RideRegistration />} />
           <Route path="/User-login" element={<RiderLogin />} />
           <Route path="/User-forgot-pass" element={<RiderForgotPass />} />
@@ -108,9 +122,6 @@ function App() {
           <Route path="/User-Complaints" element={<RiderComplaints />} />
           <Route path="/User-ride-History" element={<RiderRideHistory />} />
           <Route path="/User-review-ride" element={<RiderReview />} />
-
-
-
         </Routes>
       </Router>
     </div>
