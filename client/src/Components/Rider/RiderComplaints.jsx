@@ -4,7 +4,7 @@ import '../Style/RiderPayment.css';
 import { FaCalendarAlt } from 'react-icons/fa';
 import Footer from '../Common/Footer';
 import RiderNav from './RiderNav';
-import { toast } from 'react-toastify';
+import { toast , ToastContainer } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import service from '../../Services/apiService';
 import { ClickAwayListener } from '@mui/material';
@@ -141,6 +141,7 @@ const RiderComplaints = () => {
 
   return (
     <div className="payment-container">
+      <ToastContainer />
       <RiderNav onAvatarClick={onAvatarClick} />
       
       <main className="payment-main">

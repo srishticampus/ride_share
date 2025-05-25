@@ -18,10 +18,10 @@ function RiderViewProfile({ onEditClick, currentUser }) {
       />
       <div className='profile-details' >
         <h2>{currentUser.fullName}</h2>
-        <h4>Address: {currentUser.address}</h4>
+        {/* <h4>Address: {currentUser.address}</h4> */}
         <h4>E-Mail: {currentUser.email}</h4>
-        <p>PHONE NO: {currentUser.phoneNumber}</p>
-        <p>Emergency No: {currentUser.emergencyNo}</p>
+        <h4>PHONE NO: {currentUser.phoneNumber}</h4>
+        <h4>EMERGRNCY No: {currentUser.emergencyNo}</h4>
       </div>
       <Button variant="contained" onClick={onEditClick}>Edit</Button>
     </div>
