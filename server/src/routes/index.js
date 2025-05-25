@@ -10,6 +10,7 @@ import rideRequestRoutes from "./rideReq.routes.js";
 import paymentRoutes from "./payment.routes.js";
 import ratingRoutes from "./rating.routes.js";
 import disputeRoutes from "./disputes.routes.js";
+import ContactUs from "./ContactUs.routes.js";
 const router = express.Router();
 // router.use("/", (req, res) => {
 //   res.status(200).json({
@@ -27,5 +28,5 @@ router.use("/ride-requests", rideRequestRoutes);
 router.use("/payments", paymentRoutes);
 router.use("/ratings", ratingRoutes);
 router.use("/disputes", disputeRoutes);
-
+router.use("/contact", ContactUs);
 export default router;
