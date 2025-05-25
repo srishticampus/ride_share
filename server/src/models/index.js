@@ -9,3 +9,4 @@ export { default as Ride } from './RideModel.js';
 export { default as RideRequest } from './RideRequestModel.js';
 export { default as User } from './UserModel.js';
 export { default as Vehicle } from './VehicleModel.js';
+export {default as ContactUs} from './ContactUs.js'

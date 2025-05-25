@@ -40,6 +40,7 @@ import RiderRideHistory from "./Components/Rider/RiderRideHistory";
 import RiderReview from "./Components/Rider/RiderReview";
 import DriverRideHistory from "./Components/Driver/DriverRideHistory";
 import DriverPaymentHistory from "./Components/Driver/DriverPaymentHistory";
+import ContactUsAdmin from "./Components/Admin/ContactUsAdmin";
 const NavigationHandler = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -93,6 +94,7 @@ function App() {
           <Route path="/admin-complaints" element={<ViewComplaints />} />
           <Route path="/admin-ride-history" element={<RideHistory />} />
           <Route path="/admin-feedback" element={<FeedBacks />} />
+          <Route path="/admin-ContactUs" element={<ContactUsAdmin />} />
 
           {/* Driver Routes */}
           <Route path="/driver-registration" element={<DriverRegistration />} />

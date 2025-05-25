@@ -656,7 +656,34 @@ const getAllRatings = async () => {
   }
 };
 
-// Export all services
+// contactUs
+
+const createContact = async (data) => {
+  try {
+    const response = await apiClient.post("/contact/createContact", data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+const getAllContactUs = async () => {
+  try {
+    const response = await apiClient.get("/contact");
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+const deleteContactMessage = async (id) => {
+  try {
+    const response = await apiClient.delete(`/contact/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
 export default {
   // Auth
   login,
@@ -724,4 +751,10 @@ export default {
   updateRating,
   deleteRating,
   getAllRatings,
+
+
+  // contact
+  createContact,
+  getAllContactUs,
+  deleteContactMessage
 };

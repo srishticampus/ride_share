@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
     Avatar, Dialog, DialogTitle, DialogContent,
     DialogActions, Button, List, ListItem,
-    ListItemIcon, ListItemText, Collapse, Typography,DialogContentText
+    ListItemIcon, ListItemText, Collapse, Typography, DialogContentText
 } from '@mui/material';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -17,6 +17,7 @@ import {
 import Logo from '../../Assets/RideShare.png';
 import '../Style/AdminSidemenu.css';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import EmailIcon from '@mui/icons-material/Email';
 function AdminSidemenu() {
     const location = useLocation();
     const navigate = useNavigate();
@@ -37,6 +38,7 @@ function AdminSidemenu() {
         { name: 'Complaints', icon: <ErrorOutlineIcon />, path: '/admin-complaints' },
         { name: 'Ride History', icon: <HistoryIcon />, path: '/admin-ride-history' },
         { name: 'Feedbacks', icon: <ChatBubbleOutlineIcon />, path: '/admin-feedback' },
+        { name: 'Enquiry', icon: <EmailIcon/>, path: '/admin-ContactUs' },
         { name: 'Logout', icon: <LogoutIcon />, action: () => setOpenLogoutDialog(true) }
     ];
 
@@ -147,7 +149,7 @@ function AdminSidemenu() {
                         color: 'black',
                         fontWeight: 'bold',
                         padding: '16px 24px',
-                        textAlign:"center"
+                        textAlign: "center"
                     }}
                 >
                     Confirm Logout
@@ -157,7 +159,7 @@ function AdminSidemenu() {
                         style={{
                             color: 'black',
                             fontSize: '16px',
-                            textAlign:"center"
+                            textAlign: "center"
                         }}
                     >
                         Are you sure you want to logout?
