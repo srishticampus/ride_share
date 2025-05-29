@@ -323,7 +323,19 @@ const rejectDriver = async (driverId) => {
     throw error.response?.data || error.message;
   }
 };
-
+const deactivateDriver = async (driverId)=>{
+  const AdminId = localStorage.getItem("adminToken")
+   try {
+    const response = await apiClient.patch(`/drivers/${driverId}/deactivate`, {
+      headers: {
+        Authorization: `Bearer ${AdminId}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+}
 const getCurrentDriver = async () => {
   try {
     const token = localStorage.getItem("driverToken");
@@ -402,10 +414,14 @@ const acceptRideRequest = async (rideId, data) => {
     }
   });
 }
-const processPayment = (id, paymentData) => {
-  return apiClient.post(`/rides/${id}/payment`, paymentData);
-};
-const acceptRide = async (rideId, driverId) => {
+const processPayment = (rideId, paymentData) => {
+  return apiClient.post(`/rides/${rideId}/payment`, {
+    riderId: paymentData.riderId,
+    paymentMode: paymentData.paymentMode, // Make sure this matches backend expectation
+    paymentStatus: paymentData.paymentStatus,
+    PaymentMode: paymentData.PaymentMode // Some backends might expect this
+  });
+};const acceptRide = async (rideId, driverId) => {
   try {
     const response = await apiClient.put(
       `/rides/${rideId}/accept`,
@@ -513,7 +529,6 @@ const solveDispute = async (disputeId) => {
     throw error.response?.data || error.message;
   }
 };
-// Ensure proper authorization headers in apiService:
 const responseDispute = async (disputeId, responseData) => {
   try {
     const token = localStorage.getItem('adminToken');
@@ -709,6 +724,7 @@ export default {
   driverForgotPassword,
   rejectDriver,
   getCurrentDriver,
+  deactivateDriver,
 
   // Ride
   createRide,

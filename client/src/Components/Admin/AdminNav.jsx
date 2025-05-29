@@ -11,8 +11,8 @@ export default function AdminNav() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed" style={{ backgroundColor: '#D8D8D8', color: 'black',zIndex:'2' }}>
         <Toolbar style={{ display: 'flex', justifyContent: 'end',gap:"10px" }}>
-        <IconButton color="inherit"><NotificationsNoneOutlinedIcon/></IconButton>
-          <IconButton color="inherit"><AccountCircleOutlinedIcon/></IconButton>
+        {/* <IconButton color="inherit"><NotificationsNoneOutlinedIcon/></IconButton> */}
+          {/* <IconButton color="inherit"><AccountCircleOutlinedIcon/></IconButton> */}
         </Toolbar>
       </AppBar>
     </Box>

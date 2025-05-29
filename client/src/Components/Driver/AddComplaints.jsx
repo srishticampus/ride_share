@@ -5,7 +5,7 @@ import Footer from '../Common/Footer';
 import DriverNav from './DriverNav';
 import { useNavigate } from 'react-router-dom';
 import service from '../../Services/apiService';
-import { toast } from 'react-toastify';
+import { toast , ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ClickAwayListener } from '@mui/material';
 import DriverViewProfile from './DriverViewProfile';
@@ -98,7 +98,7 @@ const AddComplaints = () => {
     return (
         <div className="payment-container">
             <DriverNav onAvatarClick={onAvatarClick} currentDriver={currentDriver} />
-
+<ToastContainer/>
             {showProfileCard && currentDriver && (
                 <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
                     <div style={{ position: "absolute", top: "40px", right: "20px" }}>

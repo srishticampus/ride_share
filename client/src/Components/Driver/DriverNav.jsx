@@ -16,7 +16,7 @@ import {
     MenuItem
 } from '@mui/material';
 import Logo from '../../Assets/Logo1.png';
-import { toast } from 'react-toastify';
+import { toast , ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
@@ -58,6 +58,7 @@ export default function DriverNav({ onAvatarClick }) {
 
     return (
         <Box sx={{ flexGrow: 1 , zIndex: '100'}}>
+            <ToastContainer/>
             <AppBar position="fixed" style={{ backgroundColor: 'black',  zIndex: '100' }}>
 
                 <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>

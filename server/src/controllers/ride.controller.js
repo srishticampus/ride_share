@@ -100,7 +100,6 @@ export const joinRide = catchAsync(async (req, res, next) => {
     return next(new AppError('No ride found with that ID', 404));
   }
 
-  // Check if rider is already in the ride (either pending or accepted)
   const isAlreadyInRide = ride.riderId.includes(riderId) || 
                          ride.acceptedRiderId.includes(riderId);
   
@@ -108,12 +107,10 @@ export const joinRide = catchAsync(async (req, res, next) => {
     return next(new AppError('You have already joined this ride', 400));
   }
 
-  // Check available seats
   if (ride.acceptedRiderId.length >= ride.availableSeats) {
     return next(new AppError('No available seats left', 400));
   }
 
-  // Add rider to riderId array
   ride.riderId.push(riderId);
   await ride.save();
 
@@ -131,37 +128,30 @@ export const acceptReq = catchAsync(async (req, res, next) => {
     return next(new AppError('Please provide a rider ID', 400));
   }
 
-  // Find the ride first
   const ride = await Ride.findById(req.params.id);
   if (!ride) {
     return next(new AppError('Ride request not found', 404));
   }
 
-  // Check if rider exists in riderId array
   if (!ride.riderId.includes(riderId)) {
     return next(new AppError('This rider has not requested this ride', 400));
   }
 
-  // Check if rider is already accepted
   if (ride.acceptedRiderId.includes(riderId)) {
     return next(new AppError('This rider has already been accepted', 400));
   }
 
-  // Check available seats
   if (ride.acceptedRiderId.length >= ride.availableSeats) {
     return next(new AppError('No available seats left', 400));
   }
 
-  // Add rider to acceptedRiderId and remove from riderId
   ride.acceptedRiderId.push(riderId);
   ride.riderId = ride.riderId.filter(id => id.toString() !== riderId.toString());
 
-  // Update status if all seats are filled
   if (ride.acceptedRiderId.length >= ride.availableSeats) {
     ride.status = 'accepted';
   }
 
-  // Save the updated ride
   await ride.save();
 
   res.status(200).json({
@@ -183,7 +173,6 @@ export const deleteRide = catchAsync(async (req, res, next) => {
     data: null
   });
 });
-// Add this to your ride.controller.js
 export const rejectReq = catchAsync(async (req, res, next) => {
   const { riderId } = req.body;
 
@@ -191,21 +180,17 @@ export const rejectReq = catchAsync(async (req, res, next) => {
     return next(new AppError('Please provide a rider ID', 400));
   }
 
-  // Find the ride first
   const ride = await Ride.findById(req.params.id);
   if (!ride) {
     return next(new AppError('Ride request not found', 404));
   }
 
-  // Check if rider exists in riderId array
   if (!ride.riderId.includes(riderId)) {
     return next(new AppError('This rider has not requested this ride', 400));
   }
 
-  // Remove rider from riderId array
   ride.riderId = ride.riderId.filter(id => id.toString() !== riderId.toString());
 
-  // Save the updated ride
   await ride.save();
 
   res.status(200).json({
@@ -216,7 +201,7 @@ export const rejectReq = catchAsync(async (req, res, next) => {
   });
 });
 export const processRidePayment = catchAsync(async (req, res, next) => {
-  const { riderId, paymentMode, paymentStatus } = req.body;
+  const { riderId, paymentMode, paymentStatus, PaymentMode } = req.body;
 
   if (!riderId || !paymentStatus) {
     return next(new AppError('Please provide rider ID and payment status', 400));
@@ -233,13 +218,15 @@ export const processRidePayment = catchAsync(async (req, res, next) => {
     return next(new AppError('You are not an accepted rider for this ride', 403));
   }
 
+  // Use the payment mode from the request (handling both camelCase and PascalCase)
+  const mode = paymentMode || PaymentMode || 'OnlinePayment';
+
   // Update payment status in messages or create new payment message
   const paymentMessage = {
-    text: `Payment Successful`,
-    // text: `Payment ${paymentStatus.toLowerCase()} by rider ${riderId}`,
+    text: `Payment Successful via ${mode}`,
     sender: riderId,
     senderType: 'User',
-    PaymentMode: paymentMode || 'OnlinePayment',
+    PaymentMode: mode,
     paymentStatus: paymentStatus === 'success' ? 'Completed' : 'Failed',
     createdAt: new Date()
   };
@@ -262,7 +249,9 @@ export const processRidePayment = catchAsync(async (req, res, next) => {
       ride.successfulPayments.push({
         riderId,
         paymentTime: new Date(),
-        amount: ride.price // Assuming equal share for all riders
+        amount: ride.price, // Assuming equal share for all riders
+        paymentMode: mode, // Store the payment mode
+        PaymentMode: mode // Also store with capital P if needed
       });
     }
   }
@@ -287,11 +276,11 @@ export const processRidePayment = catchAsync(async (req, res, next) => {
     data: {
       ride,
       paymentStatus: paymentMessage.paymentStatus,
+      paymentMode: mode,
       allPaymentsCompleted: allPaid
     }
   });
 });
-
 export const acceptRide = async (req, res) => {
   try {
     const { rideId } = req.params;

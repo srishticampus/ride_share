@@ -5,7 +5,7 @@ import Footer from '../Common/Footer';
 import DriverNav from './DriverNav';
 import { Link, useNavigate } from 'react-router-dom';
 import service from '../../Services/apiService';
-import { toast } from 'react-toastify';
+import { toast , ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Avatar from '@mui/material/Avatar';
 import { ClickAwayListener } from '@mui/material';
@@ -26,7 +26,7 @@ const AddRide = () => {
     origin: '',
     destination: '',
     rideDateTime: '',
-    availableSeats: 1,
+    availableSeats: 1, // Default value, will be updated when driver data loads
     price: '',
     rideDescription: '',
     specialNote: '',
@@ -37,8 +37,18 @@ const AddRide = () => {
     try {
       const driverData = await apiService.getCurrentDriver();
       const driver = driverData.data.driver;
+      console.log(driver);
+      
       setCurrentDriver(driver);
       setHasVehicle(!!driver.vehicleId);
+      
+      // Update availableSeats when driver data is loaded
+      if (driver.vehicleId) {
+        setFormData(prev => ({
+          ...prev,
+          availableSeats: driver.vehicleId.vehicleCapacity
+        }));
+      }
     } catch (error) {
       console.error("Failed to load driver data:", error);
     }
@@ -107,66 +117,67 @@ const AddRide = () => {
     }));
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  
-  if (!hasVehicle) {
-    toast.error('You must add vehicle details before creating a ride');
-    navigate('/driver-Add-Vehicle'); 
-    return;
-  }
-
-  if (!validateForm()) {
-    toast.error('Please fix the form errors');
-    return;
-  }
-
-  try {
-    const rideDateTime = new Date(formData.rideDateTime);
-    const rideDate = rideDateTime.toISOString().split('T')[0];
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     
-    const hours = rideDateTime.getHours().toString().padStart(2, '0');
-    const minutes = rideDateTime.getMinutes().toString().padStart(2, '0');
-    const rideTime = `${hours}:${minutes}`;
+    if (!hasVehicle) {
+      toast.error('You must add vehicle details before creating a ride');
+      navigate('/driver-Add-Vehicle'); 
+      return;
+    }
 
-    const rideData = {
-      VehicleId: currentDriver.vehicleId,
-      origin: formData.origin.trim(),
-      destination: formData.destination.trim(),
-      rideDate: rideDate,
-      rideTime: rideTime, 
-      availableSeats: parseInt(formData.availableSeats),
-      price: parseFloat(formData.price), 
-      rideDescription: formData.rideDescription.trim(),
-      specialNote: formData.specialNote.trim(),
-      route: formData.route.trim()
-    };
+    if (!validateForm()) {
+      toast.error('Please fix the form errors');
+      return;
+    }
 
-    console.log('Submitting ride data:', rideData);
+    try {
+      const rideDateTime = new Date(formData.rideDateTime);
+      const rideDate = rideDateTime.toISOString().split('T')[0];
+      
+      const hours = rideDateTime.getHours().toString().padStart(2, '0');
+      const minutes = rideDateTime.getMinutes().toString().padStart(2, '0');
+      const rideTime = `${hours}:${minutes}`;
 
-    const response = await service.createRide(rideData);
-    toast.success('Ride created successfully!');
-    
-    setFormData({
-      origin: '',
-      destination: '',
-      rideDateTime: '',
-      availableSeats: 1,
-      price: '',
-      rideDescription: '',
-      specialNote: '',
-      route: ''
-    });
+      const rideData = {
+        VehicleId: currentDriver.vehicleId._id,
+        origin: formData.origin.trim(),
+        destination: formData.destination.trim(),
+        rideDate: rideDate,
+        rideTime: rideTime, 
+        availableSeats: formData.availableSeats, // Use the value from form state
+        price: parseFloat(formData.price), 
+        rideDescription: formData.rideDescription.trim(),
+        specialNote: formData.specialNote.trim(),
+        route: formData.route.trim()
+      };
 
-  } catch (error) {
-    console.error('Error creating ride:', error);
-    toast.error(error.response?.data?.message || 'Failed to create ride');
-  } 
-};
+      console.log('Submitting ride data:', rideData);
+
+      const response = await service.createRide(rideData);
+      toast.success('Ride created successfully!');
+      
+      setFormData({
+        origin: '',
+        destination: '',
+        rideDateTime: '',
+        availableSeats: currentDriver?.vehicleId?.vehicleCapacity || 1, // Reset to vehicle capacity
+        price: '',
+        rideDescription: '',
+        specialNote: '',
+        route: ''
+      });
+
+    } catch (error) {
+      console.error('Error creating ride:', error);
+      toast.error(error.response?.data?.message || 'Failed to create ride');
+    } 
+  };
+
   return (
     <div className="payment-container">
       <DriverNav onAvatarClick={onAvatarClick} currentDriver={currentDriver} />
-
+<ToastContainer/>
       {showProfileCard && currentDriver && (
         <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
           <div style={{ position: "absolute", top: "40px", right: "20px" }}>
@@ -254,9 +265,10 @@ const handleSubmit = async (e) => {
                   name="availableSeats"
                   type="number"
                   min="1"
-                  max="15"
+                  max={currentDriver?.vehicleId?.vehicleCapacity || 15}
                   value={formData.availableSeats}
                   onChange={handleChange}
+                  disabled // Make it read-only since it's determined by vehicle capacity
                 />
                 {errors.availableSeats && <div className="invalid-feedback">{errors.availableSeats}</div>}
               </div>
