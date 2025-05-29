@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TextField, Button, FormLabel, CircularProgress, InputAdornment, IconButton } from '@mui/material';
-import { toast } from 'react-toastify';
+import { toast , ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Link, useNavigate } from 'react-router-dom';
 import Service from '../../Services/apiService';
@@ -157,6 +157,7 @@ function DriverRegistration() {
   return (
     <div className="registration-container">
       <LandingNav />
+      <ToastContainer/>
       <div className="registration-logo">
         <img src={Logo} alt="Company Logo" className="logo-image" />
       </div>

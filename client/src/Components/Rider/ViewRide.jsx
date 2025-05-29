@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaMapMarkerAlt, FaTimes } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaTimes, FaStar } from 'react-icons/fa';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -13,7 +13,7 @@ import RiderNav from './RiderNav';
 import RiderSearch from './RiderSearch';
 import { Box } from '@mui/material';
 import apiService from '../../Services/apiService';
-import { toast } from 'react-toastify';
+import { toast , ToastContainer } from 'react-toastify';
 import { ClickAwayListener } from '@mui/material';
 import RiderViewProfile from './RiderViewProfile';
 import RiderEditProfile from './RiderEditProfile';
@@ -24,7 +24,9 @@ const ViewRide = () => {
   const [selectedRide, setSelectedRide] = useState(null);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  
+  const [ratings, setRatings] = useState([]);
+  const [vehicleRatings, setVehicleRatings] = useState({});
+
   const [showProfileCard, setShowProfileCard] = useState(false);
   const [showProfileEditCard, setShowProfileEditCard] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
@@ -40,6 +42,41 @@ const ViewRide = () => {
     setShowProfileEditCard(true);
     setShowProfileCard(false);
   };
+
+  useEffect(() => {
+    const fetchRating = async () => {
+      try {
+        const ratingData = await apiService.getAllRatings();
+        setRatings(ratingData.data.ratings);
+        
+        // Calculate average ratings per vehicle
+        const vehicleRatingMap = {};
+        ratingData.data.ratings.forEach(rating => {
+          const vehicleId = rating.rideId.VehicleId;
+          if (!vehicleRatingMap[vehicleId]) {
+            vehicleRatingMap[vehicleId] = {
+              total: 0,
+              count: 0,
+              average: 0
+            };
+          }
+          vehicleRatingMap[vehicleId].total += rating.rating;
+          vehicleRatingMap[vehicleId].count += 1;
+        });
+        
+        // Calculate averages
+        Object.keys(vehicleRatingMap).forEach(vehicleId => {
+          vehicleRatingMap[vehicleId].average = 
+            vehicleRatingMap[vehicleId].total / vehicleRatingMap[vehicleId].count;
+        });
+        
+        setVehicleRatings(vehicleRatingMap);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchRating();
+  }, []);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -58,6 +95,7 @@ const ViewRide = () => {
     const fetchRides = async () => {
       try {
         const response = await apiService.getAllRides();
+        
         if (response.status === 'success') {
           const now = new Date();
           const filteredRides = response.data.rides.filter(ride => {
@@ -129,17 +167,42 @@ const ViewRide = () => {
     return new Date(dateString).toLocaleDateString('en-US', options);
   };
 
+  const renderStars = (rating) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    
+    for (let i = 1; i <= 5; i++) {
+      if (i <= fullStars) {
+        stars.push(<FaStar key={i} color="#FFD700" />);
+      } else if (i === fullStars + 1 && hasHalfStar) {
+        stars.push(<FaStar key={i} color="#FFD700" opacity="0.5" />);
+      } else {
+        stars.push(<FaStar key={i} color="#D3D3D3" />);
+      }
+    }
+    
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+        {stars}
+        <Typography variant="body2" sx={{ ml: 1 }}>
+          ({rating.toFixed(1)})
+        </Typography>
+      </Box>
+    );
+  };
+
   return (
     <div className="view-ride-container">
       <RiderNav onAvatarClick={onAvatarClick} />
-
+<ToastContainer/>
       {showProfileCard && (
         <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
-          <div style={{ 
-            position: "absolute", 
-            top: "40px", 
-            right: "20px", 
-            zIndex: 1000 
+          <div style={{
+            position: "absolute",
+            top: "40px",
+            right: "20px",
+            zIndex: 1000
           }}>
             <RiderViewProfile
               onEditClick={onEditClick}
@@ -151,13 +214,13 @@ const ViewRide = () => {
 
       {showProfileEditCard && (
         <ClickAwayListener onClickAway={() => setShowProfileEditCard(false)}>
-          <div style={{ 
-            position: "absolute", 
-            top: "10vh", 
-            left: "50%", 
-            transform: "translateX(-50%)", 
-            backgroundColor: "white", 
-            zIndex: 1000, 
+          <div style={{
+            position: "absolute",
+            top: "10vh",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "white",
+            zIndex: 1000,
             borderRadius: "25px",
             boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)'
           }}>
@@ -181,58 +244,56 @@ const ViewRide = () => {
         </div>
 
         <section className="view-ride-grid">
-          {filteredRides.length > 0 ? (
-            filteredRides.map((ride) => {
-              const isJoined = ride.acceptedRiderId?.some(rider => rider._id === riderId) ||
-                ride.riderId?.some(rider => rider._id === riderId);
+         {filteredRides.length > 0 ? (
+  filteredRides.map((ride) => {
+    const isJoined = ride.acceptedRiderId?.some(rider => rider._id === riderId) ||
+      ride.riderId?.some(rider => rider._id === riderId);
 
-              return (
-                <article key={ride._id} className="view-ride-card">
-                  <img alt="Taxi car" className="view-ride-image" src={image} />
-                  <div className="view-ride-details">
-                    <div className="view-ride-time">
-                      <span>{ride.rideTime}</span>
-                      <span>{formatDate(ride.rideDate)}</span>
-                    </div>
-                    <p className="view-ride-pickup">Pick Up at {ride.origin}</p>
-                    <p className="view-ride-dropoff">
-                      <FaMapMarkerAlt className="view-ride-marker" />
-                      Drop Off: {ride.destination}
-                    </p>
-                    <Button
-                      variant="contained"
-                      sx={{
-                        backgroundColor: isJoined ? '#cccccc' : '#f59e0b',
-                        color: 'black',
-                        fontSize: '10px',
-                        borderRadius: '2px',
-                        padding: '4px 16px',
-                        minWidth: 'auto',
-                        '&:hover': { backgroundColor: isJoined ? '#cccccc' : '#e69100' },
-                      }}
-                      onClick={() => !isJoined && handleViewDetails(ride)}
-                      disabled={isJoined}
-                    >
-                      {isJoined ? 'Already Joined' : 'View Details'}
-                    </Button>
-                  </div>
-                </article>
-              );
-            })
-          ) : (
-            <Box sx={{
-              width: '100%',
-              textAlign: 'center',
-              p: 3,
-              mt: 4,
-              backgroundColor: '#fff9e6',
-              borderRadius: 2
-            }}>
-              <Typography variant="h6" sx={{ color: '#666', position: 'relative', left: '500px' }}>
-                {searchQuery ? 'No rides match your search' : 'Rides not available at the moment'}
-              </Typography>
-            </Box>
-          )}
+    return (
+      <article key={ride._id} className="view-ride-card">
+        <img alt="Taxi car" className="view-ride-image" src={image} />
+        <div className="view-ride-details">
+          <div className="view-ride-time">
+            <span>{ride.rideTime}</span>
+            <span>{formatDate(ride.rideDate)}</span>
+          </div>
+          <p className="view-ride-pickup">Pick Up at {ride.origin}</p>
+          <p className="view-ride-dropoff">
+            <FaMapMarkerAlt className="view-ride-marker" />
+            Drop Off: {ride.destination}
+          </p>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: isJoined ? '#cccccc' : '#f59e0b',
+              color: 'black',
+              fontSize: '10px',
+              borderRadius: '2px',
+              padding: '4px 16px',
+              minWidth: 'auto',
+              '&:hover': { backgroundColor: isJoined ? '#cccccc' : '#e69100' },
+            }}
+            onClick={() => !isJoined && handleViewDetails(ride)}
+            disabled={isJoined}
+          >
+            {isJoined ? 'Already Joined' : 'View Details'}
+          </Button>
+        </div>
+      </article>
+    );
+  })
+) : (
+  <Typography variant="h6" sx={{ 
+    color: '#666', 
+    width: '100%', 
+    textAlign: 'center', 
+    mt: 4,
+    position: 'relative', 
+    left: '500px' 
+  }}>
+    {searchQuery ? 'No rides match your search' : 'Rides not available at the moment'}
+  </Typography>
+)}
         </section>
       </main>
 
@@ -277,6 +338,14 @@ const ViewRide = () => {
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Contact:</Typography>
                 <Typography variant="body1">{selectedRide.VehicleId.driverId.phoneNumber}</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Rating:</Typography>
+                {vehicleRatings[selectedRide.VehicleId._id] ? (
+                  renderStars(vehicleRatings[selectedRide.VehicleId._id].average)
+                ) : (
+                  <Typography variant="body1">No ratings yet</Typography>
+                )}
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Route:</Typography>

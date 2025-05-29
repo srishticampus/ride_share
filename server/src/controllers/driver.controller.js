@@ -16,7 +16,7 @@ const filterObj = (obj, ...allowedFields) => {
 
 export const DriverRegistration = catchAsync(async (req, res, next) => {
   const { email, vehicleRegNumber, phoneNumber, password, licenseNumber, fullname } = req.body;
-  
+
   const newDriver = await Driver.create({
     email,
     vehicleRegNumber,
@@ -75,8 +75,10 @@ export const login = catchAsync(async (req, res, next) => {
 });
 
 export const getCurrentDriver = catchAsync(async (req, res, next) => {
-  const driver = await Driver.findById(req.user.id).select('-password -__v');
-  
+  const driver = await Driver.findById(req.user.id)
+    .select('-password -__v')
+    .populate('vehicleId');
+
   if (!driver) {
     return next(new AppError('No driver found', 404));
   }
@@ -88,7 +90,6 @@ export const getCurrentDriver = catchAsync(async (req, res, next) => {
     }
   });
 });
-
 export const updateCurrentDriver = catchAsync(async (req, res, next) => {
   const filteredBody = {
     fullname: req.body.fullname,
@@ -109,11 +110,11 @@ export const updateCurrentDriver = catchAsync(async (req, res, next) => {
 
   // Check if email is being changed
   if (req.body.email) {
-    const existingDriverWithEmail = await Driver.findOne({ 
+    const existingDriverWithEmail = await Driver.findOne({
       email: req.body.email,
       _id: { $ne: req.user.id }
     });
-    
+
     if (existingDriverWithEmail) {
       return next(new AppError('This email is already registered', 400));
     }
@@ -121,11 +122,11 @@ export const updateCurrentDriver = catchAsync(async (req, res, next) => {
 
   // Check if phone number is being changed
   if (req.body.phoneNumber) {
-    const existingDriverWithPhone = await Driver.findOne({ 
+    const existingDriverWithPhone = await Driver.findOne({
       phoneNumber: req.body.phoneNumber,
       _id: { $ne: req.user.id }
     });
-    
+
     if (existingDriverWithPhone) {
       return next(new AppError('This phone number is already registered', 400));
     }
@@ -133,11 +134,11 @@ export const updateCurrentDriver = catchAsync(async (req, res, next) => {
 
   // Check if vehicle registration number is being changed
   if (req.body.vehicleRegNumber) {
-    const existingDriverWithVehicle = await Driver.findOne({ 
+    const existingDriverWithVehicle = await Driver.findOne({
       vehicleRegNumber: req.body.vehicleRegNumber,
       _id: { $ne: req.user.id }
     });
-    
+
     if (existingDriverWithVehicle) {
       return next(new AppError('This vehicle registration number is already registered', 400));
     }
@@ -173,11 +174,11 @@ export const updateCurrentDriver = catchAsync(async (req, res, next) => {
     if (err.code === 11000) {
       const field = Object.keys(err.keyPattern)[0];
       let errorMessage = 'This value is already registered';
-      
+
       if (field === 'email') errorMessage = 'This email is already registered';
       if (field === 'phoneNumber') errorMessage = 'This phone number is already registered';
       if (field === 'vehicleRegNumber') errorMessage = 'This vehicle registration number is already registered';
-      
+
       return next(new AppError(errorMessage, 400));
     }
     return next(err);
@@ -221,7 +222,7 @@ export const FindByPhonenumber = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    data: driver, 
+    data: driver,
   });
 });
 
@@ -239,7 +240,7 @@ export const ForgotPassword = catchAsync(async (req, res, next) => {
   }
 
   driver.password = password;
-  await driver.save(); 
+  await driver.save();
 
   res.status(200).json({
     status: 'success',
@@ -284,7 +285,7 @@ export const resetPassword = catchAsync(async (req, res, next) => {
 
 export const getDriverVehicle = catchAsync(async (req, res, next) => {
   const driver = await Driver.findById(req.user.id).populate('vehicleId');
-  
+
   if (!driver || !driver.vehicleId) {
     return next(new AppError('No vehicle registered for this driver', 404));
   }
@@ -358,9 +359,9 @@ export const viewADriver = catchAsync(async (req, res, next) => {
 export const ApproveDriver = catchAsync(async (req, res, next) => {
   const driver = await Driver.findByIdAndUpdate(
     req.params.id,
-    { 
+    {
       backgroundCheck: true,
-      status: true 
+      status: true
     },
     { new: true }
   );
@@ -421,7 +422,9 @@ export const ActivateDriver = catchAsync(async (req, res, next) => {
 export const DeactivateDriver = catchAsync(async (req, res, next) => {
   const driver = await Driver.findByIdAndUpdate(
     req.params.id,
-    { status: false },
+    {
+      backgroundCheck: false
+    },
     { new: true }
   );
 

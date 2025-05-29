@@ -4,7 +4,7 @@ import '../Style/RiderPayment.css';
 import Footer from '../Common/Footer';
 import DriverNav from './DriverNav';
 import service from '../../Services/apiService';
-import { toast } from 'react-toastify';
+import { toast , ToastContainer } from 'react-toastify';
 import { ClickAwayListener } from '@mui/material';
 import DriverViewProfile from './DriverViewProfile';
 import DriverEditProfile from './DriverEditProfile';
@@ -139,7 +139,7 @@ const AddVehicle = () => {
   return (
     <div className="payment-container">
       <DriverNav onAvatarClick={onAvatarClick} currentDriver={currentDriverState} />
-
+<ToastContainer/>
       <main className="payment-main">
         <section className="payment-section">
           <h1 className="payment-title">ADD VEHICLE</h1>

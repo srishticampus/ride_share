@@ -27,7 +27,7 @@ import { FaTimes, FaMapMarkerAlt } from 'react-icons/fa';
 import '../Style/RiderRideHistory.css';
 import { Link } from 'react-router-dom';
 import apiService from '../../Services/apiService';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import { ClickAwayListener } from '@mui/material';
 import RiderViewProfile from './RiderViewProfile';
 import RiderEditProfile from './RiderEditProfile';
@@ -148,7 +148,8 @@ function RiderRideHistory() {
     if (!ride || !ride.successfulPayments) return false;
     return ride.successfulPayments.some(payment =>
       (payment.riderId && (payment.riderId._id === riderId || payment.riderId === riderId))
-  )};
+    )
+  };
 
   const hasReviewed = (rideId) => {
     return reviewedRides[rideId] || false;
@@ -266,7 +267,8 @@ function RiderRideHistory() {
         riderId: riderId,
         paymentMode: paymentMode,
         paymentStatus: 'success',
-        paymentTime: new Date().toISOString()
+        paymentTime: new Date().toISOString(),
+        PaymentMode: paymentMode // Make sure this matches your backend expectation
       };
 
       const updatedRide = {
@@ -285,9 +287,9 @@ function RiderRideHistory() {
 
       const response = await apiService.processPayment(selectedRide._id, {
         riderId: riderId,
-        paymentMode: paymentMode,
+        paymentMode: paymentMode, // This should be passed correctly
         paymentStatus: 'success',
-        PaymentMode: paymentMode
+        PaymentMode: paymentMode // Some backends might expect this capitalization
       });
 
       toast.success("Payment sent successfully");
@@ -309,7 +311,6 @@ function RiderRideHistory() {
       setPaymentProcessing(false);
     }
   };
-
   const submitReview = async () => {
     try {
       if (!selectedRide) return;
@@ -435,14 +436,14 @@ function RiderRideHistory() {
   return (
     <div className="rider-ride-history-container">
       <RiderNav onAvatarClick={onAvatarClick} />
-
+      <ToastContainer />
       {showProfileCard && (
         <ClickAwayListener onClickAway={() => setShowProfileCard(false)}>
-          <div style={{ 
-            position: "absolute", 
-            top: "40px", 
-            right: "20px", 
-            zIndex: 1000 
+          <div style={{
+            position: "absolute",
+            top: "40px",
+            right: "20px",
+            zIndex: 1000
           }}>
             <RiderViewProfile
               onEditClick={onEditClick}
@@ -454,13 +455,13 @@ function RiderRideHistory() {
 
       {showProfileEditCard && (
         <ClickAwayListener onClickAway={() => setShowProfileEditCard(false)}>
-          <div style={{ 
-            position: "absolute", 
-            top: "10vh", 
-            left: "50%", 
-            transform: "translateX(-50%)", 
-            backgroundColor: "white", 
-            zIndex: 1000, 
+          <div style={{
+            position: "absolute",
+            top: "10vh",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "white",
+            zIndex: 1000,
             borderRadius: "25px",
             boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)'
           }}>

@@ -9,7 +9,7 @@ import apiService from '../../Services/apiService';
 import { Link } from 'react-router-dom';
 
 function AdminDashboard() {
-  const [rides, setRides] = useState([]); // Changed from ride to rides to store the array
+  const [rides, setRides] = useState([]);
   const [riders, setRiders] = useState(0);
   const [drivers, setDrivers] = useState(0);
 
@@ -18,7 +18,7 @@ function AdminDashboard() {
       try {
         const response = await apiService.getAllRides();
         console.log(response);
-        setRides(response.data.rides); // Assuming the rides array is in response.data.rides
+        setRides(response.data.rides); 
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -37,8 +37,10 @@ function AdminDashboard() {
     const fetchDrivers = async () => {
       try {
         const response = await apiService.getAllDrivers();
-        console.log(response.results);
-        setDrivers(response.results);
+        console.log(response);
+        // Filter drivers with backgroundCheck: true and count them
+        const verifiedDrivers = response.data.drivers.filter(driver => driver.backgroundCheck === true);
+        setDrivers(verifiedDrivers.length);
       } catch (error) {
         console.error('Error fetching data:', error);
       }

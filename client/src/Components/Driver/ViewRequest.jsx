@@ -18,7 +18,7 @@ import { Box } from '@mui/material';
 import { FaTimes } from 'react-icons/fa';
 import '../Style/ViewRide.css';
 import apiService, { imageBaseUrl } from '../../Services/apiService';
-import { toast } from 'react-toastify';
+import { toast , ToastContainer } from 'react-toastify';
 import { ClickAwayListener } from '@mui/material';
 import DriverViewProfile from './DriverViewProfile';
 import DriverEditProfile from './DriverEditProfile';
@@ -297,6 +297,7 @@ const ViewRequest = () => {
     return (
         <div className="view-ride-container">
             <DriverNav onAvatarClick={onAvatarClick} currentDriver={currentDriver} />
+            <ToastContainer/>
             <main className="view-ride-main">
                 <h1 className="payment-title" style={{ marginTop: "50px" }}>VIEW REQUESTS</h1>
 

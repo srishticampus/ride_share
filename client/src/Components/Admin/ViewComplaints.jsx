@@ -3,7 +3,7 @@ import '../Style/DriverComplaint.css';
 import AdminNav from './AdminNav';
 import AdminSidemenu from './AdminSidemenu';
 import apiService, { imageBaseUrl } from '../../Services/apiService';
-import { toast } from 'react-toastify';
+import { toast ,ToastContainer } from 'react-toastify';
 import {
   Modal,
   Box,
@@ -22,6 +22,7 @@ const ViewComplaints = () => {
   const [resolutionStatuses, setResolutionStatuses] = useState({});
   const [selectedAttachment, setSelectedAttachment] = useState(null);
   const [openModal, setOpenModal] = useState(false);
+  const [deactivating, setDeactivating] = useState(false);
   const riderBaseUrl = 'http://localhost:4052/ride_share_api';
 
   useEffect(() => {
@@ -54,7 +55,8 @@ const ViewComplaints = () => {
             bgColor: getRandomBgColor(),
             image: `${imageBaseUrl}uploads/drivers/${complaint.driverId.driverPic}`,
             incidentDate: complaint.incidentDate,
-            attachment: `${imageBaseUrl}uploads/disputes/${complaint.attachment}`,
+            attachment: complaint.attachment ? `${imageBaseUrl}uploads/disputes/${complaint.attachment}` : null,
+            driverId: complaint.driverId._id
           }));
 
         const riderComplaintsData = pendingComplaints
@@ -70,11 +72,16 @@ const ViewComplaints = () => {
             title: complaint.subject,
             content: complaint.description,
             bgColor: getRandomBgColor(),
-            image: `${riderBaseUrl}/${complaint.reportedBy?.profilePicture}`,
+            image: complaint.reportedBy.profilePicture 
+              ? `${riderBaseUrl}/${complaint.reportedBy.profilePicture}` 
+              : `${riderBaseUrl}/uploads/users/default.png`,
             incidentDate: complaint.incidentDate,
-            attachment: `${imageBaseUrl}uploads/disputes/${complaint.attachment}`,
+            attachment: complaint.attachment ? `${imageBaseUrl}uploads/disputes/${complaint.attachment}` : null,
+            driverId: typeof complaint.driverData === 'object' 
+              ? complaint.driverData._id 
+              : complaint.driverData
           }));
-          
+
         setDriverComplaints(driverComplaintsData);
         setRiderComplaints(riderComplaintsData);
 
@@ -128,15 +135,23 @@ const ViewComplaints = () => {
 
     try {
       const responseData = {
-        responseText: responseTexts[complaintId],
-        resolutionStatus: resolutionStatuses[complaintId]
+        responseText: responseTexts[complaintId] || 'No response provided',
+        resolutionStatus: resolutionStatuses[complaintId] || 'Pending'
       };
+
+      if (responseData.resolutionStatus.toLowerCase() === 'resolved') {
+        responseData.resolutionStatus = 'Resolved';
+      } else if (responseData.resolutionStatus.toLowerCase() === 'rejected') {
+        responseData.resolutionStatus = 'Rejected';
+      }
 
       const response = await apiService.responseDispute(complaintId, responseData);
 
       if (response.status === 'success') {
-        toast.success('Response submitted successfully');
+        toast.success(`Complaint marked as ${responseData.resolutionStatus}`);
         fetchComplaints();
+      } else {
+        toast.error(response.message || 'Failed to update complaint status');
       }
     } catch (error) {
       console.error('Error submitting response:', error);
@@ -144,7 +159,38 @@ const ViewComplaints = () => {
     }
   };
 
+  const handleDeactivateDriver = async (driverId, complaintId) => {
+    if (!driverId) {
+      toast.error('No driver associated with this complaint');
+      return;
+    }
+
+    if (window.confirm('Are you sure you want to deactivate this driver?')) {
+      try {
+        setDeactivating(true);
+        const responseData = {
+          responseText: 'Driver has been deactivated due to this complaint',
+          resolutionStatus: 'Resolved'
+        };
+
+        await apiService.responseDispute(complaintId, responseData);
+        const deactivateResponse = await apiService.deactivateDriver(driverId);
+        
+        if (deactivateResponse.status === 'success') {
+          toast.success('Driver deactivated successfully');
+          fetchComplaints();
+        }
+      } catch (error) {
+        console.error('Error deactivating driver:', error);
+        toast.error(error.response?.data?.message || 'Failed to deactivate driver');
+      } finally {
+        setDeactivating(false);
+      }
+    }
+  };
+
   const handleOpenAttachment = (attachment) => {
+    if (!attachment) return;
     setSelectedAttachment(attachment);
     setOpenModal(true);
   };
@@ -175,7 +221,7 @@ const ViewComplaints = () => {
     if (!selectedAttachment) return null;
 
     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
-    const isImage = selectedAttachment && 
+    const isImage = selectedAttachment &&
       imageExtensions.some(ext => selectedAttachment.toLowerCase().endsWith(ext));
 
     return (
@@ -184,7 +230,7 @@ const ViewComplaints = () => {
         onClose={handleCloseModal}
         aria-labelledby="attachment-modal-title"
         aria-describedby="attachment-modal-description"
-       style={{marginLeft:"240px"}}
+        style={{ marginLeft: "240px" }}
       >
         <Box
           sx={{
@@ -214,7 +260,7 @@ const ViewComplaints = () => {
               pb: 1
             }}
           >
-            <Typography id="attachment-modal-title" variant="h6" style={{color:"#f59e0b"}}>
+            <Typography id="attachment-modal-title" variant="h6" style={{ color: "#f59e0b" }}>
               Attachment Preview
             </Typography>
             <IconButton onClick={handleCloseModal}>
@@ -272,6 +318,7 @@ const ViewComplaints = () => {
     <div className="complaints-container">
       <AdminNav />
       <AdminSidemenu />
+      <ToastContainer/>
       <div className="main-content">
         <main className="content-area">
           <div className="header-title">
@@ -303,7 +350,10 @@ const ViewComplaints = () => {
                     <img
                       alt={`Profile of ${complaint.name}`}
                       className="profile-img"
-                      src={complaint.image}
+                      src={complaint.image || `${riderBaseUrl}/uploads/users/default.png`}
+                      onError={(e) => {
+                        e.target.src = `${riderBaseUrl}/uploads/users/default.png`;
+                      }}
                     />
                     <div className="profile-info">
                       <p className="profile-name">{complaint.name}</p>
@@ -314,36 +364,48 @@ const ViewComplaints = () => {
                     <h3 className="complaint-title">{complaint.title}</h3>
                     <p className="complaint-content">{complaint.content}</p>
                     {renderAttachment(complaint.attachment)}
+                    {complaint.incidentDate && (
+                      <p className="incident-date">
+                        Incident Date: {new Date(complaint.incidentDate).toLocaleDateString()}
+                      </p>
+                    )}
                   </div>
 
                   <form className="response-form" onSubmit={(e) => handleSubmit(e, complaint.id)}>
                     <div className="response-controls">
-                      <input
-                        type="text"
-                        className="response-input"
-                        placeholder="Enter your response..."
-                        value={responseTexts[complaint.id] || ''}
-                        onChange={(e) => handleResponseChange(complaint.id, e.target.value)}
-                        required
-                      />
-                      <select
-                        className="status-dropdown"
-                        value={resolutionStatuses[complaint.id] || 'Pending'}
-                        onChange={(e) => handleStatusChange(complaint.id, e.target.value)}
-                      >
-                        <option value="Pending">Pending</option>
-                        <option value="Resolved">Resolved</option>
-                        <option value="Rejected">Rejected</option>
-                      </select>
-                      <button className="response-btn" type="submit">
-                        Submit Response
-                      </button>
+                      <div className="status-control">
+                        <select
+                          className="status-dropdown"
+                          value={resolutionStatuses[complaint.id] || 'Pending'}
+                          onChange={(e) => handleStatusChange(complaint.id, e.target.value)}
+                          required
+                        >
+                          <option value="Pending" disabled>Select status</option>
+                          <option value="Resolved">Resolved</option>
+                          <option value="Rejected">Rejected</option>
+                        </select>
+                      </div>
+                      <div className="action-buttons">
+                        {activeTab === 'rider' && complaint.driverId && (
+                          <button
+                            type="button"
+                            className="deactivate-btn"
+                            onClick={() => handleDeactivateDriver(complaint.driverId, complaint.id)}
+                            disabled={deactivating}
+                          >
+                            {deactivating ? 'Processing...' : 'Deactivate Driver'}
+                          </button>
+                        )}
+                        <button className="response-btn" type="submit">
+                          Submit Response
+                        </button>
+                      </div>
                     </div>
                   </form>
                 </article>
               ))
             ) : (
-              <div className="no-rides-message" >
+              <div className="no-rides-message">
                 <h3>No pending {activeTab} complaints found</h3>
               </div>
             )}
