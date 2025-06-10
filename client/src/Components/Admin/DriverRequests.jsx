@@ -59,7 +59,8 @@ console.log(imageBaseUrl);
                 setLoading(false);
 
                 if (err.response?.data?.status === "fail") {
-                    toast.error('Session expired. Please login again.');
+                    // toast.error('Session expired. Please login again.');
+                    alert("Session expired. Please login again.")
                     setTimeout(() => navigate("/admin-login"), 2000);
                 }
             }
@@ -71,22 +72,26 @@ console.log(imageBaseUrl);
     const handleAccept = async (driverId) => {
         try {
             await Service.approveDriver(driverId, true);
-            toast.success('Driver accepted successfully');
+            // toast.success('Driver accepted successfully');
+            alert("Driver accepted successfully")
             setPendingDrivers(prev => prev.filter(driver => driver._id !== driverId));
         } catch (error) {
             console.error('Error accepting driver:', error);
-            toast.error(error.response?.data?.message || 'Failed to accept driver');
+            // toast.error(error.response?.data?.message || 'Failed to accept driver');
+            alert(error.response?.data?.message || 'Failed to accept driver')
         }
     };
     
     const handleReject = async (driverId) => {
         try {
             await Service.rejectDriver(driverId);
-            toast.success('Driver rejected successfully');
+            // toast.success('Driver rejected successfully');
+            alert("Driver rejected successfully")
             setPendingDrivers(prev => prev.filter(driver => driver._id !== driverId));
         } catch (error) {
             console.error('Error rejecting driver:', error);
-            toast.error(error.response?.data?.message || 'Failed to reject driver');
+            // toast.error(error.response?.data?.message || 'Failed to reject driver');
+            alert(error.response?.data?.message || 'Failed to reject driver')
         }
     };
 

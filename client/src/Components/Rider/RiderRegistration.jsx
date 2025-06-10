@@ -52,30 +52,36 @@ function RiderRegistration() {
 
     if (!rider.email || !rider.fullName || !rider.phoneNumber ||
       !rider.address || !rider.password || !rider.confirmPassword || !profilePicture) {
-      toast.error('Please fill in all required fields');
+      // toast.error('Please fill in all required fields');
+      alert('Please fill in all required fields')
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rider.email)) {
-      toast.error('Please enter a valid email address');
+      // toast.error('Please enter a valid email address');
+      alert('Please enter a valid email address')
       return;
     }
 
     if (!/^\d{10}$/.test(rider.phoneNumber)) {
-      toast.error('Please enter a valid 10-digit phone number');
+      // toast.error('Please enter a valid 10-digit phone number');
+      alert('Please enter a valid 10-digit phone number')
       return;
     }
     if (!/^\d{10}$/.test(rider.emergencyNo)) {
-      toast.error('Please enter a valid 10-digit emergency number');
+      // toast.error('Please enter a valid 10-digit emergency number');
+      alert('Please enter a valid 10-digit emergency number')
       return;
     }
     if (rider.password !== rider.confirmPassword) {
-      toast.error('Passwords do not match');
+      // toast.error('Passwords do not match');
+      alert('Passwords do not match')
       return;
     }
 
     if (rider.password.length < 8) {
-      toast.error('Password must be at least 8 characters long');
+      // toast.error('Password must be at least 8 characters long');
+      alert('Password must be at least 8 characters long')
       return;
     }
 
@@ -96,17 +102,20 @@ function RiderRegistration() {
       console.log(response);
 
       if (response.status === 'success') {
-        toast.success('Registration successful!');
+        // toast.success('Registration successful!');
+        alert("Registration successful!")
         setTimeout(() => {
           navigate('/User-login');
         }, 2000);
       } else {
-        toast.error(response.data.message || 'Registration failed');
+        // toast.error(response.data.message || 'Registration failed');
+        alert(response.data.message || 'Registration failed')
       }
     } catch (error) {
       console.error('Registration error:', error);
       const errorMessage = error.message || 'An error occurred during registration';
-      toast.error(errorMessage);
+      // toast.error(errorMessage);
+      alert(errorMessage)
     } finally {
       setIsSubmitting(false);
     }

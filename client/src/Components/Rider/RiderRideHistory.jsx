@@ -292,7 +292,8 @@ function RiderRideHistory() {
         PaymentMode: paymentMode // Some backends might expect this capitalization
       });
 
-      toast.success("Payment sent successfully");
+      // toast.success("Payment sent successfully");
+      alert("Payment sent successfully")
 
       if (response.status === 'success' || (response.status >= 200 && response.status < 300)) {
         await fetchRides();
@@ -327,7 +328,8 @@ function RiderRideHistory() {
       const response = await apiService.createRating(reviewData);
 
       if (response.status === 'success') {
-        toast.success("Review submitted successfully");
+        // toast.success("Review submitted successfully");
+        alert("Review submitted successfully")
         // Update both state and localStorage
         setReviewedRides(prev => ({
           ...prev,
@@ -339,7 +341,8 @@ function RiderRideHistory() {
       }
     } catch (err) {
       console.error('Error submitting review:', err);
-      toast.error(err.message || 'Failed to submit review');
+      // toast.error(err.message || 'Failed to submit review');
+      alert(err.message || 'Failed to submit review')
     }
   };
 

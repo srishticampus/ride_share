@@ -378,3 +378,124 @@
   box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
   background-color: white;
 }
+/* In your RiderPayment.css */
+
+/* General form layout (already there, but good to keep in mind) */
+.payment-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.payment-main {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #f8f8f8;
+}
+
+.payment-section {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 900px; /* Adjust as needed */
+    margin: 40px auto;
+}
+
+.payment-title {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 2em;
+    font-weight: 600;
+}
+
+.payment-form .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #555;
+}
+
+.form-input {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    color: #333;
+    transition: border-color 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #007bff; /* Highlight on focus */
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Invalid feedback for errors */
+.form-input.is-invalid {
+    border-color: #dc3545;
+}
+
+.invalid-feedback {
+    color: #dc3545;
+    font-size: 0.875em;
+    margin-top: 5px;
+}
+
+/* Specific styling for the price input group */
+.price-input-group .price-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between input and button */
+}
+
+.price-input-group .form-input {
+    flex-grow: 1; /* Allows the input to take available space */
+}
+
+.predict-price-btn {
+    padding: 10px 15px;
+    background-color: #28a745; /* Green for success/action */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+    white-space: nowrap; /* Prevent button text from wrapping */
+}
+
+.predict-price-btn:hover:not(:disabled) {
+    background-color: #218838;
+}
+
+.predict-price-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* Submit button */
+.submit-container {
+    text-align: center;
+    margin-top: 30px;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .payment-form .form-grid {
+        grid-template-columns: 1fr; /* Stack columns on smaller screens */
+    }
+}

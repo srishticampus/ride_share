@@ -698,8 +698,18 @@ const deleteContactMessage = async (id) => {
     throw error.response?.data || error.message;
   }
 };
-
-export default {
+const predictPrice= async (predictionData) => {
+    try {
+      const response = await axios.post(`http://localhost:4052/predict`, predictionData);
+      console.log(response);
+      
+      return response.data; // This will contain { fare: X } or { error: Y }
+    } catch (error) {
+      console.error('Error in predictFare service:', error.response?.data || error.message);
+      throw error; // Re-throw to be caught in the component
+    }
+  }
+  export default {
   // Auth
   login,
   register,
@@ -772,5 +782,7 @@ export default {
   // contact
   createContact,
   getAllContactUs,
-  deleteContactMessage
+  deleteContactMessage,
+
+  predictPrice
 };

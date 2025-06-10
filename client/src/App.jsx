@@ -62,19 +62,6 @@ const NavigationHandler = () => {
 function App() {
   return (
     <div>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick={false}
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        transition={Bounce}
-        style={{ marginTop: "70px" }}
-      />
       
       <Router basename="/ride_share">
         <NavigationHandler />

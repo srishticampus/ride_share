@@ -39,17 +39,20 @@ const RiderResetPass = () => {
         e.preventDefault();
 
         if (!phoneNumber) {
-            toast.error('Phone number is missing');
+            // toast.error('Phone number is missing');
+            alert('Phone number is missing')
             return;
           }
       
         if (formData.password !== formData.confirmPassword) {
-          toast.error('Passwords do not match');
+        //   toast.error('Passwords do not match');
+        alert('Passwords do not match')
           return;
         }
       
         if (formData.password.length < 8) {
-          toast.error('Password must be at least 8 characters');
+        //   toast.error('Password must be at least 8 characters');
+        alert('Password must be at least 8 characters')
           return;
         }
       
@@ -57,14 +60,16 @@ const RiderResetPass = () => {
           setIsLoading(true);
           await Service.userForgotPassword(phoneNumber, formData.password);
       
-          toast.success("Password reset successfully");
+        //   toast.success("Password reset successfully");
+        alert("Password reset successfully")
           setTimeout(() => {
             navigate('/User-login');
           }, 2000);
         } catch (err) {
             console.log(err);
             
-          toast.error(err.message || 'Failed to reset password. Please try again.');
+        //   toast.error(err.message || 'Failed to reset password. Please try again.');
+        alert(err.message || 'Failed to reset password. Please try again.')
         } finally {
           setIsLoading(false);
         }

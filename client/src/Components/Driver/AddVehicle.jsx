@@ -4,7 +4,7 @@ import '../Style/RiderPayment.css';
 import Footer from '../Common/Footer';
 import DriverNav from './DriverNav';
 import service from '../../Services/apiService';
-import { toast , ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import { ClickAwayListener } from '@mui/material';
 import DriverViewProfile from './DriverViewProfile';
 import DriverEditProfile from './DriverEditProfile';
@@ -30,6 +30,26 @@ const AddVehicle = () => {
 
   const [errors, setErrors] = useState({});
 
+  // Add this function to fetch driver data
+// In AddVehicle.js
+  const fetchDriverData = async () => {
+    try {
+      const driverData = await service.getCurrentDriver();
+      const driver = driverData.data.driver;
+      console.log("Fetched Driver Data:", driver);
+
+      setCurrentDriverState(driver);
+      setHasVehicle(!!driver.vehicleId);
+
+  setFormData(prev => ({
+        ...prev,
+        vehicleRegistrationNo: response.data.vehicleRegNumber || ''
+      }));
+        } catch (error) {
+      console.error("Failed to load driver data:", error);
+      // toast.error("Failed to load driver data. Please refresh.");
+    }
+  };
   const onAvatarClick = () => {
     setShowProfileCard(prev => !prev);
     if (!showProfileCard) {
@@ -43,6 +63,7 @@ const AddVehicle = () => {
   };
 
   useEffect(() => {
+    // fetchDriverData()
     if (currentDriver?._id) {
       setFormData(prev => ({
         ...prev,
@@ -102,7 +123,8 @@ const AddVehicle = () => {
 
     const hasErrors = Object.values(errors).some(error => error !== '');
     if (hasErrors) {
-      toast.error('Please fix the form errors before submitting');
+      // toast.error('Please fix the form errors before submitting');
+      alert("Please fix the form errors before submitting")
       return;
     }
 
@@ -116,7 +138,8 @@ const AddVehicle = () => {
     try {
       console.log('Submitting:', submissionData);
       await service.registerVehicle(submissionData);
-      toast.success('Vehicle added successfully!');
+      // toast.success('Vehicle added successfully!');
+      alert('Vehicle added successfully!')
       setFormData(prev => ({
         ...prev,
         vehicleMake: '',
@@ -128,10 +151,12 @@ const AddVehicle = () => {
     } catch (error) {
       console.error('Error:', error);
       if(error.message == "Vehicle with this registration number already exists"){
-        toast.error("Vehicle Already Add Vehicle")
+        // toast.error("Vehicle Already Added");
+        alert("Vehicle Already Added")
       }
       else{
-      toast.error(error.message || 'Failed to add vehicle');
+        // toast.error(error.message || 'Failed to add vehicle');
+        alert(error.message || 'Failed to add vehicle')
       }
     }
   };
@@ -139,7 +164,7 @@ const AddVehicle = () => {
   return (
     <div className="payment-container">
       <DriverNav onAvatarClick={onAvatarClick} currentDriver={currentDriverState} />
-<ToastContainer/>
+      {/* <ToastContainer/> */}
       <main className="payment-main">
         <section className="payment-section">
           <h1 className="payment-title">ADD VEHICLE</h1>
@@ -166,6 +191,7 @@ const AddVehicle = () => {
                   setShowProfileEditCard={setShowProfileEditCard}
                   currentDriver={currentDriverState}
                   setCurrentDriver={setCurrentDriverState}
+                  fetchDriverData={fetchDriverData} 
                 />
               </div>
             </ClickAwayListener>

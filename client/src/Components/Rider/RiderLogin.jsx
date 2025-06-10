@@ -45,7 +45,8 @@ function RiderLogin() {
 
       localStorage.setItem("riderId", response.data.user._id)
 
-      toast.success("Login successful! Redirecting...");
+      // toast.success("Login successful! Redirecting...");
+      alert("Login successful! Redirecting...")
       setTimeout(() => {
         navigate("/User-home-page");
       }, 2000);
@@ -53,7 +54,8 @@ function RiderLogin() {
       const errorMessage =
         err.message ||
         "Login failed. Please check your credentials.";
-      toast.error(errorMessage);
+      // toast.error(errorMessage);
+      alert(errorMessage)
       console.error("Login error:", err);
     } finally {
       setIsLoading(false);

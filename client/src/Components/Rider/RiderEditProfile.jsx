@@ -61,17 +61,20 @@ const RiderEditProfile = ({ setShowProfileEditCard, currentUser, setCurrentUser 
     e.preventDefault();
 
     if (!/^[a-zA-Z\s]+$/.test(formData.fullName)) {
-      toast.error('Name should contain only letters');
+      // toast.error('Name should contain only letters');
+      alert('Name should contain only letters')
       return;
     }
 
     if (!/^\d{10}$/.test(formData.phoneNumber)) {
-      toast.error('Phone number must be 10 digits');
+      // toast.error('Phone number must be 10 digits');
+      alert('Phone number must be 10 digits')
       return;
     }
 
     if (!/^\d{10}$/.test(formData.emergencyContact)) {
-      toast.error('Emergency contact must be 10 digits');
+      // toast.error('Emergency contact must be 10 digits');
+      alert('Emergency contact must be 10 digits')
       return;
     }
 
@@ -95,16 +98,18 @@ const RiderEditProfile = ({ setShowProfileEditCard, currentUser, setCurrentUser 
         }
 
         toast.success('Profile updated successfully!');
-        
+        alert('Profile updated successfully!')
         setTimeout(() => {
           setShowProfileEditCard(false);
         }, 1500);
       } else {
-        toast.error(response.message || 'Update failed');
+        // toast.error(response.message || 'Update failed');
+        alert(response.message || 'Update failed')
       }
     } catch (error) {
       console.error('Update error:', error);
-      toast.error(error.message || 'Failed to update profile');
+      // toast.error(error.message || 'Failed to update profile');
+      alert(error.message || 'Failed to update profile')
     }
   };
 

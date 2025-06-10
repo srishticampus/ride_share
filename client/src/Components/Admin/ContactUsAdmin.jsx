@@ -39,9 +39,11 @@ function ContactUsAdmin() {
     try {
       await apiService.deleteContactMessage(id);
       setContacts(contacts.filter(contact => contact._id !== id));
-      toast.success("Deleted Successfully")
+      // toast.success("Deleted Successfully")
+      alert("Deleted Successfully")
     } catch (err) {
-      toast.error('Failed to delete message')
+      // toast.error('Failed to delete message')
+      alert('Failed to delete message')
       setError('Failed to delete message');
     }
   };

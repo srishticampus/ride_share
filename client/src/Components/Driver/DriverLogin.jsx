@@ -44,8 +44,8 @@ function DriverLogin() {
             console.log(response);
 
 
-            toast.success("Login successful! Redirecting...");
-
+            // toast.success("Login successful! Redirecting...");
+alert("Login successful! Redirecting...")
             setTimeout(() => {
                 navigate("/driver-home-page");
             }, 2000);
@@ -53,7 +53,8 @@ function DriverLogin() {
             const errorMessage =
                 err.message ||
                 "Login failed. Please check your credentials.";
-            toast.error(errorMessage);
+            // toast.error(errorMessage);
+            alert(errorMessage)
             console.error("Login error:", err);
         } finally {
             setIsLoading(false);
