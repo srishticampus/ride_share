@@ -74,42 +74,50 @@ function DriverRegistration() {
     if (!driver.email || !driver.password || !driver.fullname ||
       !driver.phoneNumber || !driver.licenseNumber ||
       !driver.vehicleRegNumber || !driver.driverPic) {
-      toast.error('Please fill in all required fields');
+      // toast.error('Please fill in all required fields');
+      alert('Please fill in all required fields')
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(driver.email)) {
-      toast.error('Please enter a valid email address');
+      // toast.error('Please enter a valid email address');
+      alert('Please enter a valid email address')
       return;
     }
 
     if (!/^[a-zA-Z\s]+$/.test(driver.fullname)) {
-      toast.error('Full name should only contain alphabets');
+      // toast.error('Full name should only contain alphabets');
+      alert('Full name should only contain alphabets')
       return;
     }
 
     if (!/^\d{10}$/.test(driver.phoneNumber)) {
-      toast.error('Phone number must be 10 digits');
+      // toast.error('Phone number must be 10 digits');
+      alert('Phone number must be 10 digits')
       return;
     }
 
     if (!/^\d{16}$/.test(driver.licenseNumber)) {
-      toast.error('License number must be 16 digits');
+      // toast.error('License number must be 16 digits');
+      alert('License number must be 16 digits')
       return;
     }
 
     if (!/^[A-Z0-9]+$/.test(driver.vehicleRegNumber)) {
-      toast.error('Vehicle registration should be uppercase alphanumeric with no spaces or special characters');
+      // toast.error('Vehicle registration should be uppercase alphanumeric with no spaces or special characters');
+      alert('Vehicle registration should be uppercase alphanumeric with no spaces or special characters')
       return;
     }
 
     if (driver.password.length < 8) {
-      toast.error('Password must be at least 8 characters long');
+      // toast.error('Password must be at least 8 characters long');
+      alert('Password must be at least 8 characters long')
       return;
     }
 
     if (driver.password !== driver.confirmPassword) {
-      toast.error('Passwords do not match');
+      // toast.error('Passwords do not match');
+      alert('Passwords do not match')
       return;
     }
 

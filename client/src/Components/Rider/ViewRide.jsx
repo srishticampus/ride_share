@@ -153,12 +153,14 @@ const ViewRide = () => {
       if (response.status === 'success') {
         setRides(prevRides => prevRides.filter(ride => ride._id !== selectedRide._id));
         setSelectedRide(null);
-        toast.success('Ride joined successfully');
+        // toast.success('Ride joined successfully');
+        alert('Ride joined successfully')
       }
     } catch (err) {
       console.error('Error joining ride:', err);
       setError(err.message || 'Failed to join ride');
-      toast.error('Ride joined Unsuccessfully');
+      // toast.error('Ride joined Unsuccessfully');
+      alert('Ride joined Unsuccessfully')
     }
   };
 

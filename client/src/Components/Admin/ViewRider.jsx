@@ -50,7 +50,8 @@ function ViewRider() {
                 setLoading(false);
 
                 if (err.status === "fail") {
-                    toast.error('Session expired. Please login again.');
+                    // toast.error('Session expired. Please login again.');
+                    alert('Session expired. Please login again.')
                     // setTimeout(() => {
                     //     navigate("/admin-login")
                     // }, 2000);

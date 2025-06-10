@@ -98,7 +98,7 @@ const ViewComplaints = () => {
       }
     } catch (err) {
       console.error('Error fetching complaints:', err);
-      toast.error(err.response?.data?.message || 'Failed to fetch complaints');
+      // toast.error(err.response?.data?.message || 'Failed to fetch complaints');
     } finally {
       setLoading(false);
     }
@@ -148,20 +148,24 @@ const ViewComplaints = () => {
       const response = await apiService.responseDispute(complaintId, responseData);
 
       if (response.status === 'success') {
-        toast.success(`Complaint marked as ${responseData.resolutionStatus}`);
+        // toast.success(`Complaint marked as ${responseData.resolutionStatus}`);
+        alert(`Complaint marked as ${responseData.resolutionStatus}`)
         fetchComplaints();
       } else {
-        toast.error(response.message || 'Failed to update complaint status');
+        // toast.error(response.message || 'Failed to update complaint status');
+        alert(response.message || 'Failed to update complaint status')
       }
     } catch (error) {
       console.error('Error submitting response:', error);
-      toast.error(error.response?.data?.message || 'Failed to submit response');
+      // toast.error(error.response?.data?.message || 'Failed to submit response');
+      alert(error.response?.data?.message || 'Failed to submit response')
     }
   };
 
   const handleDeactivateDriver = async (driverId, complaintId) => {
     if (!driverId) {
-      toast.error('No driver associated with this complaint');
+      alert('No driver associated with this complaint')
+      // toast.error('No driver associated with this complaint');
       return;
     }
 
@@ -177,12 +181,14 @@ const ViewComplaints = () => {
         const deactivateResponse = await apiService.deactivateDriver(driverId);
         
         if (deactivateResponse.status === 'success') {
-          toast.success('Driver deactivated successfully');
+          // toast.success('Driver deactivated successfully');
+          alert('Driver deactivated successfully')
           fetchComplaints();
         }
       } catch (error) {
         console.error('Error deactivating driver:', error);
-        toast.error(error.response?.data?.message || 'Failed to deactivate driver');
+        // toast.error(error.response?.data?.message || 'Failed to deactivate driver');
+        alert(error.response?.data?.message || 'Failed to deactivate driver')
       } finally {
         setDeactivating(false);
       }

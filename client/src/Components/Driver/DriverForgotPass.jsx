@@ -20,18 +20,21 @@ const DriverForgotPass = () => {
             console.log(response);
             
             if (response.status === 'success') {
-                toast.success("Phone number verified! Redirecting...");
+                // toast.success("Phone number verified! Redirecting...");
+                alert("Phone number verified! Redirecting...")
                 console.log('Driver found:', response.data);
                 setTimeout(() => {
                     navigate(`/driver-Reset-Pass/${response.data.phoneNumber}`)
                 }, 2000);
     
             } else {
-                toast.error(response.message || 'No driver found with this phone number');
+                // toast.error(response.message || 'No driver found with this phone number');
+                alert("response.message || 'No driver found with this phone number")
             }
             
         } catch (err) {
-            toast.error(err.message || 'Failed to send reset instructions');
+            // toast.error(err.message || 'Failed to send reset instructions');
+            // alert(err.message || 'Failed to send reset instructions')
             console.error('Error:', err);
         } finally {
             setLoading(false);

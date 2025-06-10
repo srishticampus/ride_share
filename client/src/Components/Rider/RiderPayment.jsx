@@ -49,6 +49,7 @@ const RiderPayment = () => {
   };
 
   const handleSubmit = (e) => {
+    alert("Payment Send Successfully")
     e.preventDefault();
     setShowDialog(true);
   };
@@ -63,6 +64,7 @@ const RiderPayment = () => {
 
   const submitReview = () => {
     console.log('Review submitted:', review);
+    alert('Review submitted')
     closeDialog();
   };
 

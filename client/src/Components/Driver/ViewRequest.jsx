@@ -208,11 +208,13 @@ const ViewRequest = () => {
                         return isDriverRide && hasPendingRiders && hasUnacceptedRiders;
                     }));
                 }
-                toast.success("Approved Successfully")
+                // toast.success("Approved Successfully")
+                alert("Approved Successfully")
             } else {
                 setSuccessMessage('Ride request accepted successfully!');
                 setTimeout(() => setSuccessMessage(null), 3000);
-                toast.error("Approved Failed")
+                // toast.error("Approved Failed")
+                alert("Approved Failed")
 
             }
         } catch (error) {
@@ -265,11 +267,13 @@ const ViewRequest = () => {
                         return isDriverRide && hasPendingRiders && hasUnacceptedRiders;
                     }));
                 }
-                toast.success("Rejected Successfully")
+                // toast.success("Rejected Successfully")
+                alert("Rejected Successfully")
             } else {
                 setSuccessMessage('Ride request rejected successfully!');
                 setTimeout(() => setSuccessMessage(null), 3000);
-                toast.error("Rejected Failed")
+                // toast.error("Rejected Failed")
+                alert("Rejected Failed")
             }
         } catch (error) {
             console.error('Error rejecting request:', error);

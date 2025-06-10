@@ -126,7 +126,8 @@ const handleSubmit = async (e) => {
   setErrors(newErrors);
 
   if (!isValid) {
-    toast.error("Please fix the errors in the form");
+    // toast.error("Please fix the errors in the form");
+    alert("Please fix the errors in the form")
     return;
   }
 
@@ -146,7 +147,8 @@ const handleSubmit = async (e) => {
 
  if (response.status === 'success') {
   await fetchDriverData(); 
-  toast.success('Profile updated successfully!');
+  // toast.success('Profile updated successfully!');
+  alert('Profile updated successfully!')
   setTimeout(() => setShowProfileEditCard(false), 1500);
 }
     else {
@@ -157,13 +159,15 @@ const handleSubmit = async (e) => {
 
     if (error.response?.data?.message?.includes('E11000 duplicate key error') &&
       error.response?.data?.message?.includes('phoneNumber')) {
-      toast.error('This phone number is already registered', {
-        autoClose: 3000
-      });
+      // toast.error('This phone number is already registered', {
+      //   autoClose: 3000
+      // });
+      alert("This phone number is already registered")
     } else {
-      toast.error(error.response?.data?.message || error.message || 'Failed to update profile', {
-        autoClose: 3000
-      });
+      // toast.error(error.message || 'Failed to update profile', {
+      //   autoClose: 3000
+      // });
+      alert("error.message || 'Failed to update profile'")
     }
   }
 };

@@ -205,8 +205,8 @@ function DriverRideHistory() {
           )
         );
       }
-      toast.success("Accepted Successfully")
-
+      // toast.success("Accepted Successfully")
+alert("Accepted Successfully")
     } catch (err) {
       console.error('Error accepting ride:', err);
       setAcceptedRides(prev =>

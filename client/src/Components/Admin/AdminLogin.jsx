@@ -42,7 +42,8 @@ function AdminLogin() {
       const response = await apiService.adminLogin(credentials);
       // localStorage.setItem("adminToken", response.token);
 
-      toast.success("Login successful! Redirecting...");
+      // toast.success("Login successful! Redirecting...");
+      alert("Login successful! Redirecting...")
 
       setTimeout(() => {
         navigate("/admin-dashboard");
@@ -51,7 +52,8 @@ function AdminLogin() {
       const errorMessage =
         err.message ||
         "Login failed. Please check your credentials.";
-      toast.error(errorMessage);
+      // toast.error(errorMessage);
+      alert(errorMessage)
       console.error("Login error:", err);
     } finally {
       setIsLoading(false);

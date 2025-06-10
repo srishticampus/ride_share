@@ -28,13 +28,15 @@ function ContactUs() {
 
     // Validation
     if (!formData.name || !formData.email || !formData.message) {
-      toast.error('Please fill in all fields');
+      // toast.error('Please fill in all fields');
+      alert('Please fill in all fields')
       setIsSubmitting(false);
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      toast.error('Please enter a valid email address');
+      // toast.error('Please enter a valid email address');
+      alert('Please enter a valid email address')
       setIsSubmitting(false);
       return;
     }
@@ -44,13 +46,16 @@ function ContactUs() {
       
       if (response.success) {
         toast.success('Message sent successfully!');
+        alert('Message sent successfully!')
         setFormData({ name: '', email: '', message: '' });
       } else {
-        toast.error(response.message || 'Failed to send message');
+        // toast.error(response.message || 'Failed to send message');
+        alert(response.message || 'Failed to send message')
       }
     } catch (error) {
       console.error('Contact form error:', error);
-      toast.error(error.message || 'An error occurred while sending your message');
+      // toast.error(error.message || 'An error occurred while sending your message');
+      alert(error.message || 'An error occurred while sending your message')
     } finally {
       setIsSubmitting(false);
     }

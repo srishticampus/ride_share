@@ -87,7 +87,8 @@ const RiderComplaints = () => {
     e.preventDefault();
     
     if (!validateForm()) {
-      toast.error('Please fill all required fields');
+      // toast.error('Please fill all required fields');
+      alert('Please fill all required fields')
       return;
     }
 
@@ -112,7 +113,8 @@ const RiderComplaints = () => {
       }
       
       await service.createDispute(payload, token);
-      toast.success('Complaint submitted successfully!');
+      // toast.success('Complaint submitted successfully!');
+      alert("Complaint submitted successfully!")
       
       // Reset form
       setFormData({
@@ -133,7 +135,8 @@ const RiderComplaints = () => {
       
     } catch (error) {
       console.error('Submission error:', error);
-      toast.error(error.response?.data?.message || error.message || 'Submission failed');
+      // toast.error(error.response?.data?.message || error.message || 'Submission failed');
+      alert(error.response?.data?.message || error.message || 'Submission failed')
     } finally {
       setIsSubmitting(false);
     }
